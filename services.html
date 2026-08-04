@@ -1,0 +1,1194 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>CARS&amp;GO · Доп. услуги</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page-plane:     #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --card-border:    rgba(11,11,11,0.08);
+
+    --accent:   #2a78d6;
+    --series-1: #2a78d6;
+    --series-2: #eb6834;
+    --series-3: #1baf7a;
+    --series-4: #eda100;
+    --series-5: #e87ba4;
+
+    --chip-bg: #f2f1ec;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page-plane:     #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --gridline:       #2c2c2a;
+      --baseline:       #383835;
+      --card-border:    rgba(255,255,255,0.08);
+      --accent:   #3987e5;
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --series-3: #199e70;
+      --series-4: #c98500;
+      --series-5: #d55181;
+      --chip-bg: #232322;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page-plane:     #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --gridline:       #2c2c2a;
+    --baseline:       #383835;
+    --card-border:    rgba(255,255,255,0.08);
+    --accent:   #3987e5;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --series-4: #c98500;
+    --series-5: #d55181;
+    --chip-bg: #232322;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--page-plane); color:var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{ max-width:1180px; margin:0 auto; padding:28px 20px 64px; }
+
+  header.top{ display:flex; flex-direction:column; gap:4px; margin-bottom:20px; }
+  .eyebrow{ font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); }
+  h1{ font-size:26px; font-weight:700; margin:2px 0 0; letter-spacing:-0.01em; }
+  .subtitle{ font-size:13.5px; color:var(--text-secondary); margin-top:2px; }
+
+  .kpi-row{ display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin-bottom:16px; }
+  @media (max-width:760px){ .kpi-row{ grid-template-columns:repeat(2, 1fr); } }
+  .kpi-tile{
+    background:var(--surface-1); border:1px solid var(--card-border); border-radius:14px;
+    padding:16px 18px;
+  }
+  .kpi-label{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:6px; }
+  .kpi-value{ font-size:26px; font-weight:700; letter-spacing:-0.01em; }
+  .kpi-sub{ font-size:12px; color:var(--text-secondary); margin-top:4px; }
+
+  .card{
+    background:var(--surface-1); border:1px solid var(--card-border); border-radius:14px;
+    padding:18px 20px; margin-bottom:16px;
+  }
+  .card h2{ font-size:14.5px; font-weight:700; margin:0 0 4px; }
+  .card .hint{ font-size:12px; color:var(--text-muted); margin-bottom:14px; }
+
+  /* ---- monthly total bar chart ---- */
+  .bars-wrap{ display:flex; align-items:flex-end; gap:14px; height:180px; padding-top:24px; position:relative; }
+  .bar-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; position:relative; }
+  .bar-col .val{ font-size:11.5px; font-weight:700; margin-bottom:6px; color:var(--text-primary); white-space:nowrap; }
+  .bar-col .bar{ width:100%; max-width:38px; background:var(--series-1); border-radius:4px 4px 0 0; transition:opacity .15s; cursor:default; }
+  .bar-col .bar:hover{ opacity:.8; }
+  .bar-col .lbl{ font-size:11.5px; color:var(--text-secondary); margin-top:8px; }
+
+  /* ---- stacked package bars ---- */
+  .stack-wrap{ display:flex; align-items:flex-end; gap:14px; height:200px; }
+  .stack-col{ flex:1; display:flex; flex-direction:column-reverse; height:100%; max-width:56px; margin:0 auto; }
+  .stack-seg{ width:100%; margin-bottom:2px; border-radius:0; cursor:default; }
+  .stack-seg:first-child{ margin-bottom:0; border-radius:4px 4px 0 0; }
+  .stack-seg:last-child{ border-radius:0 0 0 0; }
+  .stack-labels{ display:flex; gap:14px; margin-top:8px; }
+  .stack-labels div{ flex:1; max-width:56px; margin:0 auto; text-align:center; font-size:11.5px; color:var(--text-secondary); }
+  .stack-cols-row{ display:flex; gap:14px; }
+  .stack-cols-row > div{ flex:1; }
+
+  .legend-row{ display:flex; flex-wrap:wrap; gap:14px; margin-top:14px; }
+  .legend-item{ display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); }
+  .legend-item .swatch{ width:10px; height:10px; border-radius:2px; flex:none; }
+
+  /* ---- heatmap ---- */
+  .heat-table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  .heat-table th{ font-weight:600; color:var(--text-muted); font-size:11px; text-transform:uppercase; letter-spacing:.03em; padding:0 4px 8px; text-align:center; }
+  .heat-table th.name-col, .heat-table td.name-col{ text-align:left; padding-left:0; }
+  .heat-table td{ padding:2px; text-align:center; }
+  .heat-table td.name-col{ color:var(--text-primary); white-space:nowrap; padding-right:10px; font-size:12.5px; }
+  .heat-table td.total-col{ text-align:right; padding-left:10px; color:var(--text-secondary); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .heat-cell{
+    width:44px; height:26px; border-radius:5px; position:relative; cursor:default;
+  }
+  .heat-cell:hover::after{
+    content: attr(data-tip);
+    position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%);
+    background:var(--text-primary); color:var(--surface-1); font-size:11px; font-weight:600;
+    padding:5px 8px; border-radius:6px; white-space:nowrap; z-index:5; pointer-events:none;
+  }
+  .heat-more{ font-size:12px; color:var(--text-muted); margin-top:10px; }
+
+  footer.caveats{
+    font-size:12px; color:var(--text-muted); border-top:1px solid var(--gridline);
+    padding-top:14px; line-height:1.65; margin-top:8px;
+  }
+  footer.caveats b{ color:var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">CARS&amp;GO · Доп. услуги</div>
+    <h1>Динамика доп. услуг по месяцам</h1>
+    <div class="subtitle" id="subtitle">Загрузка…</div>
+  </header>
+
+  <div class="kpi-row" id="kpiRow"></div>
+
+  <section class="card">
+    <h2>Доход от доп. услуг по месяцам</h2>
+    <div class="hint">Весь доход по строке «Доход» из таблицы, включая пакеты снижения ответственности</div>
+    <div id="monthlyBars"></div>
+  </section>
+
+  <section class="card">
+    <h2>Пакеты снижения ответственности</h2>
+    <div class="hint">Классы авто внутри каждого номера пакета объединены — важен номер пакета, не класс машины</div>
+    <div id="packageStack"></div>
+  </section>
+
+  <section class="card">
+    <h2>Остальные услуги — по месяцам</h2>
+    <div class="hint">Строки отсортированы по общему доходу за 7 месяцев; цвет клетки — доля от максимального месяца этой же услуги (наведите для точных цифр)</div>
+    <div id="heatmap"></div>
+  </section>
+
+  <footer class="caveats" id="caveats"></footer>
+</div>
+
+<script>
+const fmtRub = n => Math.round(n).toLocaleString('ru-RU') + ' ₽';
+const fmtRubShort = n => {
+  const a = Math.abs(n);
+  if(a >= 1e6) return (n/1e6).toFixed(1).replace('.0','') + ' млн ₽';
+  if(a >= 1e3) return Math.round(n/1e3) + ' тыс ₽';
+  return Math.round(n) + ' ₽';
+};
+const fmtNum = n => Math.round(n).toLocaleString('ru-RU');
+const fmtPct = (n, d) => isFinite(n) ? (n>0?'+':'') + n.toFixed(d===undefined?0:d) + '%' : '—';
+const monthShort = m => m.split(' ')[0].slice(0,3);
+
+let DATA = null;
+
+function renderKpis(){
+  const el = document.getElementById('kpiRow');
+  const totalRevenue = DATA.monthlyTotal.reduce((a,b)=>a+b,0);
+  const totalRequests = DATA.packages.reduce((a,p)=>a+p.totalRequests,0) + DATA.services.reduce((a,s)=>a+s.totalRequests,0);
+  const packageRevenue = DATA.packages.reduce((a,p)=>a+p.totalRevenue,0);
+  const packageShare = totalRevenue > 0 ? packageRevenue/totalRevenue*100 : 0;
+  const first = DATA.monthlyTotal[0], last = DATA.monthlyTotal[DATA.monthlyTotal.length-1];
+  const growth = first > 0 ? (last-first)/first*100 : NaN;
+
+  const tiles = [
+    {label:'Доход за 7 месяцев', value: fmtRubShort(totalRevenue), sub: `${fmtNum(totalRequests)} заявок`},
+    {label:'Пакеты в доходе', value: fmtPct(packageShare,0).replace('+',''), sub: fmtRubShort(packageRevenue)},
+    {label:monthShort(DATA.months[0])+' → '+monthShort(DATA.months[DATA.months.length-1]), value: fmtPct(growth,0), sub: `${fmtRubShort(first)} → ${fmtRubShort(last)}`},
+    {label:'Лучший месяц', value: monthShort(DATA.months[DATA.monthlyTotal.indexOf(Math.max(...DATA.monthlyTotal))]), sub: fmtRubShort(Math.max(...DATA.monthlyTotal))},
+  ];
+  el.innerHTML = tiles.map(t => `
+    <div class="kpi-tile">
+      <div class="kpi-label">${t.label}</div>
+      <div class="kpi-value">${t.value}</div>
+      <div class="kpi-sub">${t.sub}</div>
+    </div>
+  `).join('');
+}
+
+function renderMonthlyBars(){
+  const el = document.getElementById('monthlyBars');
+  const max = Math.max(...DATA.monthlyTotal, 1);
+  el.innerHTML = `<div class="bars-wrap">` + DATA.months.map((m,i) => {
+    const v = DATA.monthlyTotal[i];
+    const h = Math.max(4, v/max*100);
+    return `
+      <div class="bar-col">
+        <div class="val">${fmtRubShort(v)}</div>
+        <div class="bar" style="height:${h}%;" data-tip="${m}: ${fmtRub(v)}"></div>
+        <div class="lbl">${monthShort(m)}</div>
+      </div>`;
+  }).join('') + `</div>`;
+}
+
+function renderPackageStack(){
+  const el = document.getElementById('packageStack');
+  const colors = ['var(--series-1)','var(--series-2)','var(--series-3)','var(--series-4)','var(--series-5)'];
+  const max = Math.max(...DATA.months.map((_,i) => DATA.packages.reduce((a,p)=>a+p.revenue[i],0)), 1);
+
+  const cols = DATA.months.map((m,i) => {
+    const segs = DATA.packages.map((p,pi) => {
+      const v = p.revenue[i];
+      const h = v/max*100;
+      return `<div class="stack-seg" style="height:${h}%; background:${colors[pi]};" data-tip="${p.name}, ${m}: ${fmtRub(v)}"></div>`;
+    }).join('');
+    return `<div class="stack-col">${segs}</div>`;
+  }).join('');
+
+  const labels = DATA.months.map(m => `<div>${monthShort(m)}</div>`).join('');
+
+  el.innerHTML = `
+    <div class="stack-wrap">${cols}</div>
+    <div class="stack-labels">${labels}</div>
+    <div class="legend-row">
+      ${DATA.packages.map((p,pi) => `<div class="legend-item"><span class="swatch" style="background:${colors[pi]};"></span>${p.name} · ${fmtRubShort(p.totalRevenue)}</div>`).join('')}
+    </div>
+  `;
+}
+
+function renderHeatmap(){
+  const el = document.getElementById('heatmap');
+  const CAP = 20;
+  const rows = DATA.services.slice(0, CAP);
+  const omitted = DATA.services.length - rows.length;
+
+  const head = `<tr><th class="name-col">Услуга</th>${DATA.months.map(m=>`<th>${monthShort(m)}</th>`).join('')}<th>Всего</th></tr>`;
+
+  const body = rows.map(s => {
+    const rowMax = Math.max(...s.revenue, 1);
+    const cells = s.revenue.map((v,i) => {
+      const intensity = Math.round(v/rowMax*90) + (v>0?8:0);
+      return `<td><div class="heat-cell" style="background:color-mix(in srgb, var(--accent) ${intensity}%, var(--surface-1));" data-tip="${DATA.months[i]}: ${fmtRub(v)} · ${fmtNum(s.requests[i])} заяв."></div></td>`;
+    }).join('');
+    return `<tr><td class="name-col">${s.name}</td>${cells}<td class="total-col">${fmtRubShort(s.totalRevenue)}</td></tr>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div style="overflow-x:auto;">
+      <table class="heat-table">${head}${body}</table>
+    </div>
+    ${omitted > 0 ? `<div class="heat-more">и ещё ${omitted} услуг с меньшим оборотом (не показаны)</div>` : ''}
+  `;
+}
+
+function renderCaveats(){
+  document.getElementById('caveats').innerHTML =
+    '<b>Пакеты снижения ответственности:</b> в исходнике каждый номер пакета (№1–№5) разбит по классам авто (эконом/кроссовер/бизнес и т.д.) — здесь классы суммированы внутри своего номера, чтобы видеть спрос на сам уровень пакета, а не на комбинацию класс×пакет.<br>' +
+    '<b>Тепловая карта услуг:</b> цвет каждой клетки — доля от МАКСИМАЛЬНОГО месяца этой же услуги (свой масштаб на строку), это показывает сезонность внутри услуги. Для сравнения услуг между собой используйте колонку «Всего» — она в абсолютных рублях.<br>' +
+    '<b>Не показано в таблице:</b> услуги с наименьшим суммарным доходом за 7 месяцев (обычно единичные заявки) скрыты, чтобы таблица помещалась на экран — их количество указано под таблицей.';
+}
+
+DATA = {
+ "months": [
+  "Январь 2026",
+  "Февраль 2026",
+  "Март 2026",
+  "Апрель 2026",
+  "Май 2026",
+  "Июнь 2026",
+  "Июль 2026"
+ ],
+ "monthlyTotal": [
+  7246070,
+  7661699,
+  7896738,
+  8387839,
+  8856486,
+  10586284,
+  12570034
+ ],
+ "packages": [
+  {
+   "name": "Пакет №1",
+   "revenue": [
+    244825,
+    283525,
+    347135,
+    328830,
+    371510,
+    376985,
+    425345
+   ],
+   "requests": [
+    73,
+    85,
+    92,
+    89,
+    88,
+    106,
+    100
+   ],
+   "totalRevenue": 2378155,
+   "totalRequests": 633
+  },
+  {
+   "name": "Пакет №2 (л+к)",
+   "revenue": [
+    110890,
+    114415,
+    188770,
+    190095,
+    93010,
+    236625,
+    358000
+   ],
+   "requests": [
+    27,
+    27,
+    48,
+    49,
+    29,
+    57,
+    62
+   ],
+   "totalRevenue": 1291805,
+   "totalRequests": 299
+  },
+  {
+   "name": "Пакет №3 (л+к+лкп)",
+   "revenue": [
+    545905,
+    703585,
+    888205,
+    686260,
+    588220,
+    999020,
+    1123230
+   ],
+   "requests": [
+    87,
+    88,
+    114,
+    108,
+    141,
+    159,
+    151
+   ],
+   "totalRevenue": 5534425,
+   "totalRequests": 848
+  },
+  {
+   "name": "Пакет №4 \"до нуля\"",
+   "revenue": [
+    1206320,
+    1780500,
+    1759770,
+    1819395,
+    1963200,
+    1921025,
+    2553150
+   ],
+   "requests": [
+    95,
+    130,
+    125,
+    140,
+    129,
+    136,
+    147
+   ],
+   "totalRevenue": 13003360,
+   "totalRequests": 902
+  },
+  {
+   "name": "Пакет №5 \"расширенные условия\"",
+   "revenue": [
+    0,
+    0,
+    0,
+    0,
+    59600,
+    191500,
+    117800
+   ],
+   "requests": [
+    0,
+    0,
+    0,
+    0,
+    6,
+    10,
+    12
+   ],
+   "totalRevenue": 368900,
+   "totalRequests": 28
+  }
+ ],
+ "services": [
+  {
+   "name": "мойка автомобиля",
+   "revenue": [
+    1260400,
+    1312072,
+    1487850,
+    1444230,
+    1599108,
+    1804574,
+    1791290
+   ],
+   "requests": [
+    686,
+    712,
+    809,
+    745,
+    821,
+    923,
+    909
+   ],
+   "totalRevenue": 10699524,
+   "totalRequests": 5605
+  },
+  {
+   "name": "штраф ГИБДД",
+   "revenue": [
+    752869,
+    622731,
+    878527,
+    1103533,
+    1005679,
+    1080266,
+    1528728
+   ],
+   "requests": [
+    235,
+    230,
+    306,
+    304,
+    363,
+    398,
+    543
+   ],
+   "totalRevenue": 6972333,
+   "totalRequests": 2379
+  },
+  {
+   "name": "дозаправка",
+   "revenue": [
+    609722,
+    641081,
+    532548,
+    586686,
+    696827,
+    947808,
+    1606897
+   ],
+   "requests": [
+    229,
+    248,
+    226,
+    238,
+    268,
+    338,
+    518
+   ],
+   "totalRevenue": 5621569,
+   "totalRequests": 2065
+  },
+  {
+   "name": "повреждение авто",
+   "revenue": [
+    860050,
+    443373,
+    163365,
+    561220,
+    560635,
+    609600,
+    603080
+   ],
+   "requests": [
+    20,
+    14,
+    14,
+    14,
+    22,
+    25,
+    19
+   ],
+   "totalRevenue": 3801323,
+   "totalRequests": 128
+  },
+  {
+   "name": "перепробег",
+   "revenue": [
+    267289,
+    399352,
+    477138,
+    385500,
+    549017,
+    563821,
+    530439
+   ],
+   "requests": [
+    50,
+    70,
+    92,
+    82,
+    103,
+    96,
+    98
+   ],
+   "totalRevenue": 3172556,
+   "totalRequests": 591
+  },
+  {
+   "name": "выдача авто по адресу",
+   "revenue": [
+    228100,
+    192900,
+    190500,
+    201200,
+    265400,
+    273900,
+    416600
+   ],
+   "requests": [
+    146,
+    134,
+    120,
+    140,
+    154,
+    176,
+    203
+   ],
+   "totalRevenue": 1768600,
+   "totalRequests": 1073
+  },
+  {
+   "name": "возврат авто по адресу",
+   "revenue": [
+    205200,
+    227700,
+    173700,
+    220000,
+    248700,
+    291500,
+    388200
+   ],
+   "requests": [
+    130,
+    144,
+    113,
+    140,
+    141,
+    164,
+    185
+   ],
+   "totalRevenue": 1755000,
+   "totalRequests": 1017
+  },
+  {
+   "name": "выдача авто в аэропорт",
+   "revenue": [
+    136000,
+    213600,
+    177000,
+    191000,
+    199500,
+    280500,
+    242500
+   ],
+   "requests": [
+    89,
+    140,
+    125,
+    121,
+    130,
+    182,
+    154
+   ],
+   "totalRevenue": 1440100,
+   "totalRequests": 941
+  },
+  {
+   "name": "выдача авто в не рабочее время",
+   "revenue": [
+    307000,
+    151500,
+    128500,
+    163000,
+    182500,
+    228000,
+    186500
+   ],
+   "requests": [
+    155,
+    110,
+    100,
+    111,
+    128,
+    168,
+    137
+   ],
+   "totalRevenue": 1347000,
+   "totalRequests": 909
+  },
+  {
+   "name": "возврат авто в аэропорт",
+   "revenue": [
+    133500,
+    180500,
+    185500,
+    161000,
+    181000,
+    243000,
+    223000
+   ],
+   "requests": [
+    86,
+    124,
+    121,
+    109,
+    116,
+    154,
+    146
+   ],
+   "totalRevenue": 1307500,
+   "totalRequests": 856
+  },
+  {
+   "name": "возврат авто в не рабочее время",
+   "revenue": [
+    150500,
+    161000,
+    153000,
+    150000,
+    148200,
+    202500,
+    182000
+   ],
+   "requests": [
+    102,
+    123,
+    117,
+    104,
+    110,
+    150,
+    132
+   ],
+   "totalRevenue": 1147200,
+   "totalRequests": 838
+  },
+  {
+   "name": "Доп. водитель",
+   "revenue": [
+    20000,
+    32500,
+    31000,
+    26500,
+    32500,
+    36500,
+    52000
+   ],
+   "requests": [
+    36,
+    55,
+    52,
+    52,
+    65,
+    74,
+    97
+   ],
+   "totalRevenue": 231000,
+   "totalRequests": 431
+  },
+  {
+   "name": "простой авто",
+   "revenue": [
+    136400,
+    8100,
+    0,
+    32000,
+    22900,
+    4950,
+    16200
+   ],
+   "requests": [
+    7,
+    1,
+    0,
+    1,
+    2,
+    1,
+    1
+   ],
+   "totalRevenue": 220550,
+   "totalRequests": 13
+  },
+  {
+   "name": "продление по часам",
+   "revenue": [
+    25300,
+    57700,
+    41280,
+    30250,
+    14480,
+    8860,
+    31975
+   ],
+   "requests": [
+    8,
+    12,
+    13,
+    9,
+    7,
+    3,
+    14
+   ],
+   "totalRevenue": 209845,
+   "totalRequests": 66
+  },
+  {
+   "name": "доставка авто (возврат) Межгород",
+   "revenue": [
+    15000,
+    64000,
+    15000,
+    11950,
+    0,
+    72000,
+    26000
+   ],
+   "requests": [
+    1,
+    4,
+    1,
+    1,
+    0,
+    5,
+    2
+   ],
+   "totalRevenue": 203950,
+   "totalRequests": 14
+  },
+  {
+   "name": "детское кресло",
+   "revenue": [
+    11400,
+    14550,
+    17850,
+    20550,
+    11250,
+    43650,
+    46900
+   ],
+   "requests": [
+    22,
+    22,
+    23,
+    19,
+    17,
+    53,
+    47
+   ],
+   "totalRevenue": 166150,
+   "totalRequests": 203
+  },
+  {
+   "name": "доставка авто (выдача) Межгород",
+   "revenue": [
+    0,
+    20000,
+    40000,
+    11940,
+    5000,
+    70000,
+    18000
+   ],
+   "requests": [
+    0,
+    1,
+    2,
+    1,
+    1,
+    5,
+    1
+   ],
+   "totalRevenue": 164940,
+   "totalRequests": 11
+  },
+  {
+   "name": "Сервисный сбор",
+   "revenue": [
+    5000,
+    0,
+    0,
+    25000,
+    25000,
+    50000,
+    55000
+   ],
+   "requests": [
+    1,
+    0,
+    0,
+    1,
+    3,
+    4,
+    4
+   ],
+   "totalRevenue": 160000,
+   "totalRequests": 13
+  },
+  {
+   "name": "видеорегистратор",
+   "revenue": [
+    200,
+    3400,
+    3000,
+    4400,
+    11200,
+    13800,
+    8800
+   ],
+   "requests": [
+    1,
+    4,
+    5,
+    5,
+    12,
+    15,
+    7
+   ],
+   "totalRevenue": 44800,
+   "totalRequests": 49
+  },
+  {
+   "name": "бустер",
+   "revenue": [
+    2300,
+    2600,
+    1850,
+    2350,
+    2850,
+    6650,
+    12200
+   ],
+   "requests": [
+    9,
+    11,
+    13,
+    7,
+    14,
+    28,
+    42
+   ],
+   "totalRevenue": 30800,
+   "totalRequests": 124
+  },
+  {
+   "name": "химчистка",
+   "revenue": [
+    5000,
+    0,
+    0,
+    15000,
+    5000,
+    0,
+    0
+   ],
+   "requests": [
+    1,
+    0,
+    0,
+    1,
+    1,
+    0,
+    0
+   ],
+   "totalRevenue": 25000,
+   "totalRequests": 3
+  },
+  {
+   "name": "возврат авто ЖД вокзал",
+   "revenue": [
+    1000,
+    2800,
+    1000,
+    800,
+    6600,
+    6600,
+    2800
+   ],
+   "requests": [
+    1,
+    3,
+    1,
+    1,
+    7,
+    7,
+    3
+   ],
+   "totalRevenue": 21600,
+   "totalRequests": 23
+  },
+  {
+   "name": "Резервный запас топлива",
+   "revenue": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    21000
+   ],
+   "requests": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    6
+   ],
+   "totalRevenue": 21000,
+   "totalRequests": 6
+  },
+  {
+   "name": "подача авто ЖД вокзал",
+   "revenue": [
+    1000,
+    4600,
+    5000,
+    0,
+    3600,
+    3800,
+    1800
+   ],
+   "requests": [
+    1,
+    5,
+    5,
+    0,
+    4,
+    4,
+    2
+   ],
+   "totalRevenue": 19800,
+   "totalRequests": 21
+  },
+  {
+   "name": "услуги трансфера (водителя)",
+   "revenue": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    17500,
+    0
+   ],
+   "requests": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "totalRevenue": 17500,
+   "totalRequests": 1
+  },
+  {
+   "name": "СКОЛ Лобовое стекло",
+   "revenue": [
+    1500,
+    3000,
+    6300,
+    2000,
+    2000,
+    0,
+    0
+   ],
+   "requests": [
+    1,
+    2,
+    3,
+    1,
+    1,
+    0,
+    0
+   ],
+   "totalRevenue": 14800,
+   "totalRequests": 8
+  },
+  {
+   "name": "штрафстоянка",
+   "revenue": [
+    0,
+    13500,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "requests": [
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "totalRevenue": 13500,
+   "totalRequests": 1
+  },
+  {
+   "name": "эвакуатор",
+   "revenue": [
+    0,
+    0,
+    0,
+    13000,
+    0,
+    0,
+    0
+   ],
+   "requests": [
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "totalRevenue": 13000,
+   "totalRequests": 1
+  },
+  {
+   "name": "крепление для лыж",
+   "revenue": [
+    2800,
+    3200,
+    2800,
+    0,
+    0,
+    0,
+    0
+   ],
+   "requests": [
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0
+   ],
+   "totalRevenue": 8800,
+   "totalRequests": 3
+  },
+  {
+   "name": "оплата сверх тарифа",
+   "revenue": [
+    0,
+    3765,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "requests": [
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "totalRevenue": 3765,
+   "totalRequests": 1
+  },
+  {
+   "name": "люлька (Автолюлька)",
+   "revenue": [
+    600,
+    0,
+    0,
+    0,
+    0,
+    1200,
+    600
+   ],
+   "requests": [
+    1,
+    0,
+    0,
+    0,
+    0,
+    2,
+    1
+   ],
+   "totalRevenue": 2400,
+   "totalRequests": 4
+  },
+  {
+   "name": "подача авто в области",
+   "revenue": [
+    0,
+    0,
+    0,
+    0,
+    2000,
+    0,
+    0
+   ],
+   "requests": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0
+   ],
+   "totalRevenue": 2000,
+   "totalRequests": 1
+  },
+  {
+   "name": "детское кресло (за шт)",
+   "revenue": [
+    0,
+    150,
+    150,
+    150,
+    0,
+    150,
+    0
+   ],
+   "requests": [
+    1,
+    1,
+    1,
+    1,
+    0,
+    2,
+    0
+   ],
+   "totalRevenue": 600,
+   "totalRequests": 6
+  }
+ ]
+};
+document.getElementById('subtitle').textContent = `${DATA.months[0]} – ${DATA.months[DATA.months.length-1]} · ${DATA.packages.length} пакета + ${DATA.services.length} услуг`;
+renderKpis();
+renderMonthlyBars();
+renderPackageStack();
+renderHeatmap();
+renderCaveats();
+</script>
+</body>
+</html>
