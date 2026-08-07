@@ -1,0 +1,3338 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>CARS&amp;GO · Пульс 2</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root{
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page-plane:     #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --gridline:       #e1e0d9;
+    --baseline:       #c3c2b7;
+    --card-border:    rgba(11,11,11,0.08);
+    --accent:         #2a78d6;
+    --accent-wash:    rgba(42,120,214,0.10);
+    --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a;
+    --good: #0ca30c; --warning: #fab219; --critical: #d03b3b;
+    --good-wash: rgba(12,163,12,0.12); --warning-wash: rgba(250,178,25,0.14); --critical-wash: rgba(208,59,59,0.12);
+    --chip-bg: #f2f1ec; --chip-bg-hover: #ebe9e2; --input-bg: #ffffff;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --surface-1: #1a1a19; --page-plane: #0d0d0d; --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+      --gridline: #2c2c2a; --baseline: #383835; --card-border: rgba(255,255,255,0.08);
+      --accent: #3987e5; --accent-wash: rgba(57,135,229,0.14);
+      --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
+      --good: #0ca30c; --warning: #fab219; --critical: #e66767;
+      --good-wash: rgba(12,163,12,0.18); --warning-wash: rgba(250,178,25,0.16); --critical-wash: rgba(230,103,103,0.16);
+      --chip-bg: #232322; --chip-bg-hover: #2b2b29; --input-bg: #141413;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --surface-1: #1a1a19; --page-plane: #0d0d0d; --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
+    --gridline: #2c2c2a; --baseline: #383835; --card-border: rgba(255,255,255,0.08);
+    --accent: #3987e5; --accent-wash: rgba(57,135,229,0.14);
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
+    --good: #0ca30c; --warning: #fab219; --critical: #e66767;
+    --good-wash: rgba(12,163,12,0.18); --warning-wash: rgba(250,178,25,0.16); --critical-wash: rgba(230,103,103,0.16);
+    --chip-bg: #232322; --chip-bg-hover: #2b2b29; --input-bg: #141413;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ background:var(--page-plane); color:var(--text-primary); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing:antialiased; }
+  .wrap{ max-width:1180px; margin:0 auto; padding:28px 20px 64px; }
+  header.top{ display:flex; flex-direction:column; gap:4px; margin-bottom:20px; }
+  .eyebrow{ font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); }
+  h1{ font-size:26px; font-weight:700; margin:2px 0 0; letter-spacing:-0.01em; }
+  .subtitle{ font-size:13.5px; color:var(--text-secondary); margin-top:2px; }
+  .toolbar{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; background:var(--surface-1); border:1px solid var(--card-border); border-radius:12px; padding:12px 14px; margin-bottom:20px; }
+  .sep{ width:1px; align-self:stretch; background:var(--gridline); }
+  .chip{ font: inherit; font-size:12px; color:var(--text-secondary); background:var(--chip-bg); border:1px solid transparent; border-radius:20px; padding:5px 12px; cursor:pointer; }
+  .chip:hover{ background:var(--chip-bg-hover); }
+  .chip.active{ background:var(--accent-wash); color:var(--accent); font-weight:600; }
+  .chips-row{ display:flex; flex-wrap:wrap; gap:6px; }
+
+  .card{ background:var(--surface-1); border:1px solid var(--card-border); border-radius:14px; padding:18px 20px; margin-bottom:14px; }
+  .card h2{ font-size:14.5px; font-weight:700; margin:0 0 4px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .card .hint{ font-size:12px; color:var(--text-muted); margin-bottom:12px; }
+  .expand-btn{ font:inherit; font-size:11.5px; color:var(--accent); background:none; border:none; cursor:pointer; font-weight:600; white-space:nowrap; }
+
+  .stat-row{ display:flex; gap:24px; flex-wrap:wrap; align-items:baseline; }
+  .stat-tile .stat-label{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:4px; }
+  .stat-tile .stat-value{ font-size:22px; font-weight:700; letter-spacing:-0.01em; }
+  .stat-tile .stat-sub{ font-size:11.5px; color:var(--text-secondary); margin-top:2px; }
+
+  .status-pill{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:999px; }
+  .status-pill.good{ background:var(--good-wash); color:var(--good); }
+  .status-pill.warning{ background:var(--warning-wash); color:#8a5a00; }
+  :root[data-theme="dark"] .status-pill.warning{ color:var(--warning); }
+  @media (prefers-color-scheme:dark){ .status-pill.warning{ color:var(--warning); } }
+  .status-pill.critical{ background:var(--critical-wash); color:var(--critical); }
+
+  .mom-note{ font-size:11.5px; color:var(--text-muted); margin-top:8px; }
+  .mom-note b{ color:var(--text-secondary); }
+
+  .seg-detail{ margin-top:14px; padding-top:14px; border-top:1px solid var(--gridline); display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+  @media (max-width:640px){ .seg-detail{ grid-template-columns:1fr; } }
+  .seg-block .seg-title{ font-size:11.5px; font-weight:700; color:var(--text-secondary); margin-bottom:6px; }
+  .seg-block .seg-line{ display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:3px; }
+  .seg-block .seg-line b{ font-variant-numeric:tabular-nums; }
+
+  .chan-list{ display:flex; flex-direction:column; gap:8px; }
+  .chan-row{ display:flex; align-items:center; gap:10px; }
+  .chan-row .chan-name{ width:170px; flex:none; font-size:12.5px; color:var(--text-secondary); }
+  .chan-row .chan-bar-track{ flex:1; height:8px; border-radius:4px; background:var(--gridline); overflow:hidden; }
+  .chan-row .chan-bar-fill{ height:100%; background:var(--accent); border-radius:4px; }
+  .chan-row .chan-val{ width:110px; flex:none; text-align:right; font-size:12px; font-variant-numeric:tabular-nums; color:var(--text-secondary); }
+  .chan-row .chan-val b{ color:var(--text-primary); }
+
+  .empty-note{ font-size:12.5px; color:var(--text-muted); padding:12px 0; text-align:center; }
+  footer.caveats{ font-size:12px; color:var(--text-muted); border-top:1px solid var(--gridline); padding-top:14px; line-height:1.65; margin-top:8px; }
+  footer.caveats b{ color:var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">CARS&amp;GO · Пульс 2</div>
+    <h1>Показатели из РНП</h1>
+    <div class="subtitle" id="subtitle">Загрузка…</div>
+  </header>
+
+  <div class="toolbar">
+    <div class="chips-row" id="monthChips"></div>
+    <div class="sep"></div>
+    <div class="chips-row" id="cityChips"></div>
+  </div>
+
+  <section class="card"><h2>Выручка</h2><div class="hint">Требуемый план выручки на месяц (уже с учётом протекающей выручки и продлений)</div><div id="m-revenue"></div></section>
+  <section class="card"><h2>Продления</h2><div class="hint">Запланированные продления существующих аренд</div><div id="m-renewals"></div></section>
+  <section class="card"><h2>Уже имеющиеся брони</h2><div class="hint">Выручка, которая уже гарантирована бронями, сделанными до начала месяца</div><div id="m-already"></div></section>
+  <section class="card"><h2>Конверсия</h2><div class="hint">Из заявки в бронь (взвешено по требуемым лидам выбранных городов)</div><div id="m-conv"></div></section>
+
+  <section class="card">
+    <h2>Кол-во и выручка на текущий период <button class="expand-btn" id="toggle-current">Показать новые/постоянные ▾</button></h2>
+    <div class="hint">Брони, приходящиеся на выбранный месяц</div>
+    <div id="m-current"></div>
+  </section>
+
+  <section class="card">
+    <h2>Отмены и будущие брони, в суммах <button class="expand-btn" id="toggle-cancelfuture">Показать новые/постоянные ▾</button></h2>
+    <div class="hint">«Будущие» — брони этого месяца, чья выручка уходит за его пределы</div>
+    <div id="m-cancelfuture"></div>
+  </section>
+
+  <section class="card"><h2>% отмен и % будущих броней</h2><div class="hint">Источник не делит эти проценты на новых/постоянных клиентов — только общие</div><div id="m-pctpair"></div></section>
+
+  <section class="card"><h2>Лиды по каналам</h2><div class="hint">Факт по каждому каналу и доля от суммы показанных каналов</div><div id="m-channels"></div></section>
+
+  <section class="card">
+    <h2>Средний чек <button class="expand-btn" id="toggle-check">Показать новые/постоянные ▾</button></h2>
+    <div class="hint">Выручка текущего периода / кол-во броней текущего периода</div>
+    <div id="m-check"></div>
+  </section>
+  <section class="card"><h2>Стоимость лида</h2><div class="hint">Взвешено по требуемым лидам выбранных городов</div><div id="m-cpl"></div></section>
+  <section class="card"><h2>Стоимость бронирования</h2><div class="hint">Взвешено по количеству созданных броней выбранных городов</div><div id="m-cpb"></div></section>
+
+  <footer class="caveats" id="caveats"></footer>
+</div>
+
+<script>
+const fmtRub = n => Math.round(n).toLocaleString('ru-RU') + ' ₽';
+const fmtRubShort = n => { const a=Math.abs(n); if(a>=1e6) return (n/1e6).toFixed(1).replace('.0','')+' млн ₽'; if(a>=1e3) return Math.round(n/1e3)+' тыс ₽'; return Math.round(n)+' ₽'; };
+const fmtNum = n => Math.round(n).toLocaleString('ru-RU');
+const fmtPct = (n,d) => isFinite(n) ? n.toFixed(d===undefined?0:d)+'%' : '—';
+
+let DATA = null;
+const MONTHS = ["Июль 2026","Август 2026"];
+const CITIES = ["Москва","Екатеринбург","Новосибирск","Тюмень","Красноярск","Иркутск"];
+const state = { month: MONTHS[MONTHS.length-1], cities: new Set(CITIES) };
+
+function selectedCities(){ return CITIES.filter(c => state.cities.has(c)); }
+function otherMonth(){ return state.month === MONTHS[0] ? MONTHS[1] : MONTHS[0]; }
+
+function elapsedFraction(monthKey){
+  const cities = selectedCities();
+  if(!cities.length) return 1;
+  const meta = DATA[monthKey][cities[0]].meta;
+  const start = new Date(meta['Начало месяца']), end = new Date(meta['Конец месяца']);
+  const daysInMonth = Math.round((end-start)/86400000)+1;
+  const elapsed = meta['Прошло дней'];
+  return Math.max(elapsed/daysInMonth, 1/daysInMonth);
+}
+
+function getPath(obj, path){ let n=obj; for(const p of path){ if(n==null) return undefined; n = n[p]; } return n; }
+
+function sumMetric(monthKey, path){
+  let plan=0, fact=0;
+  selectedCities().forEach(c => { const m = getPath(DATA[monthKey][c], path); if(m){ plan += m.plan||0; fact += m.fact||0; } });
+  return {plan, fact};
+}
+
+function weightedRate(monthKey, path, weightPath){
+  let planNum=0, planDen=0, factNum=0, factDen=0;
+  selectedCities().forEach(c => {
+    const rate = getPath(DATA[monthKey][c], path);
+    const w = getPath(DATA[monthKey][c], weightPath);
+    if(!rate || !w) return;
+    if(isFinite(rate.plan) && isFinite(w.plan)){ planNum += rate.plan*w.plan; planDen += w.plan; }
+    if(isFinite(rate.fact) && isFinite(w.fact)){ factNum += rate.fact*w.fact; factDen += w.fact; }
+  });
+  return { plan: planDen>0 ? planNum/planDen : NaN, fact: factDen>0 ? factNum/factDen : NaN };
+}
+
+function statusFor(ratio){ if(ratio>=1) return 'good'; if(ratio>=0.85) return 'warning'; return 'critical'; }
+function statusLabel(s){ return s==='good' ? 'В норме' : (s==='warning' ? 'Чуть отстаём' : 'Отстаём'); }
+
+// Pace: for additive month-totals, adjust the plan by how much of the month has elapsed.
+function paceCard(el, title, monthMetric, unit, fmt){
+  const {plan, fact} = monthMetric;
+  const frac = elapsedFraction(state.month);
+  const paceTarget = plan*frac;
+  const ratio = paceTarget>0 ? fact/paceTarget : (fact>0?1:0);
+  const status = statusFor(ratio);
+
+  const otherM = sumMetric(otherMonth(), monthMetric.__path);
+  const otherFrac = elapsedFraction(otherMonth());
+  const otherPct = otherM.plan>0 ? (otherM.fact/otherM.plan*100) : NaN;
+  const thisPct = plan>0 ? (fact/plan*100) : NaN;
+
+  el.innerHTML = `
+    <div class="stat-row">
+      <div class="stat-tile"><div class="stat-label">План (месяц)</div><div class="stat-value">${fmt(plan)}</div></div>
+      <div class="stat-tile"><div class="stat-label">Факт</div><div class="stat-value">${fmt(fact)}</div><div class="stat-sub">${fmtPct(thisPct,0)} от плана</div></div>
+      <div class="stat-tile"><div class="stat-label">Темп</div><div class="stat-value"><span class="status-pill ${status}">${fmtPct(ratio*100,0)}</span></div><div class="stat-sub">с учётом ${fmtPct(frac*100,0)} прошедших дней месяца</div></div>
+    </div>
+    <div class="mom-note"><b>${otherMonth().split(' ')[0]}:</b> факт составил ${fmtPct(otherPct,0)} от плана месяца (для сравнения — там расчёт уже за полный или почти полный месяц)</div>
+  `;
+}
+
+function renderSimple(){
+  const rev = sumMetric(state.month, ['total','revenue']); rev.__path=['total','revenue'];
+  paceCard(document.getElementById('m-revenue'), 'Выручка', rev, 'rub', fmtRubShort);
+
+  const ren = sumMetric(state.month, ['total','renewals']); ren.__path=['total','renewals'];
+  paceCard(document.getElementById('m-renewals'), 'Продления', ren, 'rub', fmtRubShort);
+
+  const ae = sumMetric(state.month, ['total','alreadyExisting']); ae.__path=['total','alreadyExisting'];
+  paceCard(document.getElementById('m-already'), 'Уже имеющиеся брони', ae, 'rub', fmtRubShort);
+}
+
+function renderConv(){
+  const el = document.getElementById('m-conv');
+  const r = weightedRate(state.month, ['total','convToBooking'], ['total','leadsRequired']);
+  const ratio = r.plan>0 ? r.fact/r.plan : (r.fact>0?1:0);
+  const status = statusFor(ratio);
+  const other = weightedRate(otherMonth(), ['total','convToBooking'], ['total','leadsRequired']);
+  el.innerHTML = `
+    <div class="stat-row">
+      <div class="stat-tile"><div class="stat-label">План</div><div class="stat-value">${fmtPct(r.plan*100,1)}</div></div>
+      <div class="stat-tile"><div class="stat-label">Факт</div><div class="stat-value">${fmtPct(r.fact*100,1)}</div></div>
+      <div class="stat-tile"><div class="stat-label">К плану</div><div class="stat-value"><span class="status-pill ${status}">${fmtPct(ratio*100,0)}</span></div></div>
+    </div>
+    <div class="mom-note"><b>${otherMonth().split(' ')[0]}:</b> факт ${fmtPct(other.fact*100,1)} (план ${fmtPct(other.plan*100,1)})</div>
+  `;
+}
+
+function segTotals(monthKey, countPath, rubPath){
+  const out = {};
+  ['total','repeat','new'].forEach(seg => {
+    const cp = countPath.map(p => p==='SEG'?seg:p);
+    const rp = rubPath.map(p => p==='SEG'?seg:p);
+    out[seg] = { count: sumMetric(monthKey, cp), rub: sumMetric(monthKey, rp) };
+  });
+  return out;
+}
+
+function renderCurrentPeriod(){
+  const el = document.getElementById('m-current');
+  const segs = segTotals(state.month, ['segments','SEG','currentPeriodCount'], ['segments','SEG','currentPeriodRub']);
+  const t = segs.total;
+  const ratio = (t.rub.plan>0) ? t.rub.fact/t.rub.plan : (t.rub.fact>0?1:0);
+  const status = statusFor(ratio);
+  el.innerHTML = `
+    <div class="stat-row">
+      <div class="stat-tile"><div class="stat-label">Броней (факт/план)</div><div class="stat-value">${fmtNum(t.count.fact)}<span style="font-size:13px;color:var(--text-muted);"> / ${fmtNum(t.count.plan)}</span></div></div>
+      <div class="stat-tile"><div class="stat-label">Выручка (факт/план)</div><div class="stat-value">${fmtRubShort(t.rub.fact)}</div><div class="stat-sub">план ${fmtRubShort(t.rub.plan)}</div></div>
+      <div class="stat-tile"><div class="stat-label">Выполнение</div><div class="stat-value"><span class="status-pill ${status}">${fmtPct(ratio*100,0)}</span></div></div>
+    </div>
+    <div class="seg-detail" id="current-detail" hidden>
+      ${['repeat','new'].map(seg => `
+        <div class="seg-block">
+          <div class="seg-title">${seg==='repeat'?'Постоянные клиенты':'Новые клиенты'}</div>
+          <div class="seg-line"><span>Броней</span><b>${fmtNum(segs[seg].count.fact)} / ${fmtNum(segs[seg].count.plan)} план</b></div>
+          <div class="seg-line"><span>Выручка</span><b>${fmtRubShort(segs[seg].rub.fact)} / ${fmtRubShort(segs[seg].rub.plan)} план</b></div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderCancelFuture(){
+  const el = document.getElementById('m-cancelfuture');
+  const cancel = segTotals(state.month, ['segments','SEG','cancelledCount'], ['segments','SEG','cancelledRub']);
+  const future = segTotals(state.month, ['segments','SEG','futureCount'], ['segments','SEG','futureRub']);
+  el.innerHTML = `
+    <div class="stat-row">
+      <div class="stat-tile"><div class="stat-label">Отменено, ₽</div><div class="stat-value">${fmtRubShort(cancel.total.rub.fact)}</div><div class="stat-sub">${fmtNum(cancel.total.count.fact)} броней · план ${fmtRubShort(cancel.total.rub.plan)}</div></div>
+      <div class="stat-tile"><div class="stat-label">Будущие брони, ₽</div><div class="stat-value">${fmtRubShort(future.total.rub.fact)}</div><div class="stat-sub">${fmtNum(future.total.count.fact)} броней · план ${fmtRubShort(future.total.rub.plan)}</div></div>
+    </div>
+    <div class="seg-detail" id="cancelfuture-detail" hidden>
+      ${['repeat','new'].map(seg => `
+        <div class="seg-block">
+          <div class="seg-title">${seg==='repeat'?'Постоянные клиенты':'Новые клиенты'}</div>
+          <div class="seg-line"><span>Отменено</span><b>${fmtRubShort(cancel[seg].rub.fact)} (${fmtNum(cancel[seg].count.fact)} шт)</b></div>
+          <div class="seg-line"><span>Будущие</span><b>${fmtRubShort(future[seg].rub.fact)} (${fmtNum(future[seg].count.fact)} шт)</b></div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderPctPair(){
+  const el = document.getElementById('m-pctpair');
+  const cancel = weightedRate(state.month, ['total','pctCancel'], ['segments','total','createdCount']);
+  const future = weightedRate(state.month, ['total','pctFuture'], ['segments','total','createdCount']);
+  el.innerHTML = `
+    <div class="stat-row">
+      <div class="stat-tile"><div class="stat-label">% отмен (факт/план)</div><div class="stat-value">${fmtPct(cancel.fact*100,1)}</div><div class="stat-sub">план ${fmtPct(cancel.plan*100,1)}</div></div>
+      <div class="stat-tile"><div class="stat-label">% будущих броней (факт/план)</div><div class="stat-value">${fmtPct(future.fact*100,1)}</div><div class="stat-sub">план ${fmtPct(future.plan*100,1)}</div></div>
+    </div>
+  `;
+}
+
+function renderChannels(){
+  const el = document.getElementById('m-channels');
+  const cities = selectedCities();
+  if(!cities.length){ el.innerHTML='<div class="empty-note">Выберите хотя бы один город</div>'; return; }
+  const totals = {};
+  cities.forEach(c => {
+    const chans = DATA[state.month][c].channels;
+    Object.entries(chans).forEach(([name, v]) => {
+      if(!totals[name]) totals[name] = 0;
+      totals[name] += v.fact || 0;
+    });
+  });
+  const rows = Object.entries(totals).map(([name,fact]) => ({name, fact})).filter(r=>r.fact>0).sort((a,b)=>b.fact-a.fact);
+  const sumAll = rows.reduce((a,r)=>a+r.fact,0);
+  const maxV = Math.max(...rows.map(r=>r.fact), 1);
+  el.innerHTML = rows.length ? `
+    <div class="chan-list">
+      ${rows.map(r => `
+        <div class="chan-row">
+          <span class="chan-name">${r.name}</span>
+          <div class="chan-bar-track"><div class="chan-bar-fill" style="width:${r.fact/maxV*100}%;"></div></div>
+          <span class="chan-val"><b>${fmtNum(r.fact)}</b> · ${fmtPct(r.fact/sumAll*100,0)}</span>
+        </div>
+      `).join('')}
+    </div>
+    <div class="mom-note">Всего по показанным каналам: <b>${fmtNum(sumAll)}</b> лидов</div>
+  ` : '<div class="empty-note">Нет данных по лидам за этот месяц</div>';
+}
+
+function renderCheck(){
+  const el = document.getElementById('m-check');
+  const segs = segTotals(state.month, ['segments','SEG','currentPeriodCount'], ['segments','SEG','currentPeriodRub']);
+  const avg = seg => seg.count.fact>0 ? seg.rub.fact/seg.count.fact : NaN;
+  const avgPlan = seg => seg.count.plan>0 ? seg.rub.plan/seg.count.plan : NaN;
+  el.innerHTML = `
+    <div class="stat-row">
+      <div class="stat-tile"><div class="stat-label">Общий (факт)</div><div class="stat-value">${fmtRubShort(avg(segs.total))}</div><div class="stat-sub">план ${fmtRubShort(avgPlan(segs.total))}</div></div>
+    </div>
+    <div class="seg-detail" id="check-detail" hidden>
+      ${['repeat','new'].map(seg => `
+        <div class="seg-block">
+          <div class="seg-title">${seg==='repeat'?'Постоянные клиенты':'Новые клиенты'}</div>
+          <div class="seg-line"><span>Средний чек</span><b>${fmtRubShort(avg(segs[seg]))}</b></div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderCostCards(){
+  const cpl = weightedRate(state.month, ['total','costPerLead'], ['total','leadsRequired']);
+  const cplRatio = cpl.plan>0 ? cpl.plan/cpl.fact : NaN; // lower fact cost than plan is good -> invert
+  document.getElementById('m-cpl').innerHTML = `
+    <div class="stat-row">
+      <div class="stat-tile"><div class="stat-label">План</div><div class="stat-value">${fmtRub(cpl.plan)}</div></div>
+      <div class="stat-tile"><div class="stat-label">Факт</div><div class="stat-value">${fmtRub(cpl.fact)}</div></div>
+      <div class="stat-tile"><div class="stat-label">К плану</div><div class="stat-value"><span class="status-pill ${statusFor(cplRatio)}">${fmtPct(cplRatio*100,0)}</span></div></div>
+    </div>
+  `;
+  const cpb = weightedRate(state.month, ['total','costPerBooking'], ['segments','total','createdCount']);
+  const cpbRatio = cpb.plan>0 ? cpb.plan/cpb.fact : NaN;
+  document.getElementById('m-cpb').innerHTML = `
+    <div class="stat-row">
+      <div class="stat-tile"><div class="stat-label">План</div><div class="stat-value">${fmtRub(cpb.plan)}</div></div>
+      <div class="stat-tile"><div class="stat-label">Факт</div><div class="stat-value">${fmtRub(cpb.fact)}</div></div>
+      <div class="stat-tile"><div class="stat-label">К плану</div><div class="stat-value"><span class="status-pill ${statusFor(cpbRatio)}">${fmtPct(cpbRatio*100,0)}</span></div></div>
+    </div>
+  `;
+}
+
+function renderMonthChips(){
+  const el = document.getElementById('monthChips');
+  el.innerHTML = MONTHS.map(m => `<button class="chip ${state.month===m?'active':''}" data-m="${m}">${m}</button>`).join('');
+  el.querySelectorAll('.chip').forEach(btn => { btn.onclick = () => { state.month = btn.dataset.m; renderMonthChips(); renderAll(); }; });
+}
+function renderCityChips(){
+  const el = document.getElementById('cityChips');
+  el.innerHTML = CITIES.map(c => `<button class="chip ${state.cities.has(c)?'active':''}" data-c="${c}">${c}</button>`).join('');
+  el.querySelectorAll('.chip').forEach(btn => {
+    btn.onclick = () => {
+      const c = btn.dataset.c;
+      if(state.cities.has(c)){ if(state.cities.size>1) state.cities.delete(c); } else state.cities.add(c);
+      renderCityChips(); renderAll();
+    };
+  });
+}
+
+function wireToggle(btnId, detailId){
+  const btn = document.getElementById(btnId);
+  btn.onclick = () => {
+    const d = document.getElementById(detailId);
+    if(!d) return;
+    d.hidden = !d.hidden;
+    btn.textContent = d.hidden ? btn.textContent.replace('Скрыть','Показать').replace('▴','▾') : btn.textContent.replace('Показать','Скрыть').replace('▾','▴');
+  };
+}
+
+function renderAll(){
+  document.getElementById('subtitle').textContent = `${state.month} · источник — только внутренние отчёты РНП компании (без сайтовых/CRM данных вне этих файлов)`;
+  renderSimple();
+  renderConv();
+  renderCurrentPeriod();
+  renderCancelFuture();
+  renderPctPair();
+  renderChannels();
+  renderCheck();
+  renderCostCards();
+}
+
+function renderCaveats(){
+  document.getElementById('caveats').innerHTML =
+    '<b>Только РНП:</b> по прямому запросу все цифры этого дашборда берутся исключительно из внутренних отчётов РНП (июль и август 2026) — никакие другие файлы/выгрузки не использовались.<br>' +
+    '<b>Нет сравнения с прошлым годом:</b> РНП-файлов за 2025 год не было под рукой — сравнение доступно только между июлем и августом 2026. Если найдутся более старые РНП-файлы, можно добавить.<br>' +
+    '<b>Темп:</b> факт месяца делится на (план × доля прошедших дней месяца) — так август (несколько дней от начала) сравнивается с планом на весь месяц корректно.<br>' +
+    '<b>% отмен / % будущих броней:</b> в РНП эти проценты считаются только по городу в целом — разбивки на новых/постоянных клиентов в источнике нет, поэтому здесь она не показана.<br>' +
+    '<b>Лиды по каналам:</b> сумма по показанным каналам не всегда совпадает с собственной строкой «Проверка» в РНП — это расхождение существует в самой исходной таблице (одни каналы то учитываются, то нет), не ошибка подсчёта здесь.<br>' +
+    '<b>Города:</b> только 6 городов из шести листов «(Воронка)», совпадающих с остальными дашбордами CARS&amp;GO — Алматы/Астана/Горно-Алтайск (другие листы РНП) не включены.';
+}
+
+DATA = {
+ "Июль 2026": {
+  "Москва": {
+   "meta": {
+    "Начало месяца": "2026-07-01 00:00:00",
+    "Конец месяца": "2026-07-31 00:00:00",
+    "Текущая дата": "2026-08-01 00:00:00",
+    "Прошло дней": 31
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1380.0,
+     "fact": 1556.909712
+    },
+    "costPerBooking": {
+     "plan": 7516.071429,
+     "fact": 11747.59146
+    },
+    "convToLead": {
+     "plan": 0.2295081967,
+     "fact": 0.2228915663
+    },
+    "convToBooking": {
+     "plan": 0.21,
+     "fact": 0.1325301205
+    },
+    "avgCheck": {
+     "plan": 44000.0,
+     "fact": 63214.86239
+    },
+    "pctFuture": {
+     "plan": 0.15,
+     "fact": 0.116038347
+    },
+    "pctCancel": {
+     "plan": 0.2,
+     "fact": 0.179881918
+    },
+    "revenue": {
+     "plan": 7213750,
+     "fact": 8634280
+    },
+    "renewals": {
+     "plan": 3500000.0,
+     "fact": 3812654
+    },
+    "alreadyExisting": {
+     "plan": 1502550.0,
+     "fact": 3254648
+    },
+    "leadsRequired": {
+     "plan": 364.1733516,
+     "fact": 332
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 151.965035,
+      "fact": 183
+     },
+     "createdRub": {
+      "plan": 6686461.538,
+      "fact": 9786420
+     },
+     "currentPeriodCount": {
+      "plan": 98.77727273,
+      "fact": 109
+     },
+     "currentPeriodRub": {
+      "plan": 4346200,
+      "fact": 6890420
+     },
+     "cancelledCount": {
+      "plan": 30.39300699,
+      "fact": 51
+     },
+     "cancelledRub": {
+      "plan": 1337292.308,
+      "fact": 1760400
+     },
+     "futureCount": {
+      "plan": 22.79475524,
+      "fact": 23
+     },
+     "futureRub": {
+      "plan": 1002969.231,
+      "fact": 1135600
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 68.38426573,
+      "fact": 109
+     },
+     "createdRub": {
+      "plan": 3008907.692,
+      "fact": 5165370
+     },
+     "currentPeriodCount": {
+      "plan": 44.44977273,
+      "fact": 76
+     },
+     "currentPeriodRub": {
+      "plan": 1955790,
+      "fact": 3968320
+     },
+     "cancelledCount": {
+      "plan": 13.67685315,
+      "fact": 21
+     },
+     "cancelledRub": {
+      "plan": 601781.5385,
+      "fact": 631750
+     },
+     "futureCount": {
+      "plan": 10.25763986,
+      "fact": 12
+     },
+     "futureRub": {
+      "plan": 451336.1538,
+      "fact": 565300
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 83.58076923,
+      "fact": 74
+     },
+     "createdRub": {
+      "plan": 3677553.846,
+      "fact": 4621050
+     },
+     "currentPeriodCount": {
+      "plan": 54.3275,
+      "fact": 33
+     },
+     "currentPeriodRub": {
+      "plan": 2390410,
+      "fact": 2922100
+     },
+     "cancelledCount": {
+      "plan": 16.71615385,
+      "fact": 30
+     },
+     "cancelledRub": {
+      "plan": 735510.7692,
+      "fact": 1128650
+     },
+     "futureCount": {
+      "plan": 12.53711538,
+      "fact": 11
+     },
+     "futureRub": {
+      "plan": 551633.0769,
+      "fact": 570300
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 25.0,
+     "fact": 6
+    },
+    "Авито - звонки": {
+     "plan": 150.0,
+     "fact": 144
+    },
+    "Авито-чат": {
+     "plan": false,
+     "fact": 529
+    },
+    "Google Maps": {
+     "plan": 15.0,
+     "fact": 10
+    },
+    "2 GIS": {
+     "plan": 6.0,
+     "fact": 2
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 30.0,
+     "fact": 21
+    },
+    "SEO google": {
+     "plan": 40.0,
+     "fact": 52
+    },
+    "SEO yandex": {
+     "plan": 50.0,
+     "fact": 47
+    },
+    "ВК": {
+     "plan": 20.0,
+     "fact": 0
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 0
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 3
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 11
+    },
+    "Органика": {
+     "plan": 30.0,
+     "fact": 0
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 24
+    },
+    "Агенты": {
+     "plan": 10.0,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 12
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 376
+  },
+  "Екатеринбург": {
+   "meta": {
+    "Начало месяца": "2026-07-01 00:00:00",
+    "Конец месяца": "2026-07-31 00:00:00",
+    "Текущая дата": "2026-08-01 00:00:00",
+    "Прошло дней": 31
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1200.0,
+     "fact": 688.8488508
+    },
+    "costPerBooking": {
+     "plan": 6128.702758,
+     "fact": 5127.128156
+    },
+    "convToLead": {
+     "plan": 0.22,
+     "fact": 0.2159863946
+    },
+    "convToBooking": {
+     "plan": 0.22,
+     "fact": 0.1343537415
+    },
+    "avgCheck": {
+     "plan": 29000.0,
+     "fact": 31995.35398
+    },
+    "pctFuture": {
+     "plan": 0.13,
+     "fact": 0.1406240711
+    },
+    "pctCancel": {
+     "plan": 0.11,
+     "fact": 0.1979914114
+    },
+    "revenue": {
+     "plan": 8963000,
+     "fact": 9289850
+    },
+    "renewals": {
+     "plan": 3300000.0,
+     "fact": 2869000
+    },
+    "alreadyExisting": {
+     "plan": 2115258.96,
+     "fact": 2786548
+    },
+    "leadsRequired": {
+     "plan": 394.8812325,
+     "fact": 588
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 280.238294,
+      "fact": 330
+     },
+     "createdRub": {
+      "plan": 8126910.526,
+      "fact": 10933050
+     },
+     "currentPeriodCount": {
+      "plan": 212.9811034,
+      "fact": 226
+     },
+     "currentPeriodRub": {
+      "plan": 6176452,
+      "fact": 7230950
+     },
+     "cancelledCount": {
+      "plan": 30.82621234,
+      "fact": 58
+     },
+     "cancelledRub": {
+      "plan": 893960.1579,
+      "fact": 2164650
+     },
+     "futureCount": {
+      "plan": 36.43097822,
+      "fact": 46
+     },
+     "futureRub": {
+      "plan": 1056498.368,
+      "fact": 1537450
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 193.3644229,
+      "fact": 227
+     },
+     "createdRub": {
+      "plan": 5607568.263,
+      "fact": 8054800
+     },
+     "currentPeriodCount": {
+      "plan": 146.9569614,
+      "fact": 157
+     },
+     "currentPeriodRub": {
+      "plan": 4261751.88,
+      "fact": 5296000
+     },
+     "cancelledCount": {
+      "plan": 21.27008652,
+      "fact": 34
+     },
+     "cancelledRub": {
+      "plan": 616832.5089,
+      "fact": 1466050
+     },
+     "futureCount": {
+      "plan": 25.13737497,
+      "fact": 36
+     },
+     "futureRub": {
+      "plan": 728983.8742,
+      "fact": 1292750
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 86.87387114,
+      "fact": 103
+     },
+     "createdRub": {
+      "plan": 2519342.263,
+      "fact": 2878250
+     },
+     "currentPeriodCount": {
+      "plan": 66.02414207,
+      "fact": 69
+     },
+     "currentPeriodRub": {
+      "plan": 1914700.12,
+      "fact": 1934950
+     },
+     "cancelledCount": {
+      "plan": 9.556125826,
+      "fact": 24
+     },
+     "cancelledRub": {
+      "plan": 277127.6489,
+      "fact": 698600
+     },
+     "futureCount": {
+      "plan": 11.29360325,
+      "fact": 10
+     },
+     "futureRub": {
+      "plan": 327514.4942,
+      "fact": 244700
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 25.0,
+     "fact": 26
+    },
+    "Авито - звонки": {
+     "plan": 160.0,
+     "fact": 130
+    },
+    "Авито-чат": {
+     "plan": false,
+     "fact": 270
+    },
+    "Google Maps": {
+     "plan": 23.0,
+     "fact": 23
+    },
+    "2 GIS": {
+     "plan": 20.0,
+     "fact": 39
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 45.0,
+     "fact": 39
+    },
+    "SEO google": {
+     "plan": 80.0,
+     "fact": 116
+    },
+    "SEO yandex": {
+     "plan": 40.0,
+     "fact": 41
+    },
+    "ВК": {
+     "plan": 1.0,
+     "fact": 0
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 3
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Органика": {
+     "plan": 30.0,
+     "fact": 1
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 46
+    },
+    "Агенты": {
+     "plan": 5.0,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 9
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 429
+  },
+  "Новосибирск": {
+   "meta": {
+    "Начало месяца": "2026-07-01 00:00:00",
+    "Конец месяца": "2026-07-31 00:00:00",
+    "Текущая дата": "2026-08-01 00:00:00",
+    "Прошло дней": 31
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 508.0,
+     "fact": 559.2880823
+    },
+    "costPerBooking": {
+     "plan": 1700.0,
+     "fact": 2090.220714
+    },
+    "convToLead": {
+     "plan": 0.1716,
+     "fact": 0.7074829932
+    },
+    "convToBooking": {
+     "plan": 0.22,
+     "fact": 0.2675736961
+    },
+    "avgCheck": {
+     "plan": 30000.0,
+     "fact": 39945.34161
+    },
+    "pctFuture": {
+     "plan": 0.3,
+     "fact": 0.1807743531
+    },
+    "pctCancel": {
+     "plan": 0.22,
+     "fact": 0.3811136052
+    },
+    "revenue": {
+     "plan": 10003550,
+     "fact": 11369500
+    },
+    "renewals": {
+     "plan": 2500000.0,
+     "fact": 3268400
+    },
+    "alreadyExisting": {
+     "plan": 5393550.0,
+     "fact": 5734386
+    },
+    "leadsRequired": {
+     "plan": 558.9488636,
+     "fact": 441
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 273.2638889,
+      "fact": 361
+     },
+     "createdRub": {
+      "plan": 8197916.667,
+      "fact": 14679350
+     },
+     "currentPeriodCount": {
+      "plan": 131.1666667,
+      "fact": 161
+     },
+     "currentPeriodRub": {
+      "plan": 3935000,
+      "fact": 6431200
+     },
+     "cancelledCount": {
+      "plan": 60.11805556,
+      "fact": 136
+     },
+     "cancelledRub": {
+      "plan": 1803541.667,
+      "fact": 5594500
+     },
+     "futureCount": {
+      "plan": 81.97916667,
+      "fact": 64
+     },
+     "futureRub": {
+      "plan": 2459375,
+      "fact": 2653650
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 150.2951389,
+      "fact": 146
+     },
+     "createdRub": {
+      "plan": 4508854.167,
+      "fact": 5995350
+     },
+     "currentPeriodCount": {
+      "plan": 72.14166667,
+      "fact": 78
+     },
+     "currentPeriodRub": {
+      "plan": 2164250,
+      "fact": 3048100
+     },
+     "cancelledCount": {
+      "plan": 33.06493056,
+      "fact": 39
+     },
+     "cancelledRub": {
+      "plan": 991947.9167,
+      "fact": 1684750
+     },
+     "futureCount": {
+      "plan": 45.08854167,
+      "fact": 29
+     },
+     "futureRub": {
+      "plan": 1352656.25,
+      "fact": 1262500
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 122.96875,
+      "fact": 215
+     },
+     "createdRub": {
+      "plan": 3689062.5,
+      "fact": 8684000
+     },
+     "currentPeriodCount": {
+      "plan": 59.025,
+      "fact": 83
+     },
+     "currentPeriodRub": {
+      "plan": 1770750,
+      "fact": 3383100
+     },
+     "cancelledCount": {
+      "plan": 27.053125,
+      "fact": 97
+     },
+     "cancelledRub": {
+      "plan": 811593.75,
+      "fact": 3909750
+     },
+     "futureCount": {
+      "plan": 36.890625,
+      "fact": 35
+     },
+     "futureRub": {
+      "plan": 1106718.75,
+      "fact": 1391150
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 40.0,
+     "fact": 72
+    },
+    "Авито - звонки": {
+     "plan": 10.0,
+     "fact": 1
+    },
+    "Авито-чат": {
+     "plan": true,
+     "fact": 17
+    },
+    "Google Maps": {
+     "plan": 30.0,
+     "fact": 32
+    },
+    "2 GIS": {
+     "plan": 90.0,
+     "fact": 76
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 35.0,
+     "fact": 22
+    },
+    "SEO google": {
+     "plan": 130.0,
+     "fact": 112
+    },
+    "SEO yandex": {
+     "plan": 50.0,
+     "fact": 44
+    },
+    "ВК": {
+     "plan": null,
+     "fact": 0
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 3
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 2
+    },
+    "Органика": {
+     "plan": 65.0,
+     "fact": 3
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 53
+    },
+    "Агенты": {
+     "plan": null,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 4
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 450
+  },
+  "Тюмень": {
+   "meta": {
+    "Начало месяца": "2026-07-01 00:00:00",
+    "Конец месяца": "2026-07-31 00:00:00",
+    "Текущая дата": "2026-08-01 00:00:00",
+    "Прошло дней": 31
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 900.0,
+     "fact": 833.4204062
+    },
+    "costPerBooking": {
+     "plan": 4702.194357,
+     "fact": 3923.486835
+    },
+    "convToLead": {
+     "plan": 0.2486,
+     "fact": 0.3562091503
+    },
+    "convToBooking": {
+     "plan": 0.22,
+     "fact": 0.2124183007
+    },
+    "avgCheck": {
+     "plan": 18000.0,
+     "fact": 17019.55645
+    },
+    "pctFuture": {
+     "plan": 0.13,
+     "fact": 0.1679296188
+    },
+    "pctCancel": {
+     "plan": 0.13,
+     "fact": 0.1719178886
+    },
+    "revenue": {
+     "plan": 3164400,
+     "fact": 3041925
+    },
+    "renewals": {
+     "plan": 1000000.0,
+     "fact": 622775
+    },
+    "alreadyExisting": {
+     "plan": 628896.46,
+     "fact": 1125068
+    },
+    "leadsRequired": {
+     "plan": 313.1652334,
+     "fact": 306
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 153.103003,
+      "fact": 173
+     },
+     "createdRub": {
+      "plan": 2755854.054,
+      "fact": 3196875
+     },
+     "currentPeriodCount": {
+      "plan": 113.2962222,
+      "fact": 124
+     },
+     "currentPeriodRub": {
+      "plan": 2039332,
+      "fact": 2110425
+     },
+     "cancelledCount": {
+      "plan": 19.90339039,
+      "fact": 26
+     },
+     "cancelledRub": {
+      "plan": 358261.027,
+      "fact": 549600
+     },
+     "futureCount": {
+      "plan": 19.90339039,
+      "fact": 23
+     },
+     "futureRub": {
+      "plan": 358261.027,
+      "fact": 536850
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 84.20665165,
+      "fact": 86
+     },
+     "createdRub": {
+      "plan": 1515719.73,
+      "fact": 1594325
+     },
+     "currentPeriodCount": {
+      "plan": 62.31292222,
+      "fact": 69
+     },
+     "currentPeriodRub": {
+      "plan": 1121632.6,
+      "fact": 1264075
+     },
+     "cancelledCount": {
+      "plan": 10.94686471,
+      "fact": 4
+     },
+     "cancelledRub": {
+      "plan": 197043.5649,
+      "fact": 35050
+     },
+     "futureCount": {
+      "plan": 10.94686471,
+      "fact": 13
+     },
+     "futureRub": {
+      "plan": 197043.5649,
+      "fact": 295200
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 68.89635135,
+      "fact": 87
+     },
+     "createdRub": {
+      "plan": 1240134.324,
+      "fact": 1602550
+     },
+     "currentPeriodCount": {
+      "plan": 50.9833,
+      "fact": 55
+     },
+     "currentPeriodRub": {
+      "plan": 917699.4,
+      "fact": 846350
+     },
+     "cancelledCount": {
+      "plan": 8.956525676,
+      "fact": 22
+     },
+     "cancelledRub": {
+      "plan": 161217.4622,
+      "fact": 514550
+     },
+     "futureCount": {
+      "plan": 8.956525676,
+      "fact": 10
+     },
+     "futureRub": {
+      "plan": 161217.4622,
+      "fact": 241650
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 71.0,
+     "fact": 59
+    },
+    "Авито - звонки": {
+     "plan": 121.0,
+     "fact": 0
+    },
+    "Авито-чат": {
+     "plan": true,
+     "fact": 0
+    },
+    "Google Maps": {
+     "plan": 30.0,
+     "fact": 24
+    },
+    "2 GIS": {
+     "plan": 55.0,
+     "fact": 83
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 39.0,
+     "fact": 32
+    },
+    "SEO google": {
+     "plan": 56.0,
+     "fact": 68
+    },
+    "SEO yandex": {
+     "plan": 13.0,
+     "fact": 21
+    },
+    "ВК": {
+     "plan": null,
+     "fact": 0
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 1
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 1
+    },
+    "Органика": {
+     "plan": 15.0,
+     "fact": 0
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 15
+    },
+    "Агенты": {
+     "plan": null,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 2
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 400
+  },
+  "Красноярск": {
+   "meta": {
+    "Начало месяца": "2026-07-01 00:00:00",
+    "Конец месяца": "2026-07-31 00:00:00",
+    "Текущая дата": "2026-08-01 00:00:00",
+    "Прошло дней": 31
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1000.0,
+     "fact": 596.983446
+    },
+    "costPerBooking": {
+     "plan": 5903.187721,
+     "fact": 4306.24059
+    },
+    "convToLead": {
+     "plan": 0.2706,
+     "fact": 0.2569316081
+    },
+    "convToBooking": {
+     "plan": 0.22,
+     "fact": 0.1386321627
+    },
+    "avgCheck": {
+     "plan": 25000.0,
+     "fact": 26025.59524
+    },
+    "pctFuture": {
+     "plan": 0.1,
+     "fact": 0.1102904498
+    },
+    "pctCancel": {
+     "plan": 0.23,
+     "fact": 0.1861453053
+    },
+    "revenue": {
+     "plan": 5337750,
+     "fact": 6010000
+    },
+    "renewals": {
+     "plan": 1352935.0,
+     "fact": 1275450
+    },
+    "alreadyExisting": {
+     "plan": 910900.0,
+     "fact": 2706720
+    },
+    "leadsRequired": {
+     "plan": 285.5934871,
+     "fact": 541
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 157.0764179,
+      "fact": 245
+     },
+     "createdRub": {
+      "plan": 3926910.448,
+      "fact": 6214500
+     },
+     "currentPeriodCount": {
+      "plan": 105.2412,
+      "fact": 168
+     },
+     "currentPeriodRub": {
+      "plan": 2631030,
+      "fact": 4372300
+     },
+     "cancelledCount": {
+      "plan": 36.12757612,
+      "fact": 47
+     },
+     "cancelledRub": {
+      "plan": 903189.403,
+      "fact": 1156800
+     },
+     "futureCount": {
+      "plan": 15.70764179,
+      "fact": 30
+     },
+     "futureRub": {
+      "plan": 392691.0448,
+      "fact": 685400
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 94.24585075,
+      "fact": 138
+     },
+     "createdRub": {
+      "plan": 2356146.269,
+      "fact": 3804400
+     },
+     "currentPeriodCount": {
+      "plan": 63.14472,
+      "fact": 104
+     },
+     "currentPeriodRub": {
+      "plan": 1578618,
+      "fact": 2858950
+     },
+     "cancelledCount": {
+      "plan": 21.67654567,
+      "fact": 15
+     },
+     "cancelledRub": {
+      "plan": 541913.6418,
+      "fact": 511950
+     },
+     "futureCount": {
+      "plan": 9.424585075,
+      "fact": 19
+     },
+     "futureRub": {
+      "plan": 235614.6269,
+      "fact": 433500
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 62.83056716,
+      "fact": 107
+     },
+     "createdRub": {
+      "plan": 1570764.179,
+      "fact": 2410100
+     },
+     "currentPeriodCount": {
+      "plan": 42.09648,
+      "fact": 64
+     },
+     "currentPeriodRub": {
+      "plan": 1052412,
+      "fact": 1513350
+     },
+     "cancelledCount": {
+      "plan": 14.45103045,
+      "fact": 32
+     },
+     "cancelledRub": {
+      "plan": 361275.7612,
+      "fact": 644850
+     },
+     "futureCount": {
+      "plan": 6.283056716,
+      "fact": 11
+     },
+     "futureRub": {
+      "plan": 157076.4179,
+      "fact": 251900
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 25.0,
+     "fact": 33
+    },
+    "Авито - звонки": {
+     "plan": 160.0,
+     "fact": 116
+    },
+    "Авито-чат": {
+     "plan": false,
+     "fact": 233
+    },
+    "Google Maps": {
+     "plan": 23.0,
+     "fact": 0
+    },
+    "2 GIS": {
+     "plan": 20.0,
+     "fact": 159
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 45.0,
+     "fact": 24
+    },
+    "SEO google": {
+     "plan": 80.0,
+     "fact": 79
+    },
+    "SEO yandex": {
+     "plan": 40.0,
+     "fact": 70
+    },
+    "ВК": {
+     "plan": 1.0,
+     "fact": 0
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 1
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 3
+    },
+    "Органика": {
+     "plan": 30.0,
+     "fact": 1
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 49
+    },
+    "Агенты": {
+     "plan": 5.0,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 6
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 429
+  },
+  "Иркутск": {
+   "meta": {
+    "Начало месяца": "2026-07-01 00:00:00",
+    "Конец месяца": "2026-07-31 00:00:00",
+    "Текущая дата": "2026-08-01 00:00:00",
+    "Прошло дней": 31
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1000.0,
+     "fact": 471.8377309
+    },
+    "costPerBooking": {
+     "plan": 2777.777778,
+     "fact": 3121.388066
+    },
+    "convToLead": {
+     "plan": 0.36,
+     "fact": 0.2488372093
+    },
+    "convToBooking": {
+     "plan": 0.22,
+     "fact": 0.1511627907
+    },
+    "avgCheck": {
+     "plan": 32000.0,
+     "fact": 32552.63158
+    },
+    "pctFuture": {
+     "plan": 0.35,
+     "fact": 0.2475388907
+    },
+    "pctCancel": {
+     "plan": 0.1,
+     "fact": 0.2845430044
+    },
+    "revenue": {
+     "plan": 6066500,
+     "fact": 6631500
+    },
+    "renewals": {
+     "plan": 2300000.0,
+     "fact": 2319900
+    },
+    "alreadyExisting": {
+     "plan": 2093144.0,
+     "fact": 4522444
+    },
+    "leadsRequired": {
+     "plan": 229.8691307,
+     "fact": 430
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 173.4861364,
+      "fact": 161
+     },
+     "createdRub": {
+      "plan": 5551556.364,
+      "fact": 5287250
+     },
+     "currentPeriodCount": {
+      "plan": 95.417375,
+      "fact": 76
+     },
+     "currentPeriodRub": {
+      "plan": 3053356,
+      "fact": 2474000
+     },
+     "cancelledCount": {
+      "plan": 17.34861364,
+      "fact": 34
+     },
+     "cancelledRub": {
+      "plan": 555155.6364,
+      "fact": 1504450
+     },
+     "futureCount": {
+      "plan": 60.72014773,
+      "fact": 51
+     },
+     "futureRub": {
+      "plan": 1943044.727,
+      "fact": 1308800
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 81.53848409,
+      "fact": 75
+     },
+     "createdRub": {
+      "plan": 2609231.491,
+      "fact": 2450950
+     },
+     "currentPeriodCount": {
+      "plan": 44.84616625,
+      "fact": 36
+     },
+     "currentPeriodRub": {
+      "plan": 1435077.32,
+      "fact": 1113950
+     },
+     "cancelledCount": {
+      "plan": 8.153848409,
+      "fact": 13
+     },
+     "cancelledRub": {
+      "plan": 260923.1491,
+      "fact": 726350
+     },
+     "futureCount": {
+      "plan": 28.53846943,
+      "fact": 26
+     },
+     "futureRub": {
+      "plan": 913231.0218,
+      "fact": 610650
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 91.94765227,
+      "fact": 86
+     },
+     "createdRub": {
+      "plan": 2942324.873,
+      "fact": 2836300
+     },
+     "currentPeriodCount": {
+      "plan": 50.57120875,
+      "fact": 40
+     },
+     "currentPeriodRub": {
+      "plan": 1618278.68,
+      "fact": 1360050
+     },
+     "cancelledCount": {
+      "plan": 9.194765227,
+      "fact": 21
+     },
+     "cancelledRub": {
+      "plan": 294232.4873,
+      "fact": 778100
+     },
+     "futureCount": {
+      "plan": 32.1816783,
+      "fact": 25
+     },
+     "futureRub": {
+      "plan": 1029813.705,
+      "fact": 698150
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": null,
+     "fact": 60
+    },
+    "Авито - звонки": {
+     "plan": null,
+     "fact": 35
+    },
+    "Авито-чат": {
+     "plan": false,
+     "fact": 59
+    },
+    "Google Maps": {
+     "plan": 10.0,
+     "fact": 13
+    },
+    "2 GIS": {
+     "plan": 75.0,
+     "fact": 105
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 45.0,
+     "fact": 42
+    },
+    "SEO google": {
+     "plan": 80.0,
+     "fact": 97
+    },
+    "SEO yandex": {
+     "plan": 25.0,
+     "fact": 35
+    },
+    "ВК": {
+     "plan": 1.0,
+     "fact": 2
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 0
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 1
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Органика": {
+     "plan": 21.0,
+     "fact": 0
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 34
+    },
+    "Агенты": {
+     "plan": 3.0,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 6
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 260
+  }
+ },
+ "Август 2026": {
+  "Москва": {
+   "meta": {
+    "Начало месяца": "2026-08-01 00:00:00",
+    "Конец месяца": "2026-08-31 00:00:00",
+    "Текущая дата": "2026-08-03 00:00:00",
+    "Прошло дней": 2
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1500.0,
+     "fact": 4764.000224
+    },
+    "costPerBooking": {
+     "plan": 8000.0,
+     "fact": 16674.00078
+    },
+    "convToLead": {
+     "plan": 0.13,
+     "fact": 0.2857142857
+    },
+    "convToBooking": {
+     "plan": 0.21,
+     "fact": 0.2857142857
+    },
+    "avgCheck": {
+     "plan": 44000.0,
+     "fact": 47233.33333
+    },
+    "pctFuture": {
+     "plan": 0.15,
+     "fact": 0
+    },
+    "pctCancel": {
+     "plan": 0.2,
+     "fact": 0.2796136248
+    },
+    "revenue": {
+     "plan": 7599900,
+     "fact": 639090
+    },
+    "renewals": {
+     "plan": 3500000.0,
+     "fact": 197770
+    },
+    "alreadyExisting": {
+     "plan": 1744100.0,
+     "fact": 2979848
+    },
+    "leadsRequired": {
+     "plan": 664.3195266,
+     "fact": 7
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 157.020979,
+      "fact": 5
+     },
+     "createdRub": {
+      "plan": 6908923.077,
+      "fact": 196700
+     },
+     "currentPeriodCount": {
+      "plan": 102.0636364,
+      "fact": 3
+     },
+     "currentPeriodRub": {
+      "plan": 4490800,
+      "fact": 141700
+     },
+     "cancelledCount": {
+      "plan": 31.4041958,
+      "fact": 2
+     },
+     "cancelledRub": {
+      "plan": 1381784.615,
+      "fact": 55000
+     },
+     "futureCount": {
+      "plan": 23.55314685,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 1036338.462,
+      "fact": 0
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 70.65944056,
+      "fact": 3
+     },
+     "createdRub": {
+      "plan": 3109015.385,
+      "fact": 163800
+     },
+     "currentPeriodCount": {
+      "plan": 45.92863636,
+      "fact": 1
+     },
+     "currentPeriodRub": {
+      "plan": 2020860,
+      "fact": 108800
+     },
+     "cancelledCount": {
+      "plan": 14.13188811,
+      "fact": 2
+     },
+     "cancelledRub": {
+      "plan": 621803.0769,
+      "fact": 55000
+     },
+     "futureCount": {
+      "plan": 10.59891608,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 466352.3077,
+      "fact": 0
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 86.36153846,
+      "fact": 2
+     },
+     "createdRub": {
+      "plan": 3799907.692,
+      "fact": 32900
+     },
+     "currentPeriodCount": {
+      "plan": 56.135,
+      "fact": 2
+     },
+     "currentPeriodRub": {
+      "plan": 2469940,
+      "fact": 32900
+     },
+     "cancelledCount": {
+      "plan": 17.27230769,
+      "fact": 0
+     },
+     "cancelledRub": {
+      "plan": 759981.5385,
+      "fact": 0
+     },
+     "futureCount": {
+      "plan": 12.95423077,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 569986.1538,
+      "fact": 0
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 25.0,
+     "fact": 0
+    },
+    "Авито - звонки": {
+     "plan": 150.0,
+     "fact": 0
+    },
+    "Авито-чат": {
+     "plan": false,
+     "fact": 0
+    },
+    "Google Maps": {
+     "plan": 15.0,
+     "fact": 0
+    },
+    "2 GIS": {
+     "plan": 6.0,
+     "fact": 0
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 30.0,
+     "fact": 0
+    },
+    "SEO google": {
+     "plan": 40.0,
+     "fact": 1
+    },
+    "SEO yandex": {
+     "plan": 50.0,
+     "fact": 4
+    },
+    "ВК": {
+     "plan": 20.0,
+     "fact": 0
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 0
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Органика": {
+     "plan": 30.0,
+     "fact": 0
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 2
+    },
+    "Агенты": {
+     "plan": 10.0,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 0
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 376
+  },
+  "Екатеринбург": {
+   "meta": {
+    "Начало месяца": "2026-08-01 00:00:00",
+    "Конец месяца": "2026-08-31 00:00:00",
+    "Текущая дата": "2026-08-03 00:00:00",
+    "Прошло дней": 2
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1200.0,
+     "fact": 2010.139575
+    },
+    "costPerBooking": {
+     "plan": 6128.702758,
+     "fact": 13065.90724
+    },
+    "convToLead": {
+     "plan": 0.22,
+     "fact": 0.3076923077
+    },
+    "convToBooking": {
+     "plan": 0.22,
+     "fact": 0.1538461538
+    },
+    "avgCheck": {
+     "plan": 29000.0,
+     "fact": 25950
+    },
+    "pctFuture": {
+     "plan": 0.13,
+     "fact": 0
+    },
+    "pctCancel": {
+     "plan": 0.11,
+     "fact": 0.03102111159
+    },
+    "revenue": {
+     "plan": 9187400.0,
+     "fact": 613450
+    },
+    "renewals": {
+     "plan": 3300000.0,
+     "fact": 238050
+    },
+    "alreadyExisting": {
+     "plan": 2115258.96,
+     "fact": 2628859
+    },
+    "leadsRequired": {
+     "plan": 419.3094601,
+     "fact": 13
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 297.5744555,
+      "fact": 14
+     },
+     "createdRub": {
+      "plan": 8629659.211,
+      "fact": 348150
+     },
+     "currentPeriodCount": {
+      "plan": 226.1565862,
+      "fact": 13
+     },
+     "currentPeriodRub": {
+      "plan": 6558541,
+      "fact": 337350
+     },
+     "cancelledCount": {
+      "plan": 32.73319011,
+      "fact": 1
+     },
+     "cancelledRub": {
+      "plan": 949262.5132,
+      "fact": 10800
+     },
+     "futureCount": {
+      "plan": 38.68467922,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 1121855.697,
+      "fact": 0
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 205.3263743,
+      "fact": 11
+     },
+     "createdRub": {
+      "plan": 5954464.855,
+      "fact": 302750
+     },
+     "currentPeriodCount": {
+      "plan": 156.0480445,
+      "fact": 11
+     },
+     "currentPeriodRub": {
+      "plan": 4525393.29,
+      "fact": 302750
+     },
+     "cancelledCount": {
+      "plan": 22.58590118,
+      "fact": 0
+     },
+     "cancelledRub": {
+      "plan": 654991.1341,
+      "fact": 0
+     },
+     "futureCount": {
+      "plan": 26.69242866,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 774080.4312,
+      "fact": 0
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 92.24808122,
+      "fact": 3
+     },
+     "createdRub": {
+      "plan": 2675194.355,
+      "fact": 45400
+     },
+     "currentPeriodCount": {
+      "plan": 70.10854172,
+      "fact": 2
+     },
+     "currentPeriodRub": {
+      "plan": 2033147.71,
+      "fact": 34600
+     },
+     "cancelledCount": {
+      "plan": 10.14728893,
+      "fact": 1
+     },
+     "cancelledRub": {
+      "plan": 294271.3791,
+      "fact": 10800
+     },
+     "futureCount": {
+      "plan": 11.99225056,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 347775.2662,
+      "fact": 0
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 25.0,
+     "fact": 0
+    },
+    "Авито - звонки": {
+     "plan": 160.0,
+     "fact": 0
+    },
+    "Авито-чат": {
+     "plan": false,
+     "fact": 0
+    },
+    "Google Maps": {
+     "plan": 23.0,
+     "fact": 2
+    },
+    "2 GIS": {
+     "plan": 20.0,
+     "fact": 0
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 45.0,
+     "fact": 3
+    },
+    "SEO google": {
+     "plan": 80.0,
+     "fact": 4
+    },
+    "SEO yandex": {
+     "plan": 40.0,
+     "fact": 3
+    },
+    "ВК": {
+     "plan": 1.0,
+     "fact": 0
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 0
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Органика": {
+     "plan": 30.0,
+     "fact": 0
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 1
+    },
+    "Агенты": {
+     "plan": 5.0,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 0
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 429
+  },
+  "Новосибирск": {
+   "meta": {
+    "Начало месяца": "2026-08-01 00:00:00",
+    "Конец месяца": "2026-08-31 00:00:00",
+    "Текущая дата": "2026-08-03 00:00:00",
+    "Прошло дней": 2
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 508.0,
+     "fact": 691.8542617
+    },
+    "costPerBooking": {
+     "plan": 1700.0,
+     "fact": 1989.081002
+    },
+    "convToLead": {
+     "plan": 0.1716,
+     "fact": 1.130434783
+    },
+    "convToBooking": {
+     "plan": 0.22,
+     "fact": 0.347826087
+    },
+    "avgCheck": {
+     "plan": 30000.0,
+     "fact": 29013.33333
+    },
+    "pctFuture": {
+     "plan": 0.3,
+     "fact": 0.04089391691
+    },
+    "pctCancel": {
+     "plan": 0.22,
+     "fact": 0.5555452522
+    },
+    "revenue": {
+     "plan": 10102300,
+     "fact": 673610
+    },
+    "renewals": {
+     "plan": 2500000.0,
+     "fact": 88100
+    },
+    "alreadyExisting": {
+     "plan": 5393550.0,
+     "fact": 5127544
+    },
+    "leadsRequired": {
+     "plan": 572.9758523,
+     "fact": 23
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 280.1215278,
+      "fact": 28
+     },
+     "createdRub": {
+      "plan": 8403645.833,
+      "fact": 1078400
+     },
+     "currentPeriodCount": {
+      "plan": 134.4583333,
+      "fact": 15
+     },
+     "currentPeriodRub": {
+      "plan": 4033750,
+      "fact": 435200
+     },
+     "cancelledCount": {
+      "plan": 61.62673611,
+      "fact": 12
+     },
+     "cancelledRub": {
+      "plan": 1848802.083,
+      "fact": 599100
+     },
+     "futureCount": {
+      "plan": 84.03645833,
+      "fact": 1
+     },
+     "futureRub": {
+      "plan": 2521093.75,
+      "fact": 44100
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 154.0668403,
+      "fact": 11
+     },
+     "createdRub": {
+      "plan": 4622005.208,
+      "fact": 459850
+     },
+     "currentPeriodCount": {
+      "plan": 73.95208333,
+      "fact": 8
+     },
+     "currentPeriodRub": {
+      "plan": 2218562.5,
+      "fact": 254550
+     },
+     "cancelledCount": {
+      "plan": 33.89470486,
+      "fact": 3
+     },
+     "cancelledRub": {
+      "plan": 1016841.146,
+      "fact": 205300
+     },
+     "futureCount": {
+      "plan": 46.22005208,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 1386601.563,
+      "fact": 0
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 126.0546875,
+      "fact": 17
+     },
+     "createdRub": {
+      "plan": 3781640.625,
+      "fact": 618550
+     },
+     "currentPeriodCount": {
+      "plan": 60.50625,
+      "fact": 7
+     },
+     "currentPeriodRub": {
+      "plan": 1815187.5,
+      "fact": 180650
+     },
+     "cancelledCount": {
+      "plan": 27.73203125,
+      "fact": 9
+     },
+     "cancelledRub": {
+      "plan": 831960.9375,
+      "fact": 393800
+     },
+     "futureCount": {
+      "plan": 37.81640625,
+      "fact": 1
+     },
+     "futureRub": {
+      "plan": 1134492.188,
+      "fact": 44100
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 40.0,
+     "fact": 1
+    },
+    "Авито - звонки": {
+     "plan": 10.0,
+     "fact": 0
+    },
+    "Авито-чат": {
+     "plan": true,
+     "fact": 0
+    },
+    "Google Maps": {
+     "plan": 30.0,
+     "fact": 3
+    },
+    "2 GIS": {
+     "plan": 90.0,
+     "fact": 4
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 35.0,
+     "fact": 2
+    },
+    "SEO google": {
+     "plan": 130.0,
+     "fact": 6
+    },
+    "SEO yandex": {
+     "plan": 50.0,
+     "fact": 5
+    },
+    "ВК": {
+     "plan": null,
+     "fact": 0
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 0
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Органика": {
+     "plan": 65.0,
+     "fact": 0
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 1
+    },
+    "Агенты": {
+     "plan": null,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 1
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 450
+  },
+  "Тюмень": {
+   "meta": {
+    "Начало месяца": "2026-08-01 00:00:00",
+    "Конец месяца": "2026-08-31 00:00:00",
+    "Текущая дата": "2026-08-03 00:00:00",
+    "Прошло дней": 2
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 900.0,
+     "fact": 1175.237992
+    },
+    "costPerBooking": {
+     "plan": 4702.194357,
+     "fact": 16453.33189
+    },
+    "convToLead": {
+     "plan": 0.2486,
+     "fact": 0.07142857143
+    },
+    "convToBooking": {
+     "plan": 0.22,
+     "fact": 0.07142857143
+    },
+    "avgCheck": {
+     "plan": 18000.0,
+     "fact": 22250
+    },
+    "pctFuture": {
+     "plan": 0.13,
+     "fact": 0
+    },
+    "pctCancel": {
+     "plan": 0.13,
+     "fact": 0
+    },
+    "revenue": {
+     "plan": 3276300.0,
+     "fact": 177100
+    },
+    "renewals": {
+     "plan": 1000000.0,
+     "fact": 48750
+    },
+    "alreadyExisting": {
+     "plan": 628896.46,
+     "fact": 826916
+    },
+    "leadsRequired": {
+     "plan": 376.1339066,
+     "fact": 14
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 183.8876877,
+      "fact": 6
+     },
+     "createdRub": {
+      "plan": 3309978.378,
+      "fact": 111250
+     },
+     "currentPeriodCount": {
+      "plan": 136.0768889,
+      "fact": 5
+     },
+     "currentPeriodRub": {
+      "plan": 2449384,
+      "fact": 111250
+     },
+     "cancelledCount": {
+      "plan": 23.9053994,
+      "fact": 1
+     },
+     "cancelledRub": {
+      "plan": 430297.1892,
+      "fact": 0
+     },
+     "futureCount": {
+      "plan": 23.9053994,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 430297.1892,
+      "fact": 0
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 101.1382282,
+      "fact": 5
+     },
+     "createdRub": {
+      "plan": 1820488.108,
+      "fact": 104750
+     },
+     "currentPeriodCount": {
+      "plan": 74.84228889,
+      "fact": 4
+     },
+     "currentPeriodRub": {
+      "plan": 1347161.2,
+      "fact": 104750
+     },
+     "cancelledCount": {
+      "plan": 13.14796967,
+      "fact": 1
+     },
+     "cancelledRub": {
+      "plan": 236663.4541,
+      "fact": 0
+     },
+     "futureCount": {
+      "plan": 13.14796967,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 236663.4541,
+      "fact": 0
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 82.74945946,
+      "fact": 1
+     },
+     "createdRub": {
+      "plan": 1489490.27,
+      "fact": 6500
+     },
+     "currentPeriodCount": {
+      "plan": 61.2346,
+      "fact": 1
+     },
+     "currentPeriodRub": {
+      "plan": 1102222.8,
+      "fact": 6500
+     },
+     "cancelledCount": {
+      "plan": 10.75742973,
+      "fact": 0
+     },
+     "cancelledRub": {
+      "plan": 193633.7351,
+      "fact": 0
+     },
+     "futureCount": {
+      "plan": 10.75742973,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 193633.7351,
+      "fact": 0
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 71.0,
+     "fact": 3
+    },
+    "Авито - звонки": {
+     "plan": 121.0,
+     "fact": 0
+    },
+    "Авито-чат": {
+     "plan": true,
+     "fact": 0
+    },
+    "Google Maps": {
+     "plan": 30.0,
+     "fact": 2
+    },
+    "2 GIS": {
+     "plan": 55.0,
+     "fact": 5
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 39.0,
+     "fact": 1
+    },
+    "SEO google": {
+     "plan": 56.0,
+     "fact": 2
+    },
+    "SEO yandex": {
+     "plan": 13.0,
+     "fact": 0
+    },
+    "ВК": {
+     "plan": null,
+     "fact": 0
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 0
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Органика": {
+     "plan": 15.0,
+     "fact": 0
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 1
+    },
+    "Агенты": {
+     "plan": null,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 0
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 400
+  },
+  "Красноярск": {
+   "meta": {
+    "Начало месяца": "2026-08-01 00:00:00",
+    "Конец месяца": "2026-08-31 00:00:00",
+    "Текущая дата": "2026-08-03 00:00:00",
+    "Прошло дней": 2
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1000.0,
+     "fact": 868.1936674
+    },
+    "costPerBooking": {
+     "plan": 5903.187721,
+     "fact": 6945.549339
+    },
+    "convToLead": {
+     "plan": 0.2706,
+     "fact": 0.2083333333
+    },
+    "convToBooking": {
+     "plan": 0.22,
+     "fact": 0.125
+    },
+    "avgCheck": {
+     "plan": 25000.0,
+     "fact": 31308.33333
+    },
+    "pctFuture": {
+     "plan": 0.1,
+     "fact": 0
+    },
+    "pctCancel": {
+     "plan": 0.23,
+     "fact": 0.0466886577
+    },
+    "revenue": {
+     "plan": 5161050.0,
+     "fact": 412800
+    },
+    "renewals": {
+     "plan": 1265896.0,
+     "fact": 39100
+    },
+    "alreadyExisting": {
+     "plan": 750000.0,
+     "fact": 2539343
+    },
+    "leadsRequired": {
+     "plan": 284.5814925,
+     "fact": 24
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 156.5198209,
+      "fact": 7
+     },
+     "createdRub": {
+      "plan": 3912995.522,
+      "fact": 197050
+     },
+     "currentPeriodCount": {
+      "plan": 104.86828,
+      "fact": 6
+     },
+     "currentPeriodRub": {
+      "plan": 2621707,
+      "fact": 187850
+     },
+     "cancelledCount": {
+      "plan": 35.99955881,
+      "fact": 1
+     },
+     "cancelledRub": {
+      "plan": 899988.9701,
+      "fact": 9200
+     },
+     "futureCount": {
+      "plan": 15.65198209,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 391299.5522,
+      "fact": 0
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 93.91189254,
+      "fact": 3
+     },
+     "createdRub": {
+      "plan": 2347797.313,
+      "fact": 100500
+     },
+     "currentPeriodCount": {
+      "plan": 62.920968,
+      "fact": 3
+     },
+     "currentPeriodRub": {
+      "plan": 1573024.2,
+      "fact": 100500
+     },
+     "cancelledCount": {
+      "plan": 21.59973528,
+      "fact": 0
+     },
+     "cancelledRub": {
+      "plan": 539993.3821,
+      "fact": 0
+     },
+     "futureCount": {
+      "plan": 9.391189254,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 234779.7313,
+      "fact": 0
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 62.60792836,
+      "fact": 4
+     },
+     "createdRub": {
+      "plan": 1565198.209,
+      "fact": 96550
+     },
+     "currentPeriodCount": {
+      "plan": 41.947312,
+      "fact": 3
+     },
+     "currentPeriodRub": {
+      "plan": 1048682.8,
+      "fact": 87350
+     },
+     "cancelledCount": {
+      "plan": 14.39982352,
+      "fact": 1
+     },
+     "cancelledRub": {
+      "plan": 359995.5881,
+      "fact": 9200
+     },
+     "futureCount": {
+      "plan": 6.260792836,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 156519.8209,
+      "fact": 0
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 25.0,
+     "fact": 0
+    },
+    "Авито - звонки": {
+     "plan": 160.0,
+     "fact": 0
+    },
+    "Авито-чат": {
+     "plan": false,
+     "fact": 0
+    },
+    "Google Maps": {
+     "plan": 23.0,
+     "fact": 0
+    },
+    "2 GIS": {
+     "plan": 20.0,
+     "fact": 11
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 45.0,
+     "fact": 2
+    },
+    "SEO google": {
+     "plan": 80.0,
+     "fact": 3
+    },
+    "SEO yandex": {
+     "plan": 40.0,
+     "fact": 4
+    },
+    "ВК": {
+     "plan": 1.0,
+     "fact": 0
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 0
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Органика": {
+     "plan": 30.0,
+     "fact": 0
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 4
+    },
+    "Агенты": {
+     "plan": 5.0,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 0
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 429
+  },
+  "Иркутск": {
+   "meta": {
+    "Начало месяца": "2026-08-01 00:00:00",
+    "Конец месяца": "2026-08-31 00:00:00",
+    "Текущая дата": "2026-08-03 00:00:00",
+    "Прошло дней": 2
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1000.0,
+     "fact": 467.4889961
+    },
+    "costPerBooking": {
+     "plan": 2777.777778,
+     "fact": 2617.938378
+    },
+    "convToLead": {
+     "plan": 0.36,
+     "fact": 0.25
+    },
+    "convToBooking": {
+     "plan": 0.22,
+     "fact": 0.1785714286
+    },
+    "avgCheck": {
+     "plan": 20000.0,
+     "fact": 25150
+    },
+    "pctFuture": {
+     "plan": 0.35,
+     "fact": 0
+    },
+    "pctCancel": {
+     "plan": 0.1,
+     "fact": 0.4030179722
+    },
+    "revenue": {
+     "plan": 6101500.0,
+     "fact": 445350
+    },
+    "renewals": {
+     "plan": 800000.0,
+     "fact": 108900
+    },
+    "alreadyExisting": {
+     "plan": 2093144.0,
+     "fact": 3195344
+    },
+    "leadsRequired": {
+     "plan": 502.9576364,
+     "fact": 28
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 335.3050909,
+      "fact": 9
+     },
+     "createdRub": {
+      "plan": 6706101.818,
+      "fact": 294900
+     },
+     "currentPeriodCount": {
+      "plan": 184.4178,
+      "fact": 7
+     },
+     "currentPeriodRub": {
+      "plan": 3688356,
+      "fact": 176050
+     },
+     "cancelledCount": {
+      "plan": 33.53050909,
+      "fact": 2
+     },
+     "cancelledRub": {
+      "plan": 670610.1818,
+      "fact": 118850
+     },
+     "futureCount": {
+      "plan": 117.3567818,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 2347135.636,
+      "fact": 0
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 134.1220364,
+      "fact": 3
+     },
+     "createdRub": {
+      "plan": 2682440.727,
+      "fact": 119950
+     },
+     "currentPeriodCount": {
+      "plan": 73.76712,
+      "fact": 2
+     },
+     "currentPeriodRub": {
+      "plan": 1475342.4,
+      "fact": 90200
+     },
+     "cancelledCount": {
+      "plan": 13.41220364,
+      "fact": 1
+     },
+     "cancelledRub": {
+      "plan": 268244.0727,
+      "fact": 29750
+     },
+     "futureCount": {
+      "plan": 46.94271273,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 938854.2545,
+      "fact": 0
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 201.1830545,
+      "fact": 6
+     },
+     "createdRub": {
+      "plan": 4023661.091,
+      "fact": 174950
+     },
+     "currentPeriodCount": {
+      "plan": 110.65068,
+      "fact": 5
+     },
+     "currentPeriodRub": {
+      "plan": 2213013.6,
+      "fact": 85850
+     },
+     "cancelledCount": {
+      "plan": 20.11830545,
+      "fact": 1
+     },
+     "cancelledRub": {
+      "plan": 402366.1091,
+      "fact": 89100
+     },
+     "futureCount": {
+      "plan": 70.41406909,
+      "fact": 0
+     },
+     "futureRub": {
+      "plan": 1408281.382,
+      "fact": 0
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": null,
+     "fact": 3
+    },
+    "Авито - звонки": {
+     "plan": null,
+     "fact": 0
+    },
+    "Авито-чат": {
+     "plan": true,
+     "fact": 0
+    },
+    "Google Maps": {
+     "plan": 10.0,
+     "fact": 0
+    },
+    "2 GIS": {
+     "plan": 75.0,
+     "fact": 11
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 45.0,
+     "fact": 1
+    },
+    "SEO google": {
+     "plan": 80.0,
+     "fact": 5
+    },
+    "SEO yandex": {
+     "plan": 25.0,
+     "fact": 3
+    },
+    "ВК": {
+     "plan": 1.0,
+     "fact": 0
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 0
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Органика": {
+     "plan": 21.0,
+     "fact": 0
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 3
+    },
+    "Агенты": {
+     "plan": 3.0,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 2
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 260
+  }
+ }
+};
+renderMonthChips();
+renderCityChips();
+wireToggle('toggle-current','current-detail');
+wireToggle('toggle-cancelfuture','cancelfuture-detail');
+wireToggle('toggle-check','check-detail');
+renderCaveats();
+renderAll();
+</script>
+</body>
+</html>
