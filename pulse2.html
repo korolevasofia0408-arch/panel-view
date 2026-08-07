@@ -120,6 +120,7 @@
   .stack-bar .seg{ height:100%; }
   .stack-legend{ display:flex; gap:16px; flex-wrap:wrap; font-size:11.5px; color:var(--text-secondary); margin-bottom:2px; }
   .stack-legend .sw{ display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px; vertical-align:middle; }
+  .stack-legend b{ color:var(--text-primary); font-variant-numeric:tabular-nums; }
 
   /* ---- rate gauge (percent with a plan tick) ---- */
   .gauge-track{ position:relative; height:10px; border-radius:5px; background:var(--gridline); margin:8px 0 2px; }
@@ -406,6 +407,13 @@ function renderRevenueWeekly(suffix){
       <div class="month-divider"></div>
       ${groupHtml(MONTHS[1], augWeekly, 'aug', 'var(--series-3)')}
     </div>
+    <div class="hint" style="margin:16px 0 0;">Доля новых и повторных клиентов в выручке текущего периода</div>
+    ${(() => {
+      const segs = segTotals(state.month, ['segments','SEG','currentPeriodCount'], ['segments','SEG','currentPeriodRub']);
+      return newRepeatStackHtml(segs.new.rub.fact, segs.repeat.rub.fact,
+        `Новые: ${fmtNum(segs.new.count.fact)} · ${fmtRubShort(segs.new.rub.fact)}`,
+        `Постоянные: ${fmtNum(segs.repeat.count.fact)} · ${fmtRubShort(segs.repeat.rub.fact)}`);
+    })()}
   `;
 }
 
@@ -495,8 +503,10 @@ function segTotals(monthKey, countPath, rubPath){
   return out;
 }
 
-// A single bar split into "Новые"/"Постоянные" segments by revenue -- same colour convention
-// as the other CARS&GO dashboards (series-1 blue = Новые, series-2 orange = Постоянные).
+// A single bar split into "Новые"/"Постоянные" segments -- same colour convention as the other
+// CARS&GO dashboards (series-1 blue = Новые, series-2 orange = Постоянные). Always shows the
+// explicit % share in the legend, not just the proportional bar -- eyeballing a bar isn't a
+// number.
 function newRepeatStackHtml(newVal, repeatVal, newLabel, repeatLabel){
   const total = (newVal||0) + (repeatVal||0) || 1;
   const nPct = (newVal||0)/total*100, rPct = (repeatVal||0)/total*100;
@@ -506,8 +516,8 @@ function newRepeatStackHtml(newVal, repeatVal, newLabel, repeatLabel){
       <div class="seg" style="width:${rPct}%; background:var(--series-2);"></div>
     </div>
     <div class="stack-legend">
-      <span><span class="sw" style="background:var(--series-1);"></span>${newLabel}</span>
-      <span><span class="sw" style="background:var(--series-2);"></span>${repeatLabel}</span>
+      <span><span class="sw" style="background:var(--series-1);"></span>${newLabel} · <b>${fmtPct(nPct,0)}</b></span>
+      <span><span class="sw" style="background:var(--series-2);"></span>${repeatLabel} · <b>${fmtPct(rPct,0)}</b></span>
     </div>
   `;
 }
@@ -790,7 +800,8 @@ function renderCaveats(){
     '<b>% отмен / % будущих броней:</b> в РНП эти проценты считаются только по городу в целом — разбивки на новых/постоянных клиентов в источнике нет, поэтому здесь она не показана.<br>' +
     '<b>Лиды по каналам:</b> сумма по показанным каналам не всегда совпадает с собственной строкой «Проверка» в РНП — это расхождение существует в самой исходной таблице (одни каналы то учитываются, то нет), не ошибка подсчёта здесь.<br>' +
     '<b>Города:</b> только 6 городов из шести листов «(Воронка)», совпадающих с остальными дашбордами CARS&amp;GO — Алматы/Астана/Горно-Алтайск (другие листы РНП) не включены.<br>' +
-    '<b>Недели на графике выручки:</b> границы — как в РНП (не календарные). Для минимум одного города/месяца сумма недель в источнике не сходилась с итоговым «факт» ровно — такие недели пропорционально досчитаны до факта месяца, чтобы график не противоречил остальным цифрам на странице; форма (какая неделя сильнее/слабее) сохранена, копейки — нет.';
+    '<b>Недели на графике выручки:</b> границы — как в РНП (не календарные). Для минимум одного города/месяца сумма недель в источнике не сходилась с итоговым «факт» ровно — такие недели пропорционально досчитаны до факта месяца, чтобы график не противоречил остальным цифрам на странице; форма (какая неделя сильнее/слабее) сохранена, копейки — нет.<br>' +
+    '<b>Доля новых/повторных в выручке:</b> считается не от той же цифры, что недельный график (там — общий план/факт компании), а от выручки броней текущего периода — это единственная строка в РНП, где источник сам делит выручку на новых и постоянных клиентов.';
 }
 
 DATA = {
