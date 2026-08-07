@@ -134,6 +134,51 @@
   .twin-bars .tb-fill{ height:100%; border-radius:4px; }
   .twin-bars .tb-fill.plan{ background:var(--baseline); }
   .twin-bars .tb-fill.fact{ background:var(--accent); }
+
+  /* ---- sticky toolbar ---- */
+  .toolbar{
+    position:sticky; top:0; z-index:20;
+    background:color-mix(in srgb, var(--page-plane) 88%, transparent);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    margin-left:-20px; margin-right:-20px; padding-left:20px; padding-right:20px;
+    border-radius:0; border-left:none; border-right:none; border-top:none;
+    transition:box-shadow .15s, border-color .15s;
+  }
+  .toolbar.stuck{ box-shadow:0 6px 16px -8px rgba(0,0,0,0.25); border-bottom-color:var(--card-border); }
+
+  /* ---- KPI strip (headline cards with sparklines) ---- */
+  .kpi-strip{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+  @media (max-width:900px){ .kpi-strip{ grid-template-columns:repeat(2,1fr); } }
+  .kpi-card{ background:var(--surface-1); border:1px solid var(--card-border); border-radius:14px; padding:16px 18px; }
+  .kpi-card .kpi-label{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:6px; }
+  .kpi-card .kpi-value-row{ display:flex; align-items:baseline; gap:8px; margin-bottom:2px; }
+  .kpi-card .kpi-value{ font-size:24px; font-weight:700; letter-spacing:-0.01em; }
+  .kpi-card .kpi-delta{ font-size:11.5px; font-weight:700; padding:2px 7px; border-radius:999px; }
+  .kpi-card .kpi-delta.up{ background:var(--good-wash); color:var(--good); }
+  .kpi-card .kpi-delta.down{ background:var(--critical-wash); color:var(--critical); }
+  .kpi-card .kpi-sub{ font-size:11px; color:var(--text-secondary); margin-bottom:8px; }
+  .kpi-card .kpi-spark{ display:block; width:100%; height:32px; }
+
+  /* ---- weekly trend chart (bars, months visually separated) ---- */
+  .week-chart{ display:flex; align-items:flex-end; gap:6px; height:150px; padding-top:20px; position:relative; }
+  .week-chart .wk-group{ display:flex; gap:6px; align-items:flex-end; height:100%; flex:1; position:relative; padding:0 4px; border-radius:8px; }
+  .week-chart .wk-group.jul{ background:color-mix(in srgb, var(--series-1) 6%, transparent); }
+  .week-chart .wk-group.aug{ background:color-mix(in srgb, var(--series-3) 6%, transparent); }
+  .week-chart .wk-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; min-width:0; }
+  .week-chart .wk-val{ font-size:10px; font-weight:700; margin-bottom:4px; color:var(--text-primary); white-space:nowrap; }
+  .week-chart .wk-bar{ width:70%; border-radius:3px 3px 0 0; }
+  .week-chart .wk-bar.jul{ background:var(--series-1); }
+  .week-chart .wk-bar.aug{ background:var(--series-3); }
+  .week-chart .wk-lbl{ font-size:9.5px; color:var(--text-muted); margin-top:5px; white-space:nowrap; }
+  .week-chart-legend{ display:flex; gap:16px; margin-top:2px; font-size:11.5px; color:var(--text-secondary); }
+  .week-chart-legend .sw{ display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px; vertical-align:middle; }
+  .month-divider{ display:flex; align-items:center; justify-content:center; width:1px; align-self:stretch; }
+  .month-divider::before{ content:''; width:1px; height:100%; background:var(--gridline); }
+
+  /* ---- two-column detail grid ---- */
+  .detail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
+  @media (max-width:820px){ .detail-grid{ grid-template-columns:1fr; } }
+  .detail-grid .card{ margin-bottom:0; }
 </style>
 </head>
 <body>
@@ -145,40 +190,48 @@
     <div class="subtitle" id="subtitle">Загрузка…</div>
   </header>
 
-  <div class="toolbar">
+  <div class="toolbar" id="toolbar">
     <div class="chips-row" id="monthChips"></div>
     <div class="sep"></div>
     <div class="chips-row" id="cityChips"></div>
   </div>
 
-  <section class="card"><h2>Выручка</h2><div class="hint">Требуемый план выручки на месяц (уже с учётом протекающей выручки и продлений)</div><div id="m-revenue"></div></section>
-  <section class="card"><h2>Продления</h2><div class="hint">Запланированные продления существующих аренд</div><div id="m-renewals"></div></section>
-  <section class="card"><h2>Уже имеющиеся брони</h2><div class="hint">Выручка, которая уже гарантирована бронями, сделанными до начала месяца</div><div id="m-already"></div></section>
-  <section class="card"><h2>Конверсия</h2><div class="hint">Из заявки в бронь (взвешено по требуемым лидам выбранных городов)</div><div id="m-conv"></div></section>
+  <div class="kpi-strip" id="kpiStrip"></div>
 
   <section class="card">
-    <h2>Кол-во и выручка на текущий период <button class="expand-btn" id="toggle-current">Показать новые/постоянные ▾</button></h2>
-    <div class="hint">Брони, приходящиеся на выбранный месяц</div>
-    <div id="m-current"></div>
+    <h2>Выручка — по неделям</h2>
+    <div class="hint">Факт по неделям (границы недель — как в РНП); план на месяц и темп — ниже графика</div>
+    <div id="m-revenue"></div>
   </section>
 
-  <section class="card">
-    <h2>Отмены и будущие брони, в суммах <button class="expand-btn" id="toggle-cancelfuture">Показать новые/постоянные ▾</button></h2>
-    <div class="hint">«Будущие» — брони этого месяца, чья выручка уходит за его пределы</div>
-    <div id="m-cancelfuture"></div>
-  </section>
+  <div class="detail-grid">
+    <section class="card"><h2>Продления</h2><div class="hint">Запланированные продления существующих аренд</div><div id="m-renewals"></div></section>
+    <section class="card"><h2>Уже имеющиеся брони</h2><div class="hint">Выручка, которая уже гарантирована бронями, сделанными до начала месяца</div><div id="m-already"></div></section>
+    <section class="card"><h2>Конверсия</h2><div class="hint">Из заявки в бронь (взвешено по требуемым лидам выбранных городов)</div><div id="m-conv"></div></section>
+    <section class="card"><h2>% отмен и % будущих броней</h2><div class="hint">Источник не делит эти проценты на новых/постоянных клиентов — только общие</div><div id="m-pctpair"></div></section>
 
-  <section class="card"><h2>% отмен и % будущих броней</h2><div class="hint">Источник не делит эти проценты на новых/постоянных клиентов — только общие</div><div id="m-pctpair"></div></section>
+    <section class="card">
+      <h2>Кол-во и выручка на текущий период <button class="expand-btn" id="toggle-current">Показать новые/постоянные ▾</button></h2>
+      <div class="hint">Брони, приходящиеся на выбранный месяц</div>
+      <div id="m-current"></div>
+    </section>
 
-  <section class="card"><h2>Лиды по каналам</h2><div class="hint">Факт по каждому каналу и доля от суммы показанных каналов</div><div id="m-channels"></div></section>
+    <section class="card">
+      <h2>Отмены и будущие брони, в суммах <button class="expand-btn" id="toggle-cancelfuture">Показать новые/постоянные ▾</button></h2>
+      <div class="hint">«Будущие» — брони этого месяца, чья выручка уходит за его пределы</div>
+      <div id="m-cancelfuture"></div>
+    </section>
 
-  <section class="card">
-    <h2>Средний чек <button class="expand-btn" id="toggle-check">Показать новые/постоянные ▾</button></h2>
-    <div class="hint">Выручка текущего периода / кол-во броней текущего периода</div>
-    <div id="m-check"></div>
-  </section>
-  <section class="card"><h2>Стоимость лида</h2><div class="hint">Взвешено по требуемым лидам выбранных городов</div><div id="m-cpl"></div></section>
-  <section class="card"><h2>Стоимость бронирования</h2><div class="hint">Взвешено по количеству созданных броней выбранных городов</div><div id="m-cpb"></div></section>
+    <section class="card">
+      <h2>Средний чек <button class="expand-btn" id="toggle-check">Показать новые/постоянные ▾</button></h2>
+      <div class="hint">Выручка текущего периода / кол-во броней текущего периода</div>
+      <div id="m-check"></div>
+    </section>
+
+    <section class="card"><h2>Лиды по каналам</h2><div class="hint">Факт по каждому каналу и доля от суммы показанных каналов</div><div id="m-channels"></div></section>
+    <section class="card"><h2>Стоимость лида</h2><div class="hint">Взвешено по требуемым лидам выбранных городов</div><div id="m-cpl"></div></section>
+    <section class="card"><h2>Стоимость бронирования</h2><div class="hint">Взвешено по количеству созданных броней выбранных городов</div><div id="m-cpb"></div></section>
+  </div>
 
   <footer class="caveats" id="caveats"></footer>
 </div>
@@ -289,14 +342,134 @@ function paceCard(el, title, monthMetric, unit, fmt){
 }
 
 function renderSimple(){
-  const rev = sumMetric(state.month, ['total','revenue']); rev.__path=['total','revenue'];
-  paceCard(document.getElementById('m-revenue'), 'Выручка', rev, 'rub', fmtRubShort);
-
   const ren = sumMetric(state.month, ['total','renewals']); ren.__path=['total','renewals'];
   paceCard(document.getElementById('m-renewals'), 'Продления', ren, 'rub', fmtRubShort);
 
   const ae = sumMetric(state.month, ['total','alreadyExisting']); ae.__path=['total','alreadyExisting'];
   paceCard(document.getElementById('m-already'), 'Уже имеющиеся брони', ae, 'rub', fmtRubShort);
+}
+
+// Sums a per-city weekly array (5 slots, null past the elapsed weeks) across selected cities.
+function weeklyAggregate(monthKey, metric){
+  const arrs = selectedCities().map(c => (DATA[monthKey][c].weekly && DATA[monthKey][c].weekly[metric]) || [null,null,null,null,null]);
+  return [0,1,2,3,4].map(i => {
+    let sum = null;
+    arrs.forEach(a => { if(a[i] != null) sum = (sum||0) + a[i]; });
+    return sum;
+  });
+}
+function weekRangeLabel(monthKey, idx){
+  for(const c of selectedCities()){
+    const wr = DATA[monthKey][c].weekRanges && DATA[monthKey][c].weekRanges[idx];
+    if(wr && wr[0]) return new Date(wr[0]).toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit'});
+  }
+  return `Н${idx+1}`;
+}
+
+// The card the user pointed at directly: flat "July vs August" bars made it impossible to see
+// week-to-week movement without paging between month chips. Both months' weeks now render
+// side by side, always, with a visible divider and distinct hues -- no paging needed to compare.
+function renderRevenueWeekly(){
+  const el = document.getElementById('m-revenue');
+  const rev = sumMetric(state.month, ['total','revenue']);
+  const frac = elapsedFraction(state.month);
+  const paceTarget = rev.plan*frac;
+  const ratio = paceTarget>0 ? rev.fact/paceTarget : (rev.fact>0?1:0);
+  const status = statusFor(ratio);
+
+  const julWeekly = weeklyAggregate(MONTHS[0], 'revenue');
+  const augWeekly = weeklyAggregate(MONTHS[1], 'revenue');
+  const maxV = Math.max(...julWeekly.filter(v=>v!=null), ...augWeekly.filter(v=>v!=null), 1);
+
+  const groupHtml = (monthKey, vals, cls) => `
+    <div class="wk-group ${cls}">
+      ${vals.map((v,i) => v==null ? '' : `
+        <div class="wk-col">
+          <div class="wk-val">${fmtRubShort(v)}</div>
+          <div class="wk-bar ${cls}" style="height:${Math.max(4, v/maxV*100)}%;"></div>
+          <div class="wk-lbl">${weekRangeLabel(monthKey,i)}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  el.innerHTML = `
+    <div class="stat-row">
+      <div class="stat-tile"><div class="stat-label">План (месяц)</div><div class="stat-value">${fmtRubShort(rev.plan)}</div></div>
+      <div class="stat-tile"><div class="stat-label">Факт</div><div class="stat-value">${fmtRubShort(rev.fact)}</div><div class="stat-sub">${fmtPct(rev.plan>0?rev.fact/rev.plan*100:NaN,0)} от плана</div></div>
+      <div class="stat-tile"><div class="stat-label">Темп</div><div class="stat-value"><span class="status-pill ${status}">${fmtPct(ratio*100,0)}</span></div></div>
+    </div>
+    ${meterBarHtml(rev.fact, rev.plan, frac, status)}
+    <div class="hint" style="margin:14px 0 0;">Обе месяца на одном графике — сравнивайте одноимённые недели без переключения</div>
+    <div class="week-chart">
+      ${groupHtml(MONTHS[0], julWeekly, 'jul')}
+      <div class="month-divider"></div>
+      ${groupHtml(MONTHS[1], augWeekly, 'aug')}
+    </div>
+    <div class="week-chart-legend">
+      <span><span class="sw" style="background:var(--series-1);"></span>${MONTHS[0]}</span>
+      <span><span class="sw" style="background:var(--series-3);"></span>${MONTHS[1]}</span>
+    </div>
+  `;
+}
+
+// ---------- KPI strip: headline cards with sparklines ----------
+function sparklineSvg(values, w, h, color){
+  const vals = values.filter(v => v != null && isFinite(v));
+  if(vals.length < 2) return '';
+  const max = Math.max(...vals), min = Math.min(...vals, 0);
+  const range = (max-min) || 1;
+  const step = w/(vals.length-1);
+  const pts = vals.map((v,i) => [i*step, h - ((v-min)/range)*h*0.86 - h*0.07]);
+  const line = pts.map((p,i) => (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  const area = line + ` L${w.toFixed(1)},${h} L0,${h} Z`;
+  const last = pts[pts.length-1];
+  return `<svg class="kpi-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+    <path d="${area}" fill="${color}" opacity="0.14" stroke="none"></path>
+    <path d="${line}" fill="none" stroke="${color}" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"></path>
+    <circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="2.6" fill="${color}"></circle>
+  </svg>`;
+}
+
+function kpiCard(label, value, sub, deltaPct, invertGood, sparkVals, color){
+  let deltaHtml = '';
+  if(deltaPct != null && isFinite(deltaPct)){
+    const isGood = invertGood ? deltaPct <= 0 : deltaPct >= 0;
+    deltaHtml = `<span class="kpi-delta ${isGood?'up':'down'}">${deltaPct>=0?'+':''}${deltaPct.toFixed(0)}%</span>`;
+  }
+  return `<div class="kpi-card">
+    <div class="kpi-label">${label}</div>
+    <div class="kpi-value-row"><span class="kpi-value">${value}</span>${deltaHtml}</div>
+    <div class="kpi-sub">${sub}</div>
+    ${sparklineSvg(sparkVals, 220, 32, color)}
+  </div>`;
+}
+
+function renderKpiStrip(){
+  const el = document.getElementById('kpiStrip');
+
+  const rev = sumMetric(state.month, ['total','revenue']);
+  const revSpark = [...weeklyAggregate(MONTHS[0],'revenue'), ...weeklyAggregate(MONTHS[1],'revenue')];
+  const revDelta = rev.plan>0 ? (rev.fact/rev.plan-1)*100 : null;
+
+  const conv = weightedRate(state.month, ['total','convToBooking'], ['total','leadsRequired']);
+  const convSpark = MONTHS.map(m => weightedRate(m, ['total','convToBooking'], ['total','leadsRequired']).fact*100);
+  const convDelta = conv.plan>0 ? (conv.fact/conv.plan-1)*100 : null;
+
+  const cancel = weightedRate(state.month, ['total','pctCancel'], ['segments','total','createdCount']);
+  const cancelSpark = MONTHS.map(m => weightedRate(m, ['total','pctCancel'], ['segments','total','createdCount']).fact*100);
+  const cancelDelta = cancel.plan>0 ? (cancel.fact/cancel.plan-1)*100 : null;
+
+  const checkFor = m => { const s = segTotals(m, ['segments','SEG','currentPeriodCount'], ['segments','SEG','currentPeriodRub']).total; return s.count.fact>0 ? s.rub.fact/s.count.fact : null; };
+  const avgCheck = checkFor(state.month);
+  const checkSpark = MONTHS.map(checkFor);
+
+  el.innerHTML = [
+    kpiCard('Выручка', fmtRubShort(rev.fact), `план ${fmtRubShort(rev.plan)} за месяц`, revDelta, false, revSpark, 'var(--series-1)'),
+    kpiCard('Конверсия в бронь', fmtPct(conv.fact*100,1), `план ${fmtPct(conv.plan*100,1)}`, convDelta, false, convSpark, 'var(--series-3)'),
+    kpiCard('% отмен', fmtPct(cancel.fact*100,1), `план ${fmtPct(cancel.plan*100,1)}`, cancelDelta, true, cancelSpark, 'var(--critical)'),
+    kpiCard('Средний чек', fmtRubShort(avgCheck), 'текущий период', null, false, checkSpark, 'var(--series-2)'),
+  ].join('');
 }
 
 function renderConv(){
@@ -539,6 +712,8 @@ function wireToggle(btnId, detailId){
 
 function renderAll(){
   document.getElementById('subtitle').textContent = `${state.month} · источник — только внутренние отчёты РНП компании (без сайтовых/CRM данных вне этих файлов)`;
+  renderKpiStrip();
+  renderRevenueWeekly();
   renderSimple();
   renderConv();
   renderCurrentPeriod();
@@ -549,6 +724,13 @@ function renderAll(){
   renderCostCards();
 }
 
+function wireStickyToolbar(){
+  const bar = document.getElementById('toolbar');
+  const onScroll = () => { bar.classList.toggle('stuck', window.scrollY > 4); };
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+}
+
 function renderCaveats(){
   document.getElementById('caveats').innerHTML =
     '<b>Только РНП:</b> по прямому запросу все цифры этого дашборда берутся исключительно из внутренних отчётов РНП (июль и август 2026) — никакие другие файлы/выгрузки не использовались.<br>' +
@@ -556,7 +738,8 @@ function renderCaveats(){
     '<b>Темп:</b> факт месяца делится на (план × доля прошедших дней месяца) — так август (несколько дней от начала) сравнивается с планом на весь месяц корректно.<br>' +
     '<b>% отмен / % будущих броней:</b> в РНП эти проценты считаются только по городу в целом — разбивки на новых/постоянных клиентов в источнике нет, поэтому здесь она не показана.<br>' +
     '<b>Лиды по каналам:</b> сумма по показанным каналам не всегда совпадает с собственной строкой «Проверка» в РНП — это расхождение существует в самой исходной таблице (одни каналы то учитываются, то нет), не ошибка подсчёта здесь.<br>' +
-    '<b>Города:</b> только 6 городов из шести листов «(Воронка)», совпадающих с остальными дашбордами CARS&amp;GO — Алматы/Астана/Горно-Алтайск (другие листы РНП) не включены.';
+    '<b>Города:</b> только 6 городов из шести листов «(Воронка)», совпадающих с остальными дашбордами CARS&amp;GO — Алматы/Астана/Горно-Алтайск (другие листы РНП) не включены.<br>' +
+    '<b>Недели на графике выручки:</b> границы — как в РНП (не календарные). Для минимум одного города/месяца сумма недель в источнике не сходилась с итоговым «факт» ровно — такие недели пропорционально досчитаны до факта месяца, чтобы график не противоречил остальным цифрам на странице; форма (какая неделя сильнее/слабее) сохранена, копейки — нет.';
 }
 
 DATA = {
@@ -800,7 +983,45 @@ DATA = {
      "fact": 0
     }
    },
-   "channelsChecksumFact": 376
+   "channelsChecksumFact": 376,
+   "weekRanges": [
+    [
+     "2026-07-01 00:00:00",
+     "2026-07-05 00:00:00"
+    ],
+    [
+     "2026-07-06 00:00:00",
+     "2026-07-12 00:00:00"
+    ],
+    [
+     "2026-07-13 00:00:00",
+     "2026-07-19 00:00:00"
+    ],
+    [
+     "2026-07-20 00:00:00",
+     "2026-07-26 00:00:00"
+    ],
+    [
+     "2026-07-27 00:00:00",
+     "2026-07-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     1174450,
+     1521950,
+     2028550,
+     2316925,
+     1592405
+    ],
+    "cancelledRub": [
+     173200.0,
+     304600.0,
+     688500.0,
+     476100.0,
+     118000.0
+    ]
+   }
   },
   "Екатеринбург": {
    "meta": {
@@ -1041,7 +1262,45 @@ DATA = {
      "fact": 0
     }
    },
-   "channelsChecksumFact": 429
+   "channelsChecksumFact": 429,
+   "weekRanges": [
+    [
+     "2026-07-01 00:00:00",
+     "2026-07-05 00:00:00"
+    ],
+    [
+     "2026-07-06 00:00:00",
+     "2026-07-12 00:00:00"
+    ],
+    [
+     "2026-07-13 00:00:00",
+     "2026-07-19 00:00:00"
+    ],
+    [
+     "2026-07-20 00:00:00",
+     "2026-07-26 00:00:00"
+    ],
+    [
+     "2026-07-27 00:00:00",
+     "2026-07-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     1387380,
+     2223770,
+     2054200,
+     2116550,
+     1507950
+    ],
+    "cancelledRub": [
+     432450.0,
+     274650.0,
+     658450.0,
+     285150.0,
+     513950.0
+    ]
+   }
   },
   "Новосибирск": {
    "meta": {
@@ -1282,7 +1541,45 @@ DATA = {
      "fact": 0
     }
    },
-   "channelsChecksumFact": 450
+   "channelsChecksumFact": 450,
+   "weekRanges": [
+    [
+     "2026-07-01 00:00:00",
+     "2026-07-05 00:00:00"
+    ],
+    [
+     "2026-07-06 00:00:00",
+     "2026-07-12 00:00:00"
+    ],
+    [
+     "2026-07-13 00:00:00",
+     "2026-07-19 00:00:00"
+    ],
+    [
+     "2026-07-20 00:00:00",
+     "2026-07-26 00:00:00"
+    ],
+    [
+     "2026-07-27 00:00:00",
+     "2026-07-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     1500000,
+     2261100,
+     3235500,
+     2887200,
+     1485700
+    ],
+    "cancelledRub": [
+     1274750.0,
+     1537600.0,
+     836600.0,
+     1410050.0,
+     535500.0
+    ]
+   }
   },
   "Тюмень": {
    "meta": {
@@ -1523,7 +1820,45 @@ DATA = {
      "fact": 0
     }
    },
-   "channelsChecksumFact": 400
+   "channelsChecksumFact": 400,
+   "weekRanges": [
+    [
+     "2026-07-01 00:00:00",
+     "2026-07-05 00:00:00"
+    ],
+    [
+     "2026-07-06 00:00:00",
+     "2026-07-12 00:00:00"
+    ],
+    [
+     "2026-07-13 00:00:00",
+     "2026-07-19 00:00:00"
+    ],
+    [
+     "2026-07-20 00:00:00",
+     "2026-07-26 00:00:00"
+    ],
+    [
+     "2026-07-27 00:00:00",
+     "2026-07-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     490300,
+     722200,
+     634125,
+     654700,
+     540600
+    ],
+    "cancelledRub": [
+     32400.0,
+     97500.0,
+     47100.0,
+     44800.0,
+     327800.0
+    ]
+   }
   },
   "Красноярск": {
    "meta": {
@@ -1764,7 +2099,45 @@ DATA = {
      "fact": 0
     }
    },
-   "channelsChecksumFact": 429
+   "channelsChecksumFact": 429,
+   "weekRanges": [
+    [
+     "2026-07-01 00:00:00",
+     "2026-07-05 00:00:00"
+    ],
+    [
+     "2026-07-06 00:00:00",
+     "2026-07-12 00:00:00"
+    ],
+    [
+     "2026-07-13 00:00:00",
+     "2026-07-19 00:00:00"
+    ],
+    [
+     "2026-07-20 00:00:00",
+     "2026-07-26 00:00:00"
+    ],
+    [
+     "2026-07-27 00:00:00",
+     "2026-07-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     897387,
+     2071842,
+     1127029,
+     1082538,
+     831204
+    ],
+    "cancelledRub": [
+     327150.0,
+     397400.0,
+     182550.0,
+     78600.0,
+     171100.0
+    ]
+   }
   },
   "Иркутск": {
    "meta": {
@@ -2005,7 +2378,45 @@ DATA = {
      "fact": 0
     }
    },
-   "channelsChecksumFact": 260
+   "channelsChecksumFact": 260,
+   "weekRanges": [
+    [
+     "2026-07-01 00:00:00",
+     "2026-07-05 00:00:00"
+    ],
+    [
+     "2026-07-06 00:00:00",
+     "2026-07-12 00:00:00"
+    ],
+    [
+     "2026-07-13 00:00:00",
+     "2026-07-19 00:00:00"
+    ],
+    [
+     "2026-07-20 00:00:00",
+     "2026-07-26 00:00:00"
+    ],
+    [
+     "2026-07-27 00:00:00",
+     "2026-07-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     929750,
+     1581550,
+     1645800,
+     1429050,
+     1045350
+    ],
+    "cancelledRub": [
+     238800.0,
+     84900.0,
+     397950.0,
+     756700.0,
+     26100.0
+    ]
+   }
   }
  },
  "Август 2026": {
@@ -2248,7 +2659,45 @@ DATA = {
      "fact": 0
     }
    },
-   "channelsChecksumFact": 376
+   "channelsChecksumFact": 376,
+   "weekRanges": [
+    [
+     "2026-08-01 00:00:00",
+     "2026-08-02 00:00:00"
+    ],
+    [
+     "2026-08-03 00:00:00",
+     "2026-08-09 00:00:00"
+    ],
+    [
+     "2026-08-10 00:00:00",
+     "2026-08-16 00:00:00"
+    ],
+    [
+     "2026-08-17 00:00:00",
+     "2026-08-23 00:00:00"
+    ],
+    [
+     "2026-08-24 00:00:00",
+     "2026-08-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     639090,
+     null,
+     null,
+     null,
+     null
+    ],
+    "cancelledRub": [
+     55000.0,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
   },
   "Екатеринбург": {
    "meta": {
@@ -2489,7 +2938,45 @@ DATA = {
      "fact": 0
     }
    },
-   "channelsChecksumFact": 429
+   "channelsChecksumFact": 429,
+   "weekRanges": [
+    [
+     "2026-08-01 00:00:00",
+     "2026-08-02 00:00:00"
+    ],
+    [
+     "2026-08-03 00:00:00",
+     "2026-08-09 00:00:00"
+    ],
+    [
+     "2026-08-10 00:00:00",
+     "2026-08-16 00:00:00"
+    ],
+    [
+     "2026-08-17 00:00:00",
+     "2026-08-23 00:00:00"
+    ],
+    [
+     "2026-08-24 00:00:00",
+     "2026-08-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     613450,
+     null,
+     null,
+     null,
+     null
+    ],
+    "cancelledRub": [
+     10800.0,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
   },
   "Новосибирск": {
    "meta": {
@@ -2730,7 +3217,45 @@ DATA = {
      "fact": 0
     }
    },
-   "channelsChecksumFact": 450
+   "channelsChecksumFact": 450,
+   "weekRanges": [
+    [
+     "2026-08-01 00:00:00",
+     "2026-08-02 00:00:00"
+    ],
+    [
+     "2026-08-03 00:00:00",
+     "2026-08-09 00:00:00"
+    ],
+    [
+     "2026-08-10 00:00:00",
+     "2026-08-16 00:00:00"
+    ],
+    [
+     "2026-08-17 00:00:00",
+     "2026-08-23 00:00:00"
+    ],
+    [
+     "2026-08-24 00:00:00",
+     "2026-08-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     673610,
+     null,
+     null,
+     null,
+     null
+    ],
+    "cancelledRub": [
+     599100.0,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
   },
   "Тюмень": {
    "meta": {
@@ -2971,7 +3496,45 @@ DATA = {
      "fact": 0
     }
    },
-   "channelsChecksumFact": 400
+   "channelsChecksumFact": 400,
+   "weekRanges": [
+    [
+     "2026-08-01 00:00:00",
+     "2026-08-02 00:00:00"
+    ],
+    [
+     "2026-08-03 00:00:00",
+     "2026-08-09 00:00:00"
+    ],
+    [
+     "2026-08-10 00:00:00",
+     "2026-08-16 00:00:00"
+    ],
+    [
+     "2026-08-17 00:00:00",
+     "2026-08-23 00:00:00"
+    ],
+    [
+     "2026-08-24 00:00:00",
+     "2026-08-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     177100,
+     null,
+     null,
+     null,
+     null
+    ],
+    "cancelledRub": [
+     0.0,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
   },
   "Красноярск": {
    "meta": {
@@ -3212,7 +3775,45 @@ DATA = {
      "fact": 0
     }
    },
-   "channelsChecksumFact": 429
+   "channelsChecksumFact": 429,
+   "weekRanges": [
+    [
+     "2026-08-01 00:00:00",
+     "2026-08-02 00:00:00"
+    ],
+    [
+     "2026-08-03 00:00:00",
+     "2026-08-09 00:00:00"
+    ],
+    [
+     "2026-08-10 00:00:00",
+     "2026-08-16 00:00:00"
+    ],
+    [
+     "2026-08-17 00:00:00",
+     "2026-08-23 00:00:00"
+    ],
+    [
+     "2026-08-24 00:00:00",
+     "2026-08-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     412800,
+     null,
+     null,
+     null,
+     null
+    ],
+    "cancelledRub": [
+     9200.0,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
   },
   "Иркутск": {
    "meta": {
@@ -3453,7 +4054,45 @@ DATA = {
      "fact": 0
     }
    },
-   "channelsChecksumFact": 260
+   "channelsChecksumFact": 260,
+   "weekRanges": [
+    [
+     "2026-08-01 00:00:00",
+     "2026-08-02 00:00:00"
+    ],
+    [
+     "2026-08-03 00:00:00",
+     "2026-08-09 00:00:00"
+    ],
+    [
+     "2026-08-10 00:00:00",
+     "2026-08-16 00:00:00"
+    ],
+    [
+     "2026-08-17 00:00:00",
+     "2026-08-23 00:00:00"
+    ],
+    [
+     "2026-08-24 00:00:00",
+     "2026-08-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     445350,
+     null,
+     null,
+     null,
+     null
+    ],
+    "cancelledRub": [
+     118850.0,
+     null,
+     null,
+     null,
+     null
+    ]
+   }
   }
  }
 };
@@ -3462,6 +4101,7 @@ renderCityChips();
 wireToggle('toggle-current','current-detail');
 wireToggle('toggle-cancelfuture','cancelfuture-detail');
 wireToggle('toggle-check','check-detail');
+wireStickyToolbar();
 renderCaveats();
 renderAll();
 </script>
