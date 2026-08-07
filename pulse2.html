@@ -179,6 +179,24 @@
   .detail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start; }
   @media (max-width:820px){ .detail-grid{ grid-template-columns:1fr; } }
   .detail-grid .card{ margin-bottom:0; }
+
+  /* ---- per-city collapsible cards ---- */
+  .city-cards{ display:flex; flex-direction:column; gap:12px; margin-bottom:16px; }
+  .city-card{ background:var(--surface-1); border:1px solid var(--card-border); border-radius:14px; overflow:hidden; }
+  .city-head{
+    display:block; width:100%; text-align:left; font:inherit; color:inherit;
+    background:none; border:none; cursor:pointer; padding:16px 18px;
+  }
+  .city-head:hover{ background:var(--chip-bg-hover); }
+  .city-head-top{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .city-head-top .chevron{ font-size:11px; color:var(--text-muted); width:10px; flex:none; transition:transform .15s; }
+  .city-head-top .city-name{ font-size:15.5px; font-weight:700; flex:1; }
+  .city-head-meter{ margin-bottom:8px; }
+  .city-head-mini{ display:flex; gap:18px; flex-wrap:wrap; font-size:12px; color:var(--text-secondary); }
+  .city-head-mini b{ color:var(--text-primary); font-variant-numeric:tabular-nums; }
+  .city-body{ padding:0 18px 18px; }
+  .city-body .card{ background:var(--page-plane); margin-bottom:14px; }
+  .city-body .detail-grid{ margin-bottom:0; }
 </style>
 </head>
 <body>
@@ -192,46 +210,12 @@
 
   <div class="toolbar" id="toolbar">
     <div class="chips-row" id="monthChips"></div>
-    <div class="sep"></div>
-    <div class="chips-row" id="cityChips"></div>
   </div>
 
   <div class="kpi-strip" id="kpiStrip"></div>
 
-  <section class="card">
-    <h2>Выручка — по неделям</h2>
-    <div class="hint">Факт по неделям (границы недель — как в РНП); план на месяц и темп — ниже графика</div>
-    <div id="m-revenue"></div>
-  </section>
-
-  <div class="detail-grid">
-    <section class="card"><h2>Продления</h2><div class="hint">Запланированные продления существующих аренд</div><div id="m-renewals"></div></section>
-    <section class="card"><h2>Уже имеющиеся брони</h2><div class="hint">Выручка, которая уже гарантирована бронями, сделанными до начала месяца</div><div id="m-already"></div></section>
-    <section class="card"><h2>Конверсия</h2><div class="hint">Из заявки в бронь (взвешено по требуемым лидам выбранных городов)</div><div id="m-conv"></div></section>
-    <section class="card"><h2>% отмен и % будущих броней</h2><div class="hint">Источник не делит эти проценты на новых/постоянных клиентов — только общие</div><div id="m-pctpair"></div></section>
-
-    <section class="card">
-      <h2>Кол-во и выручка на текущий период <button class="expand-btn" id="toggle-current">Показать новые/постоянные ▾</button></h2>
-      <div class="hint">Брони, приходящиеся на выбранный месяц</div>
-      <div id="m-current"></div>
-    </section>
-
-    <section class="card">
-      <h2>Отмены и будущие брони, в суммах <button class="expand-btn" id="toggle-cancelfuture">Показать новые/постоянные ▾</button></h2>
-      <div class="hint">«Будущие» — брони этого месяца, чья выручка уходит за его пределы</div>
-      <div id="m-cancelfuture"></div>
-    </section>
-
-    <section class="card">
-      <h2>Средний чек <button class="expand-btn" id="toggle-check">Показать новые/постоянные ▾</button></h2>
-      <div class="hint">Выручка текущего периода / кол-во броней текущего периода</div>
-      <div id="m-check"></div>
-    </section>
-
-    <section class="card"><h2>Лиды по каналам</h2><div class="hint">Факт по каждому каналу и доля от суммы показанных каналов</div><div id="m-channels"></div></section>
-    <section class="card"><h2>Стоимость лида</h2><div class="hint">Взвешено по требуемым лидам выбранных городов</div><div id="m-cpl"></div></section>
-    <section class="card"><h2>Стоимость бронирования</h2><div class="hint">Взвешено по количеству созданных броней выбранных городов</div><div id="m-cpb"></div></section>
-  </div>
+  <div class="hint" style="margin-bottom:8px;">Города — по убыванию отставания от темпа выручки. Клик по городу разворачивает полную детализацию по нему.</div>
+  <div class="city-cards" id="cityCards"></div>
 
   <footer class="caveats" id="caveats"></footer>
 </div>
@@ -245,9 +229,15 @@ const fmtPct = (n,d) => isFinite(n) ? n.toFixed(d===undefined?0:d)+'%' : '—';
 let DATA = null;
 const MONTHS = ["Июль 2026","Август 2026"];
 const CITIES = ["Москва","Екатеринбург","Новосибирск","Тюмень","Красноярск","Иркутск"];
-const state = { month: MONTHS[MONTHS.length-1], cities: new Set(CITIES) };
+const state = { month: MONTHS[MONTHS.length-1] };
 
-function selectedCities(){ return CITIES.filter(c => state.cities.has(c)); }
+// Cities are no longer picked via chips -- every metric function below still asks
+// selectedCities() for "which cities to sum", but that now means "just the one city currently
+// being rendered" while a city card's section is being built (renderCityCards sets this before
+// each city's batch of render calls and clears it after), or "the whole company" for the
+// KPI strip and anything else rendered with no city context set.
+let cityRenderCtx = null;
+function selectedCities(){ return cityRenderCtx ? [cityRenderCtx] : CITIES; }
 function otherMonth(){ return state.month === MONTHS[0] ? MONTHS[1] : MONTHS[0]; }
 
 function elapsedFraction(monthKey){
@@ -341,12 +331,12 @@ function paceCard(el, title, monthMetric, unit, fmt){
   `;
 }
 
-function renderSimple(){
+function renderSimple(suffix){
   const ren = sumMetric(state.month, ['total','renewals']); ren.__path=['total','renewals'];
-  paceCard(document.getElementById('m-renewals'), 'Продления', ren, 'rub', fmtRubShort);
+  paceCard(document.getElementById('m-renewals'+suffix), 'Продления', ren, 'rub', fmtRubShort);
 
   const ae = sumMetric(state.month, ['total','alreadyExisting']); ae.__path=['total','alreadyExisting'];
-  paceCard(document.getElementById('m-already'), 'Уже имеющиеся брони', ae, 'rub', fmtRubShort);
+  paceCard(document.getElementById('m-already'+suffix), 'Уже имеющиеся брони', ae, 'rub', fmtRubShort);
 }
 
 // Sums a per-city weekly array (5 slots, null past the elapsed weeks) across selected cities.
@@ -369,8 +359,8 @@ function weekRangeLabel(monthKey, idx){
 // The card the user pointed at directly: flat "July vs August" bars made it impossible to see
 // week-to-week movement without paging between month chips. Both months' weeks now render
 // side by side, always, with a visible divider and distinct hues -- no paging needed to compare.
-function renderRevenueWeekly(){
-  const el = document.getElementById('m-revenue');
+function renderRevenueWeekly(suffix){
+  const el = document.getElementById('m-revenue'+suffix);
   const rev = sumMetric(state.month, ['total','revenue']);
   const frac = elapsedFraction(state.month);
   const paceTarget = rev.plan*frac;
@@ -472,8 +462,8 @@ function renderKpiStrip(){
   ].join('');
 }
 
-function renderConv(){
-  const el = document.getElementById('m-conv');
+function renderConv(suffix){
+  const el = document.getElementById('m-conv'+suffix);
   const r = weightedRate(state.month, ['total','convToBooking'], ['total','leadsRequired']);
   const ratio = r.plan>0 ? r.fact/r.plan : (r.fact>0?1:0);
   const status = statusFor(ratio);
@@ -516,8 +506,8 @@ function newRepeatStackHtml(newVal, repeatVal, newLabel, repeatLabel){
   `;
 }
 
-function renderCurrentPeriod(){
-  const el = document.getElementById('m-current');
+function renderCurrentPeriod(suffix){
+  const el = document.getElementById('m-current'+suffix);
   const segs = segTotals(state.month, ['segments','SEG','currentPeriodCount'], ['segments','SEG','currentPeriodRub']);
   const t = segs.total;
   const ratio = (t.rub.plan>0) ? t.rub.fact/t.rub.plan : (t.rub.fact>0?1:0);
@@ -530,21 +520,12 @@ function renderCurrentPeriod(){
     </div>
     <div class="hint" style="margin:12px 0 0;">Состав выручки периода</div>
     ${newRepeatStackHtml(segs.new.rub.fact, segs.repeat.rub.fact,
-      `Новые: ${fmtRubShort(segs.new.rub.fact)}`, `Постоянные: ${fmtRubShort(segs.repeat.rub.fact)}`)}
-    <div class="seg-detail" id="current-detail" hidden>
-      ${['repeat','new'].map(seg => `
-        <div class="seg-block">
-          <div class="seg-title">${seg==='repeat'?'Постоянные клиенты':'Новые клиенты'}</div>
-          <div class="seg-line"><span>Броней</span><b>${fmtNum(segs[seg].count.fact)} / ${fmtNum(segs[seg].count.plan)} план</b></div>
-          <div class="seg-line"><span>Выручка</span><b>${fmtRubShort(segs[seg].rub.fact)} / ${fmtRubShort(segs[seg].rub.plan)} план</b></div>
-        </div>
-      `).join('')}
-    </div>
+      `Новые: ${fmtNum(segs.new.count.fact)} · ${fmtRubShort(segs.new.rub.fact)}`, `Постоянные: ${fmtNum(segs.repeat.count.fact)} · ${fmtRubShort(segs.repeat.rub.fact)}`)}
   `;
 }
 
-function renderCancelFuture(){
-  const el = document.getElementById('m-cancelfuture');
+function renderCancelFuture(suffix){
+  const el = document.getElementById('m-cancelfuture'+suffix);
   const cancel = segTotals(state.month, ['segments','SEG','cancelledCount'], ['segments','SEG','cancelledRub']);
   const future = segTotals(state.month, ['segments','SEG','futureCount'], ['segments','SEG','futureRub']);
   el.innerHTML = `
@@ -554,24 +535,15 @@ function renderCancelFuture(){
     </div>
     <div class="hint" style="margin:12px 0 0;">Отменено — состав</div>
     ${newRepeatStackHtml(cancel.new.rub.fact, cancel.repeat.rub.fact,
-      `Новые: ${fmtRubShort(cancel.new.rub.fact)}`, `Постоянные: ${fmtRubShort(cancel.repeat.rub.fact)}`)}
+      `Новые: ${fmtNum(cancel.new.count.fact)} · ${fmtRubShort(cancel.new.rub.fact)}`, `Постоянные: ${fmtNum(cancel.repeat.count.fact)} · ${fmtRubShort(cancel.repeat.rub.fact)}`)}
     <div class="hint" style="margin:10px 0 0;">Будущие брони — состав</div>
     ${newRepeatStackHtml(future.new.rub.fact, future.repeat.rub.fact,
-      `Новые: ${fmtRubShort(future.new.rub.fact)}`, `Постоянные: ${fmtRubShort(future.repeat.rub.fact)}`)}
-    <div class="seg-detail" id="cancelfuture-detail" hidden>
-      ${['repeat','new'].map(seg => `
-        <div class="seg-block">
-          <div class="seg-title">${seg==='repeat'?'Постоянные клиенты':'Новые клиенты'}</div>
-          <div class="seg-line"><span>Отменено</span><b>${fmtRubShort(cancel[seg].rub.fact)} (${fmtNum(cancel[seg].count.fact)} шт)</b></div>
-          <div class="seg-line"><span>Будущие</span><b>${fmtRubShort(future[seg].rub.fact)} (${fmtNum(future[seg].count.fact)} шт)</b></div>
-        </div>
-      `).join('')}
-    </div>
+      `Новые: ${fmtNum(future.new.count.fact)} · ${fmtRubShort(future.new.rub.fact)}`, `Постоянные: ${fmtNum(future.repeat.count.fact)} · ${fmtRubShort(future.repeat.rub.fact)}`)}
   `;
 }
 
-function renderPctPair(){
-  const el = document.getElementById('m-pctpair');
+function renderPctPair(suffix){
+  const el = document.getElementById('m-pctpair'+suffix);
   const cancel = weightedRate(state.month, ['total','pctCancel'], ['segments','total','createdCount']);
   const future = weightedRate(state.month, ['total','pctFuture'], ['segments','total','createdCount']);
   const gauge = (fact,plan) => `<div class="gauge-track"><div class="gauge-fill" style="width:${Math.min(100,fact*100)}%;"></div><div class="gauge-plan-tick" style="left:${Math.min(100,plan*100)}%;" title="План"></div></div>`;
@@ -589,8 +561,8 @@ function renderPctPair(){
   `;
 }
 
-function renderChannels(){
-  const el = document.getElementById('m-channels');
+function renderChannels(suffix){
+  const el = document.getElementById('m-channels'+suffix);
   const cities = selectedCities();
   if(!cities.length){ el.innerHTML='<div class="empty-note">Выберите хотя бы один город</div>'; return; }
   const totals = {};
@@ -623,8 +595,8 @@ function renderChannels(){
   ` : '<div class="empty-note">Нет данных по лидам за этот месяц</div>';
 }
 
-function renderCheck(){
-  const el = document.getElementById('m-check');
+function renderCheck(suffix){
+  const el = document.getElementById('m-check'+suffix);
   const segs = segTotals(state.month, ['segments','SEG','currentPeriodCount'], ['segments','SEG','currentPeriodRub']);
   const avg = seg => seg.count.fact>0 ? seg.rub.fact/seg.count.fact : NaN;
   const avgPlan = seg => seg.count.plan>0 ? seg.rub.plan/seg.count.plan : NaN;
@@ -639,14 +611,6 @@ function renderCheck(){
       <div class="mc-col"><div class="mc-val">${fmtRubShort(newV)}</div><div class="mc-bar current" style="height:${Math.max(4,(newV||0)/maxV*100)}%; background:var(--series-1);"></div><div class="mc-lbl">Новые</div></div>
       <div class="mc-col"><div class="mc-val">${fmtRubShort(repV)}</div><div class="mc-bar" style="height:${Math.max(4,(repV||0)/maxV*100)}%; background:var(--series-2);"></div><div class="mc-lbl">Постоянные</div></div>
     </div>
-    <div class="seg-detail" id="check-detail" hidden>
-      ${['repeat','new'].map(seg => `
-        <div class="seg-block">
-          <div class="seg-title">${seg==='repeat'?'Постоянные клиенты':'Новые клиенты'}</div>
-          <div class="seg-line"><span>Средний чек</span><b>${fmtRubShort(avg(segs[seg]))}</b></div>
-        </div>
-      `).join('')}
-    </div>
   `;
 }
 
@@ -660,10 +624,10 @@ function twinBarsHtml(plan, fact, fmt){
   `;
 }
 
-function renderCostCards(){
+function renderCostCards(suffix){
   const cpl = weightedRate(state.month, ['total','costPerLead'], ['total','leadsRequired']);
   const cplRatio = cpl.plan>0 ? cpl.plan/cpl.fact : NaN; // lower fact cost than plan is good -> invert
-  document.getElementById('m-cpl').innerHTML = `
+  document.getElementById('m-cpl'+suffix).innerHTML = `
     <div class="stat-row">
       <div class="stat-tile"><div class="stat-label">План</div><div class="stat-value">${fmtRub(cpl.plan)}</div></div>
       <div class="stat-tile"><div class="stat-label">Факт</div><div class="stat-value">${fmtRub(cpl.fact)}</div></div>
@@ -673,7 +637,7 @@ function renderCostCards(){
   `;
   const cpb = weightedRate(state.month, ['total','costPerBooking'], ['segments','total','createdCount']);
   const cpbRatio = cpb.plan>0 ? cpb.plan/cpb.fact : NaN;
-  document.getElementById('m-cpb').innerHTML = `
+  document.getElementById('m-cpb'+suffix).innerHTML = `
     <div class="stat-row">
       <div class="stat-tile"><div class="stat-label">План</div><div class="stat-value">${fmtRub(cpb.plan)}</div></div>
       <div class="stat-tile"><div class="stat-label">Факт</div><div class="stat-value">${fmtRub(cpb.fact)}</div></div>
@@ -688,40 +652,121 @@ function renderMonthChips(){
   el.innerHTML = MONTHS.map(m => `<button class="chip ${state.month===m?'active':''}" data-m="${m}">${m}</button>`).join('');
   el.querySelectorAll('.chip').forEach(btn => { btn.onclick = () => { state.month = btn.dataset.m; renderMonthChips(); renderAll(); }; });
 }
-function renderCityChips(){
-  const el = document.getElementById('cityChips');
-  el.innerHTML = CITIES.map(c => `<button class="chip ${state.cities.has(c)?'active':''}" data-c="${c}">${c}</button>`).join('');
-  el.querySelectorAll('.chip').forEach(btn => {
-    btn.onclick = () => {
-      const c = btn.dataset.c;
-      if(state.cities.has(c)){ if(state.cities.size>1) state.cities.delete(c); } else state.cities.add(c);
-      renderCityChips(); renderAll();
-    };
-  });
+
+// ---------- Per-city cards: collapsed = at-a-glance revenue pace + 2 mini stats;
+// expanded = every metric card, scoped to that one city, via the cityRenderCtx switch above ----------
+function cityCardShellHtml(city){
+  const suf = '-' + city;
+  return `
+    <div class="city-card" data-city="${city}">
+      <button class="city-head" data-city-toggle="${city}">
+        <div class="city-head-top">
+          <span class="chevron">▸</span>
+          <span class="city-name">${city}</span>
+          <span class="status-pill" id="cityStatus${suf}"></span>
+        </div>
+        <div class="city-head-meter" id="cityMeter${suf}"></div>
+        <div class="city-head-mini" id="cityMini${suf}"></div>
+      </button>
+      <div class="city-body" id="cityBody${suf}" hidden>
+        <section class="card"><h2>Выручка — по неделям</h2><div class="hint">Оба месяца рядом — сравнивайте недели без переключения</div><div id="m-revenue${suf}"></div></section>
+        <div class="detail-grid">
+          <section class="card"><h2>Продления</h2><div class="hint">Запланированные продления существующих аренд</div><div id="m-renewals${suf}"></div></section>
+          <section class="card"><h2>Уже имеющиеся брони</h2><div class="hint">Выручка, гарантированная бронями до начала месяца</div><div id="m-already${suf}"></div></section>
+          <section class="card"><h2>Конверсия</h2><div class="hint">Из заявки в бронь</div><div id="m-conv${suf}"></div></section>
+          <section class="card"><h2>% отмен и % будущих броней</h2><div class="hint">Только общие — источник не делит по новым/постоянным</div><div id="m-pctpair${suf}"></div></section>
+          <section class="card"><h2>Кол-во и выручка на текущий период</h2><div class="hint">Брони, приходящиеся на выбранный месяц</div><div id="m-current${suf}"></div></section>
+          <section class="card"><h2>Отмены и будущие брони, в суммах</h2><div class="hint">«Будущие» — брони месяца, чья выручка уходит за его пределы</div><div id="m-cancelfuture${suf}"></div></section>
+          <section class="card"><h2>Средний чек</h2><div class="hint">Выручка периода ÷ количество броней периода</div><div id="m-check${suf}"></div></section>
+          <section class="card"><h2>Лиды по каналам</h2><div class="hint">Факт по каналу и доля от суммы</div><div id="m-channels${suf}"></div></section>
+          <section class="card"><h2>Стоимость лида</h2><div class="hint">По требуемым лидам города</div><div id="m-cpl${suf}"></div></section>
+          <section class="card"><h2>Стоимость бронирования</h2><div class="hint">По количеству созданных броней города</div><div id="m-cpb${suf}"></div></section>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
-function wireToggle(btnId, detailId){
-  const btn = document.getElementById(btnId);
-  btn.onclick = () => {
-    const d = document.getElementById(detailId);
-    if(!d) return;
-    d.hidden = !d.hidden;
-    btn.textContent = d.hidden ? btn.textContent.replace('Скрыть','Показать').replace('▴','▾') : btn.textContent.replace('Показать','Скрыть').replace('▾','▴');
-  };
+function cityPaceRatio(city){
+  cityRenderCtx = city;
+  const rev = sumMetric(state.month, ['total','revenue']);
+  const target = rev.plan * elapsedFraction(state.month);
+  const ratio = target>0 ? rev.fact/target : (rev.fact>0?1:0);
+  cityRenderCtx = null;
+  return ratio;
+}
+
+function renderCityHead(city){
+  cityRenderCtx = city;
+  const suf = '-'+city;
+  const rev = sumMetric(state.month, ['total','revenue']);
+  const frac = elapsedFraction(state.month);
+  const target = rev.plan*frac;
+  const ratio = target>0 ? rev.fact/target : (rev.fact>0?1:0);
+  const status = statusFor(ratio);
+  const conv = weightedRate(state.month, ['total','convToBooking'], ['total','leadsRequired']);
+  const cancel = weightedRate(state.month, ['total','pctCancel'], ['segments','total','createdCount']);
+
+  const pill = document.getElementById('cityStatus'+suf);
+  pill.className = 'status-pill '+status;
+  pill.textContent = statusLabel(status);
+  document.getElementById('cityMeter'+suf).innerHTML = meterBarHtml(rev.fact, rev.plan, frac, status);
+  document.getElementById('cityMini'+suf).innerHTML = `
+    <span><b>${fmtRubShort(rev.fact)}</b> из ${fmtRubShort(rev.plan)} · ${fmtPct(rev.plan>0?rev.fact/rev.plan*100:NaN,0)}</span>
+    <span>Конв. <b>${fmtPct(conv.fact*100,1)}</b></span>
+    <span>Отмен <b>${fmtPct(cancel.fact*100,1)}</b></span>
+  `;
+  cityRenderCtx = null;
+}
+
+function renderCityDetail(city){
+  cityRenderCtx = city;
+  const suf = '-'+city;
+  renderRevenueWeekly(suf);
+  renderSimple(suf);
+  renderConv(suf);
+  renderCurrentPeriod(suf);
+  renderCancelFuture(suf);
+  renderPctPair(suf);
+  renderChannels(suf);
+  renderCheck(suf);
+  renderCostCards(suf);
+  cityRenderCtx = null;
+}
+
+const expandedCities = new Set(); // survives re-render (e.g. switching months) so open cards stay open
+
+function renderCityCards(){
+  const el = document.getElementById('cityCards');
+  // Worst pace first -- a manager scanning top-to-bottom sees the cities that need attention
+  // before the ones already on track.
+  const order = [...CITIES].sort((a,b) => cityPaceRatio(a) - cityPaceRatio(b));
+  el.innerHTML = order.map(cityCardShellHtml).join('');
+  order.forEach(city => {
+    renderCityHead(city);
+    if(expandedCities.has(city)){
+      renderCityDetail(city);
+      document.getElementById('cityBody-'+city).hidden = false;
+      el.querySelector(`[data-city-toggle="${city}"] .chevron`).textContent = '▾';
+    }
+  });
+  el.querySelectorAll('[data-city-toggle]').forEach(btn => {
+    btn.onclick = () => {
+      const city = btn.dataset.cityToggle;
+      const body = document.getElementById('cityBody-'+city);
+      const opening = body.hidden;
+      body.hidden = !body.hidden;
+      btn.querySelector('.chevron').textContent = body.hidden ? '▸' : '▾';
+      if(opening){ expandedCities.add(city); renderCityDetail(city); }
+      else{ expandedCities.delete(city); }
+    };
+  });
 }
 
 function renderAll(){
   document.getElementById('subtitle').textContent = `${state.month} · источник — только внутренние отчёты РНП компании (без сайтовых/CRM данных вне этих файлов)`;
   renderKpiStrip();
-  renderRevenueWeekly();
-  renderSimple();
-  renderConv();
-  renderCurrentPeriod();
-  renderCancelFuture();
-  renderPctPair();
-  renderChannels();
-  renderCheck();
-  renderCostCards();
+  renderCityCards();
 }
 
 function wireStickyToolbar(){
@@ -4097,10 +4142,6 @@ DATA = {
  }
 };
 renderMonthChips();
-renderCityChips();
-wireToggle('toggle-current','current-detail');
-wireToggle('toggle-cancelfuture','cancelfuture-detail');
-wireToggle('toggle-check','check-detail');
 wireStickyToolbar();
 renderCaveats();
 renderAll();
