@@ -236,7 +236,7 @@ const fmtNum = n => Math.round(n).toLocaleString('ru-RU');
 const fmtPct = (n,d) => isFinite(n) ? n.toFixed(d===undefined?0:d)+'%' : '—';
 
 let DATA = null;
-const MONTHS = ["Июль 2026","Август 2026"];
+const MONTHS = ["Май 2026","Июнь 2026","Июль 2026","Август 2026"];
 const CITIES = ["Москва","Екатеринбург","Новосибирск","Тюмень","Красноярск","Иркутск"];
 const state = { month: MONTHS[MONTHS.length-1] };
 
@@ -247,7 +247,6 @@ const state = { month: MONTHS[MONTHS.length-1] };
 // KPI strip and anything else rendered with no city context set.
 let cityRenderCtx = null;
 function selectedCities(){ return cityRenderCtx ? [cityRenderCtx] : CITIES; }
-function otherMonth(){ return state.month === MONTHS[0] ? MONTHS[1] : MONTHS[0]; }
 
 function elapsedFraction(monthKey){
   const cities = selectedCities();
@@ -482,7 +481,7 @@ function renderKpiStrip(){
   const el = document.getElementById('kpiStrip');
 
   const rev = sumMetric(state.month, ['total','revenue']);
-  const revSpark = [...weeklyAggregate(MONTHS[0],'revenue'), ...weeklyAggregate(MONTHS[1],'revenue')];
+  const revSpark = MONTHS.flatMap(m => weeklyAggregate(m,'revenue'));
   const revDelta = rev.plan>0 ? (rev.fact/rev.plan-1)*100 : null;
 
   const conv = weightedRate(state.month, ['total','convToBooking'], ['total','leadsRequired']);
@@ -804,8 +803,8 @@ function wireStickyToolbar(){
 
 function renderCaveats(){
   document.getElementById('caveats').innerHTML =
-    '<b>Только РНП:</b> по прямому запросу все цифры этого дашборда берутся исключительно из внутренних отчётов РНП (июль и август 2026) — никакие другие файлы/выгрузки не использовались.<br>' +
-    '<b>Нет сравнения с прошлым годом:</b> РНП-файлов за 2025 год не было под рукой — сравнение доступно только между июлем и августом 2026. Если найдутся более старые РНП-файлы, можно добавить.<br>' +
+    '<b>Только РНП:</b> по прямому запросу все цифры этого дашборда берутся исключительно из внутренних отчётов РНП (май–август 2026) — никакие другие файлы/выгрузки не использовались.<br>' +
+    '<b>Нет сравнения с прошлым годом:</b> РНП-файлов за 2025 год не было под рукой — сравнение по неделям доступно только между соседними месяцами 2026, которые есть в РНП (у мая сравнивать не с чем — апреля нет). Если найдутся более старые РНП-файлы, можно добавить.<br>' +
     '<b>Темп:</b> факт месяца делится на (план × доля прошедших дней месяца) — так август (несколько дней от начала) сравнивается с планом на весь месяц корректно.<br>' +
     '<b>% отмен / % будущих броней:</b> в РНП эти проценты считаются только по городу в целом — разбивки на новых/постоянных клиентов в источнике нет, поэтому здесь она не показана.<br>' +
     '<b>Лиды по каналам:</b> сумма по показанным каналам не всегда совпадает с собственной строкой «Проверка» в РНП — это расхождение существует в самой исходной таблице (одни каналы то учитываются, то нет), не ошибка подсчёта здесь.<br>' +
@@ -815,6 +814,2938 @@ function renderCaveats(){
 }
 
 DATA = {
+ "Май 2026": {
+  "Москва": {
+   "meta": {
+    "Начало месяца": "2026-05-01 00:00:00",
+    "Конец месяца": "2026-05-31 00:00:00",
+    "Текущая дата": "2026-06-01 00:00:00",
+    "Прошло дней": 31
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1800.0,
+     "fact": 2177.239204
+    },
+    "costPerBooking": {
+     "plan": 11764.70588,
+     "fact": 10996.9031
+    },
+    "convToBooking": {
+     "plan": 0.18,
+     "fact": 0.2583892617
+    },
+    "avgCheck": {
+     "plan": 45000.0,
+     "fact": 40203.30357
+    },
+    "pctFuture": {
+     "plan": 0.13,
+     "fact": 0.2231645604
+    },
+    "pctCancel": {
+     "plan": 0.15,
+     "fact": 0.1954074788
+    },
+    "revenue": {
+     "plan": 5701300.0,
+     "fact": 6306170
+    },
+    "renewals": {
+     "plan": 2500000.0,
+     "fact": 3198590
+    },
+    "alreadyExisting": {
+     "plan": 1277920.0,
+     "fact": 2119340.97
+    },
+    "leadsRequired": {
+     "plan": 245.6762023,
+     "fact": 298
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 110.554291,
+      "fact": 163
+     },
+     "createdRub": {
+      "plan": 4974943.097,
+      "fact": 7744330
+     },
+     "currentPeriodCount": {
+      "plan": 79.59908956,
+      "fact": 112
+     },
+     "currentPeriodRub": {
+      "plan": 3581959.03,
+      "fact": 4502770
+     },
+     "cancelledCount": {
+      "plan": 16.58314366,
+      "fact": 27
+     },
+     "cancelledRub": {
+      "plan": 746241.4646,
+      "fact": 1513300
+     },
+     "futureCount": {
+      "plan": 14.37205784,
+      "fact": 24
+     },
+     "futureRub": {
+      "plan": 646742.6026,
+      "fact": 1728260
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 66.33257463,
+      "fact": 86
+     },
+     "createdRub": {
+      "plan": 2984965.858,
+      "fact": 4130060
+     },
+     "currentPeriodCount": {
+      "plan": 47.75945373,
+      "fact": 66
+     },
+     "currentPeriodRub": {
+      "plan": 2149175.418,
+      "fact": 2730800
+     },
+     "cancelledCount": {
+      "plan": 9.949886194,
+      "fact": 9
+     },
+     "cancelledRub": {
+      "plan": 447744.8788,
+      "fact": 421000
+     },
+     "futureCount": {
+      "plan": 8.623234702,
+      "fact": 11
+     },
+     "futureRub": {
+      "plan": 388045.5616,
+      "fact": 978260
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 44.22171642,
+      "fact": 77
+     },
+     "createdRub": {
+      "plan": 1989977.239,
+      "fact": 3614270
+     },
+     "currentPeriodCount": {
+      "plan": 31.83963582,
+      "fact": 46
+     },
+     "currentPeriodRub": {
+      "plan": 1432783.612,
+      "fact": 1771970
+     },
+     "cancelledCount": {
+      "plan": 6.633257463,
+      "fact": 18
+     },
+     "cancelledRub": {
+      "plan": 298496.5858,
+      "fact": 1092300
+     },
+     "futureCount": {
+      "plan": 5.748823135,
+      "fact": 13
+     },
+     "futureRub": {
+      "plan": 258697.0411,
+      "fact": 750000
+     }
+    }
+   },
+   "channels": {
+    "Органика": {
+     "plan": null,
+     "fact": null
+    }
+   },
+   "channelsChecksumFact": null,
+   "weekRanges": [
+    [
+     "2026-05-01 00:00:00",
+     "2026-05-03 00:00:00"
+    ],
+    [
+     "2026-05-04 00:00:00",
+     "2026-05-10 00:00:00"
+    ],
+    [
+     "2026-05-11 00:00:00",
+     "2026-05-17 00:00:00"
+    ],
+    [
+     "2026-05-18 00:00:00",
+     "2026-05-24 00:00:00"
+    ],
+    [
+     "2026-05-25 00:00:00",
+     "2026-05-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     1055640,
+     1454110,
+     1317860,
+     1372230,
+     1106330
+    ],
+    "cancelledRub": [
+     140000.0,
+     230700.0,
+     164500.0,
+     388400.0,
+     589700.0
+    ]
+   }
+  },
+  "Екатеринбург": {
+   "meta": {
+    "Начало месяца": "2026-05-01 00:00:00",
+    "Конец месяца": "2026-05-31 00:00:00",
+    "Текущая дата": "2026-06-01 00:00:00",
+    "Прошло дней": 31
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1200.0,
+     "fact": 965.4560174
+    },
+    "costPerBooking": {
+     "plan": 6128.702758,
+     "fact": 6640.771795
+    },
+    "convToBooking": {
+     "plan": 0.22,
+     "fact": 0.1768172888
+    },
+    "avgCheck": {
+     "plan": 29000.0,
+     "fact": 24519.95074
+    },
+    "pctFuture": {
+     "plan": 0.13,
+     "fact": 0.2350571807
+    },
+    "pctCancel": {
+     "plan": 0.11,
+     "fact": 0.1993796195
+    },
+    "revenue": {
+     "plan": 8382500.0,
+     "fact": 8247750
+    },
+    "renewals": {
+     "plan": 3300000.0,
+     "fact": 2637200
+    },
+    "alreadyExisting": {
+     "plan": 2020100.0,
+     "fact": 3522383.82
+    },
+    "leadsRequired": {
+     "plan": 373.0127042,
+     "fact": 509
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 264.7186933,
+      "fact": 296
+     },
+     "createdRub": {
+      "plan": 7676842.105,
+      "fact": 8801050
+     },
+     "currentPeriodCount": {
+      "plan": 201.1862069,
+      "fact": 203
+     },
+     "currentPeriodRub": {
+      "plan": 5834400,
+      "fact": 4977550
+     },
+     "cancelledCount": {
+      "plan": 29.11905626,
+      "fact": 42
+     },
+     "cancelledRub": {
+      "plan": 844452.6316,
+      "fact": 1754750
+     },
+     "futureCount": {
+      "plan": 34.41343013,
+      "fact": 51
+     },
+     "futureRub": {
+      "plan": 997989.4737,
+      "fact": 2068750
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 182.6558984,
+      "fact": 206
+     },
+     "createdRub": {
+      "plan": 5297021.053,
+      "fact": 6314400
+     },
+     "currentPeriodCount": {
+      "plan": 138.8184828,
+      "fact": 147
+     },
+     "currentPeriodRub": {
+      "plan": 4025736,
+      "fact": 3692400
+     },
+     "cancelledCount": {
+      "plan": 20.09214882,
+      "fact": 26
+     },
+     "cancelledRub": {
+      "plan": 582672.3158,
+      "fact": 1315900
+     },
+     "futureCount": {
+      "plan": 23.74526679,
+      "fact": 33
+     },
+     "futureRub": {
+      "plan": 688612.7368,
+      "fact": 1306100
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 82.06279492,
+      "fact": 90
+     },
+     "createdRub": {
+      "plan": 2379821.053,
+      "fact": 2486650
+     },
+     "currentPeriodCount": {
+      "plan": 62.36772414,
+      "fact": 56
+     },
+     "currentPeriodRub": {
+      "plan": 1808664,
+      "fact": 1285150
+     },
+     "cancelledCount": {
+      "plan": 9.026907441,
+      "fact": 16
+     },
+     "cancelledRub": {
+      "plan": 261780.3158,
+      "fact": 438850
+     },
+     "futureCount": {
+      "plan": 10.66816334,
+      "fact": 18
+     },
+     "futureRub": {
+      "plan": 309376.7368,
+      "fact": 762650
+     }
+    }
+   },
+   "channels": {
+    "Органика": {
+     "plan": null,
+     "fact": null
+    }
+   },
+   "channelsChecksumFact": null,
+   "weekRanges": [
+    [
+     "2026-05-01 00:00:00",
+     "2026-05-03 00:00:00"
+    ],
+    [
+     "2026-05-04 00:00:00",
+     "2026-05-10 00:00:00"
+    ],
+    [
+     "2026-05-11 00:00:00",
+     "2026-05-17 00:00:00"
+    ],
+    [
+     "2026-05-18 00:00:00",
+     "2026-05-24 00:00:00"
+    ],
+    [
+     "2026-05-25 00:00:00",
+     "2026-05-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     913700,
+     2117350,
+     1718800,
+     2007900,
+     1490000
+    ],
+    "cancelledRub": [
+     461600.0,
+     663750.0,
+     97400.0,
+     250700.0,
+     281300.0
+    ]
+   }
+  },
+  "Новосибирск": {
+   "meta": {
+    "Начало месяца": "2026-05-01 00:00:00",
+    "Конец месяца": "2026-05-31 00:00:00",
+    "Текущая дата": "2026-06-01 00:00:00",
+    "Прошло дней": 31
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 900.0,
+     "fact": 847.544125
+    },
+    "costPerBooking": {
+     "plan": 5000.0,
+     "fact": 3411.9084
+    },
+    "convToBooking": {
+     "plan": 0.25,
+     "fact": 0.1231422505
+    },
+    "avgCheck": {
+     "plan": 30000.0,
+     "fact": 25808.15603
+    },
+    "pctFuture": {
+     "plan": 0.3,
+     "fact": 0.5164831588
+    },
+    "pctCancel": {
+     "plan": 0.17,
+     "fact": 0.1451168933
+    },
+    "revenue": {
+     "plan": 7949800.0,
+     "fact": 6979150
+    },
+    "renewals": {
+     "plan": 2200000.0,
+     "fact": 2622450
+    },
+    "alreadyExisting": {
+     "plan": 2944750.0,
+     "fact": 3675647.33
+    },
+    "leadsRequired": {
+     "plan": 430.1034133,
+     "fact": 471
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 268.8146333,
+      "fact": 312
+     },
+     "createdRub": {
+      "plan": 8064439,
+      "fact": 10753400
+     },
+     "currentPeriodCount": {
+      "plan": 142.4717557,
+      "fact": 141
+     },
+     "currentPeriodRub": {
+      "plan": 4274152.67,
+      "fact": 3638950
+     },
+     "cancelledCount": {
+      "plan": 45.69848767,
+      "fact": 59
+     },
+     "cancelledRub": {
+      "plan": 1370954.63,
+      "fact": 1560500
+     },
+     "futureCount": {
+      "plan": 80.64439,
+      "fact": 112
+     },
+     "futureRub": {
+      "plan": 2419331.7,
+      "fact": 5553950
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 161.28878,
+      "fact": 159
+     },
+     "createdRub": {
+      "plan": 4838663.4,
+      "fact": 5360950
+     },
+     "currentPeriodCount": {
+      "plan": 85.4830534,
+      "fact": 83
+     },
+     "currentPeriodRub": {
+      "plan": 2564491.602,
+      "fact": 2169950
+     },
+     "cancelledCount": {
+      "plan": 27.4190926,
+      "fact": 23
+     },
+     "cancelledRub": {
+      "plan": 822572.778,
+      "fact": 563300
+     },
+     "futureCount": {
+      "plan": 48.386634,
+      "fact": 53
+     },
+     "futureRub": {
+      "plan": 1451599.02,
+      "fact": 2627700
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 107.5258533,
+      "fact": 153
+     },
+     "createdRub": {
+      "plan": 3225775.6,
+      "fact": 5392450
+     },
+     "currentPeriodCount": {
+      "plan": 56.98870227,
+      "fact": 58
+     },
+     "currentPeriodRub": {
+      "plan": 1709661.068,
+      "fact": 1469000
+     },
+     "cancelledCount": {
+      "plan": 18.27939507,
+      "fact": 36
+     },
+     "cancelledRub": {
+      "plan": 548381.852,
+      "fact": 997200
+     },
+     "futureCount": {
+      "plan": 32.257756,
+      "fact": 59
+     },
+     "futureRub": {
+      "plan": 967732.68,
+      "fact": 2926250
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 65.0,
+     "fact": 72
+    },
+    "Авито - звонки": {
+     "plan": 120.0,
+     "fact": 24
+    },
+    "Авито-чат": {
+     "plan": true,
+     "fact": 110
+    },
+    "Google Maps": {
+     "plan": 20.0,
+     "fact": 16
+    },
+    "2 GIS": {
+     "plan": 50.0,
+     "fact": 57
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 2
+    },
+    "Яндекс Карты": {
+     "plan": 25.0,
+     "fact": 19
+    },
+    "SEO google": {
+     "plan": 85,
+     "fact": 91
+    },
+    "SEO yandex": {
+     "plan": 35.0,
+     "fact": 35
+    },
+    "ВК": {
+     "plan": null,
+     "fact": 1
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 1
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 0
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Органика": {
+     "plan": 50.0,
+     "fact": 4
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 37
+    },
+    "Агенты": {
+     "plan": null,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 2
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 450,
+   "weekRanges": [
+    [
+     "2026-05-01 00:00:00",
+     "2026-05-03 00:00:00"
+    ],
+    [
+     "2026-05-04 00:00:00",
+     "2026-05-10 00:00:00"
+    ],
+    [
+     "2026-05-11 00:00:00",
+     "2026-05-17 00:00:00"
+    ],
+    [
+     "2026-05-18 00:00:00",
+     "2026-05-24 00:00:00"
+    ],
+    [
+     "2026-05-25 00:00:00",
+     "2026-05-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     758350,
+     1920200,
+     1538250,
+     1397550,
+     1364800
+    ],
+    "cancelledRub": [
+     384300.0,
+     391200.0,
+     274400.0,
+     227900.0,
+     282700.0
+    ]
+   }
+  },
+  "Тюмень": {
+   "meta": {
+    "Начало месяца": "2026-05-01 00:00:00",
+    "Конец месяца": "2026-05-31 00:00:00",
+    "Текущая дата": "2026-06-01 00:00:00",
+    "Прошло дней": 31
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 900.0,
+     "fact": 789.7211503
+    },
+    "costPerBooking": {
+     "plan": 4497.751124,
+     "fact": 4108.684363
+    },
+    "convToBooking": {
+     "plan": 0.23,
+     "fact": 0.2337662338
+    },
+    "avgCheck": {
+     "plan": 18000.0,
+     "fact": 19165.47619
+    },
+    "pctFuture": {
+     "plan": 0.13,
+     "fact": 0.1186371641
+    },
+    "pctCancel": {
+     "plan": 0.13,
+     "fact": 0.3027685599
+    },
+    "revenue": {
+     "plan": 3646900.0,
+     "fact": 2892550
+    },
+    "renewals": {
+     "plan": 1032000.0,
+     "fact": 944500
+    },
+    "alreadyExisting": {
+     "plan": 590800.0,
+     "fact": 757861.42
+    },
+    "leadsRequired": {
+     "plan": 424.3593684,
+     "fact": 385
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 216.8947883,
+      "fact": 177
+     },
+     "createdRub": {
+      "plan": 3904106.189,
+      "fact": 4173650
+     },
+     "currentPeriodCount": {
+      "plan": 160.5021433,
+      "fact": 126
+     },
+     "currentPeriodRub": {
+      "plan": 2889038.58,
+      "fact": 2414850
+     },
+     "cancelledCount": {
+      "plan": 28.19632248,
+      "fact": 32
+     },
+     "cancelledRub": {
+      "plan": 507533.8046,
+      "fact": 1263650
+     },
+     "futureCount": {
+      "plan": 28.19632248,
+      "fact": 19
+     },
+     "futureRub": {
+      "plan": 507533.8046,
+      "fact": 495150
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 119.2921336,
+      "fact": 87
+     },
+     "createdRub": {
+      "plan": 2147258.404,
+      "fact": 2390700
+     },
+     "currentPeriodCount": {
+      "plan": 88.27617883,
+      "fact": 65
+     },
+     "currentPeriodRub": {
+      "plan": 1588971.219,
+      "fact": 1183350
+     },
+     "cancelledCount": {
+      "plan": 15.50797736,
+      "fact": 16
+     },
+     "cancelledRub": {
+      "plan": 279143.5925,
+      "fact": 1074150
+     },
+     "futureCount": {
+      "plan": 15.50797736,
+      "fact": 6
+     },
+     "futureRub": {
+      "plan": 279143.5925,
+      "fact": 133200
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 97.60265473,
+      "fact": 90
+     },
+     "createdRub": {
+      "plan": 1756847.785,
+      "fact": 1782950
+     },
+     "currentPeriodCount": {
+      "plan": 72.2259645,
+      "fact": 61
+     },
+     "currentPeriodRub": {
+      "plan": 1300067.361,
+      "fact": 1231500
+     },
+     "cancelledCount": {
+      "plan": 12.68834511,
+      "fact": 16
+     },
+     "cancelledRub": {
+      "plan": 228390.2121,
+      "fact": 189500
+     },
+     "futureCount": {
+      "plan": 12.68834511,
+      "fact": 13
+     },
+     "futureRub": {
+      "plan": 228390.2121,
+      "fact": 361950
+     }
+    }
+   },
+   "channels": {
+    "Органика": {
+     "plan": null,
+     "fact": null
+    }
+   },
+   "channelsChecksumFact": null,
+   "weekRanges": [
+    [
+     "2026-05-01 00:00:00",
+     "2026-05-03 00:00:00"
+    ],
+    [
+     "2026-05-04 00:00:00",
+     "2026-05-10 00:00:00"
+    ],
+    [
+     "2026-05-11 00:00:00",
+     "2026-05-17 00:00:00"
+    ],
+    [
+     "2026-05-18 00:00:00",
+     "2026-05-24 00:00:00"
+    ],
+    [
+     "2026-05-25 00:00:00",
+     "2026-05-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     356200,
+     571000,
+     653050,
+     699550,
+     612750
+    ],
+    "cancelledRub": [
+     143100.0,
+     224350.0,
+     103450.0,
+     257100.0,
+     535650.0
+    ]
+   }
+  },
+  "Красноярск": {
+   "meta": {
+    "Начало месяца": "2026-05-01 00:00:00",
+    "Конец месяца": "2026-05-31 00:00:00",
+    "Текущая дата": "2026-06-01 00:00:00",
+    "Прошло дней": 31
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1000.0,
+     "fact": 1001.27796
+    },
+    "costPerBooking": {
+     "plan": 5376.344086,
+     "fact": 4828.948137
+    },
+    "convToBooking": {
+     "plan": 0.2,
+     "fact": 0.2362204724
+    },
+    "avgCheck": {
+     "plan": 21000.0,
+     "fact": 24738.59375
+    },
+    "pctFuture": {
+     "plan": 0.1,
+     "fact": 0.3478923302
+    },
+    "pctCancel": {
+     "plan": 0.07,
+     "fact": 0.05501343516
+    },
+    "revenue": {
+     "plan": 4110100.0,
+     "fact": 3701245
+    },
+    "renewals": {
+     "plan": 1304169.0,
+     "fact": 908150
+    },
+    "alreadyExisting": {
+     "plan": 1016965.0,
+     "fact": 1285843.1
+    },
+    "leadsRequired": {
+     "plan": 324.0684911,
+     "fact": 381
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 162.0342456,
+      "fact": 193
+     },
+     "createdRub": {
+      "plan": 3402719.157,
+      "fact": 5303250
+     },
+     "currentPeriodCount": {
+      "plan": 134.4884238,
+      "fact": 128
+     },
+     "currentPeriodRub": {
+      "plan": 2824256.9,
+      "fact": 3166540
+     },
+     "cancelledCount": {
+      "plan": 11.34239719,
+      "fact": 18
+     },
+     "cancelledRub": {
+      "plan": 238190.341,
+      "fact": 291750
+     },
+     "futureCount": {
+      "plan": 16.20342456,
+      "fact": 47
+     },
+     "futureRub": {
+      "plan": 340271.9157,
+      "fact": 1844960
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 97.22054733,
+      "fact": 103
+     },
+     "createdRub": {
+      "plan": 2041631.494,
+      "fact": 2752640
+     },
+     "currentPeriodCount": {
+      "plan": 80.69305429,
+      "fact": 70
+     },
+     "currentPeriodRub": {
+      "plan": 1694554.14,
+      "fact": 1560640
+     },
+     "cancelledCount": {
+      "plan": 6.805438313,
+      "fact": 7
+     },
+     "cancelledRub": {
+      "plan": 142914.2046,
+      "fact": 115000
+     },
+     "futureCount": {
+      "plan": 9.722054733,
+      "fact": 26
+     },
+     "futureRub": {
+      "plan": 204163.1494,
+      "fact": 1077000
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 64.81369822,
+      "fact": 90
+     },
+     "createdRub": {
+      "plan": 1361087.663,
+      "fact": 2550610
+     },
+     "currentPeriodCount": {
+      "plan": 53.79536952,
+      "fact": 58
+     },
+     "currentPeriodRub": {
+      "plan": 1129702.76,
+      "fact": 1605900
+     },
+     "cancelledCount": {
+      "plan": 4.536958876,
+      "fact": 11
+     },
+     "cancelledRub": {
+      "plan": 95276.13639,
+      "fact": 176750
+     },
+     "futureCount": {
+      "plan": 6.481369822,
+      "fact": 21
+     },
+     "futureRub": {
+      "plan": 136108.7663,
+      "fact": 767960
+     }
+    }
+   },
+   "channels": {
+    "Органика": {
+     "plan": null,
+     "fact": null
+    }
+   },
+   "channelsChecksumFact": null,
+   "weekRanges": [
+    [
+     "2026-05-01 00:00:00",
+     "2026-05-03 00:00:00"
+    ],
+    [
+     "2026-05-04 00:00:00",
+     "2026-05-10 00:00:00"
+    ],
+    [
+     "2026-05-11 00:00:00",
+     "2026-05-17 00:00:00"
+    ],
+    [
+     "2026-05-18 00:00:00",
+     "2026-05-24 00:00:00"
+    ],
+    [
+     "2026-05-25 00:00:00",
+     "2026-05-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     362780,
+     657775,
+     884400,
+     946400,
+     849890
+    ],
+    "cancelledRub": [
+     80200.0,
+     33400.0,
+     37950.0,
+     99500.0,
+     40700.0
+    ]
+   }
+  },
+  "Иркутск": {
+   "meta": {
+    "Начало месяца": "2026-05-01 00:00:00",
+    "Конец месяца": "2026-05-31 00:00:00",
+    "Текущая дата": "2026-06-01 00:00:00",
+    "Прошло дней": 31
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1000.0,
+     "fact": 966.0228287
+    },
+    "costPerBooking": {
+     "plan": 1501.501502,
+     "fact": 4085.229071
+    },
+    "convToBooking": {
+     "plan": 0.37,
+     "fact": 0.2478632479
+    },
+    "avgCheck": {
+     "plan": 20000.0,
+     "fact": 28106.07477
+    },
+    "pctFuture": {
+     "plan": 0.4,
+     "fact": 0.3808472597
+    },
+    "pctCancel": {
+     "plan": 0.1,
+     "fact": 0.07048638984
+    },
+    "revenue": {
+     "plan": 4503500.0,
+     "fact": 4271840
+    },
+    "renewals": {
+     "plan": 1000000.0,
+     "fact": 1428250
+    },
+    "alreadyExisting": {
+     "plan": 1232450.0,
+     "fact": 1800118.77
+    },
+    "leadsRequired": {
+     "plan": 219.1930727,
+     "fact": 351
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 270.338123,
+      "fact": 185
+     },
+     "createdRub": {
+      "plan": 5406762.46,
+      "fact": 5481200
+     },
+     "currentPeriodCount": {
+      "plan": 135.1690615,
+      "fact": 107
+     },
+     "currentPeriodRub": {
+      "plan": 2703381.23,
+      "fact": 3007350
+     },
+     "cancelledCount": {
+      "plan": 27.0338123,
+      "fact": 15
+     },
+     "cancelledRub": {
+      "plan": 540676.246,
+      "fact": 386350
+     },
+     "futureCount": {
+      "plan": 108.1352492,
+      "fact": 63
+     },
+     "futureRub": {
+      "plan": 2162704.984,
+      "fact": 2087500
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 108.1352492,
+      "fact": 98
+     },
+     "createdRub": {
+      "plan": 2162704.984,
+      "fact": 2870300
+     },
+     "currentPeriodCount": {
+      "plan": 54.0676246,
+      "fact": 62
+     },
+     "currentPeriodRub": {
+      "plan": 1081352.492,
+      "fact": 1610600
+     },
+     "cancelledCount": {
+      "plan": 10.81352492,
+      "fact": 11
+     },
+     "cancelledRub": {
+      "plan": 216270.4984,
+      "fact": 346000
+     },
+     "futureCount": {
+      "plan": 43.25409968,
+      "fact": 25
+     },
+     "futureRub": {
+      "plan": 865081.9936,
+      "fact": 913700
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 162.2028738,
+      "fact": 87
+     },
+     "createdRub": {
+      "plan": 3244057.476,
+      "fact": 2610900
+     },
+     "currentPeriodCount": {
+      "plan": 81.1014369,
+      "fact": 45
+     },
+     "currentPeriodRub": {
+      "plan": 1622028.738,
+      "fact": 1396750
+     },
+     "cancelledCount": {
+      "plan": 16.22028738,
+      "fact": 4
+     },
+     "cancelledRub": {
+      "plan": 324405.7476,
+      "fact": 40350
+     },
+     "futureCount": {
+      "plan": 64.88114952,
+      "fact": 38
+     },
+     "futureRub": {
+      "plan": 1297622.99,
+      "fact": 1173800
+     }
+    }
+   },
+   "channels": {
+    "Органика": {
+     "plan": null,
+     "fact": null
+    }
+   },
+   "channelsChecksumFact": null,
+   "weekRanges": [
+    [
+     "2026-05-01 00:00:00",
+     "2026-05-03 00:00:00"
+    ],
+    [
+     "2026-05-04 00:00:00",
+     "2026-05-10 00:00:00"
+    ],
+    [
+     "2026-05-11 00:00:00",
+     "2026-05-17 00:00:00"
+    ],
+    [
+     "2026-05-18 00:00:00",
+     "2026-05-24 00:00:00"
+    ],
+    [
+     "2026-05-25 00:00:00",
+     "2026-05-31 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     404990,
+     896000,
+     800900,
+     1051470,
+     1118480
+    ],
+    "cancelledRub": [
+     6200.0,
+     65000.0,
+     66050.0,
+     80800.0,
+     168300.0
+    ]
+   }
+  }
+ },
+ "Июнь 2026": {
+  "Москва": {
+   "meta": {
+    "Начало месяца": "2026-06-01 00:00:00",
+    "Конец месяца": "2026-06-30 00:00:00",
+    "Текущая дата": "2026-07-01 00:00:00",
+    "Прошло дней": 30
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1800.0,
+     "fact": 1342.581881
+    },
+    "costPerBooking": {
+     "plan": 12500,
+     "fact": 7714.836183
+    },
+    "convToLead": {
+     "plan": null,
+     "fact": 0.225974026
+    },
+    "convToBooking": {
+     "plan": 0.18,
+     "fact": 0.174025974
+    },
+    "avgCheck": {
+     "plan": 45000.0,
+     "fact": 40414.05263
+    },
+    "pctFuture": {
+     "plan": 0.2,
+     "fact": 0.2641329365
+    },
+    "pctCancel": {
+     "plan": 0.2,
+     "fact": 0.1571696796
+    },
+    "revenue": {
+     "plan": 6416800,
+     "fact": 6521110
+    },
+    "renewals": {
+     "plan": 4000000.0,
+     "fact": 2454650
+    },
+    "alreadyExisting": {
+     "plan": 1922643.0,
+     "fact": 2394918
+    },
+    "leadsRequired": {
+     "plan": 331.0190947,
+     "fact": 385
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 148.9585926,
+      "fact": 176
+     },
+     "createdRub": {
+      "plan": 6703136.667,
+      "fact": 7961332
+     },
+     "currentPeriodCount": {
+      "plan": 89.37515556,
+      "fact": 114
+     },
+     "currentPeriodRub": {
+      "plan": 4021882,
+      "fact": 4607202
+     },
+     "cancelledCount": {
+      "plan": 29.79171852,
+      "fact": 33
+     },
+     "cancelledRub": {
+      "plan": 1340627.333,
+      "fact": 1251280
+     },
+     "futureCount": {
+      "plan": 29.79171852,
+      "fact": 29
+     },
+     "futureRub": {
+      "plan": 1340627.333,
+      "fact": 2102850
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 89.37515556,
+      "fact": 89
+     },
+     "createdRub": {
+      "plan": 4021882,
+      "fact": 4495160
+     },
+     "currentPeriodCount": {
+      "plan": 53.62509333,
+      "fact": 57
+     },
+     "currentPeriodRub": {
+      "plan": 2413129.2,
+      "fact": 2369150
+     },
+     "cancelledCount": {
+      "plan": 17.87503111,
+      "fact": 13
+     },
+     "cancelledRub": {
+      "plan": 804376.4,
+      "fact": 646410
+     },
+     "futureCount": {
+      "plan": 17.87503111,
+      "fact": 19
+     },
+     "futureRub": {
+      "plan": 804376.4,
+      "fact": 1479600
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 59.58343704,
+      "fact": 87
+     },
+     "createdRub": {
+      "plan": 2681254.667,
+      "fact": 3466172
+     },
+     "currentPeriodCount": {
+      "plan": 35.75006222,
+      "fact": 57
+     },
+     "currentPeriodRub": {
+      "plan": 1608752.8,
+      "fact": 2238052
+     },
+     "cancelledCount": {
+      "plan": 11.91668741,
+      "fact": 20
+     },
+     "cancelledRub": {
+      "plan": 536250.9333,
+      "fact": 604870
+     },
+     "futureCount": {
+      "plan": 11.91668741,
+      "fact": 10
+     },
+     "futureRub": {
+      "plan": 536250.9333,
+      "fact": 623250
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 30.0,
+     "fact": 14
+    },
+    "Авито - звонки": {
+     "plan": 120.0,
+     "fact": 171
+    },
+    "Авито-чат": {
+     "plan": false,
+     "fact": 558
+    },
+    "Google Maps": {
+     "plan": 15.0,
+     "fact": 9
+    },
+    "2 GIS": {
+     "plan": 6.0,
+     "fact": 7
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 30.0,
+     "fact": 20
+    },
+    "SEO google": {
+     "plan": 50.0,
+     "fact": 47
+    },
+    "SEO yandex": {
+     "plan": 30.0,
+     "fact": 50
+    },
+    "ВК": {
+     "plan": 20.0,
+     "fact": 0
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 0
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 1
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 38
+    },
+    "Органика": {
+     "plan": 30.0,
+     "fact": 0
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 17
+    },
+    "Агенты": {
+     "plan": 10.0,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 11
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 341,
+   "weekRanges": [
+    [
+     "2026-06-01 00:00:00",
+     "2026-06-07 00:00:00"
+    ],
+    [
+     "2026-06-08 00:00:00",
+     "2026-06-14 00:00:00"
+    ],
+    [
+     "2026-06-15 00:00:00",
+     "2026-06-21 00:00:00"
+    ],
+    [
+     "2026-06-22 00:00:00",
+     "2026-06-28 00:00:00"
+    ],
+    [
+     "2026-06-29 00:00:00",
+     "2026-06-30 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     1663600,
+     1675360,
+     1342750,
+     1498950,
+     340450
+    ],
+    "cancelledRub": [
+     526160.0,
+     150170.0,
+     283800.0,
+     119500.0,
+     171650.0
+    ]
+   }
+  },
+  "Екатеринбург": {
+   "meta": {
+    "Начало месяца": "2026-06-01 00:00:00",
+    "Конец месяца": "2026-06-30 00:00:00",
+    "Текущая дата": "2026-07-01 00:00:00",
+    "Прошло дней": 30
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1200.0,
+     "fact": 1052.060063
+    },
+    "costPerBooking": {
+     "plan": 6128.702758,
+     "fact": 5473.555734
+    },
+    "convToBooking": {
+     "plan": 0.22,
+     "fact": 0.1922077922
+    },
+    "avgCheck": {
+     "plan": 29000.0,
+     "fact": 27281.88073
+    },
+    "pctFuture": {
+     "plan": 0.13,
+     "fact": 0.1476829185
+    },
+    "pctCancel": {
+     "plan": 0.11,
+     "fact": 0.2307937487
+    },
+    "revenue": {
+     "plan": 9520400,
+     "fact": 7346000
+    },
+    "renewals": {
+     "plan": 3300000.0,
+     "fact": 1902950
+    },
+    "alreadyExisting": {
+     "plan": 2115258.96,
+     "fact": 1739062.4
+    },
+    "leadsRequired": {
+     "plan": 497.4869361,
+     "fact": 385
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 353.055245,
+      "fact": 323
+     },
+     "createdRub": {
+      "plan": 10238602.11,
+      "fact": 9569150
+     },
+     "currentPeriodCount": {
+      "plan": 268.3219862,
+      "fact": 218
+     },
+     "currentPeriodRub": {
+      "plan": 7781337.6,
+      "fact": 5947450
+     },
+     "cancelledCount": {
+      "plan": 38.83607695,
+      "fact": 63
+     },
+     "cancelledRub": {
+      "plan": 1126246.232,
+      "fact": 2208500
+     },
+     "futureCount": {
+      "plan": 45.89718185,
+      "fact": 42
+     },
+     "futureRub": {
+      "plan": 1331018.274,
+      "fact": 1413200
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 243.6081191,
+      "fact": 222
+     },
+     "createdRub": {
+      "plan": 7064635.453,
+      "fact": 6566950
+     },
+     "currentPeriodCount": {
+      "plan": 185.1421705,
+      "fact": 156
+     },
+     "currentPeriodRub": {
+      "plan": 5369122.944,
+      "fact": 4253400
+     },
+     "cancelledCount": {
+      "plan": 26.7968931,
+      "fact": 36
+     },
+     "cancelledRub": {
+      "plan": 777109.8998,
+      "fact": 1219850
+     },
+     "futureCount": {
+      "plan": 31.66905548,
+      "fact": 30
+     },
+     "futureRub": {
+      "plan": 918402.6088,
+      "fact": 1093700
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 109.447126,
+      "fact": 101
+     },
+     "createdRub": {
+      "plan": 3173966.653,
+      "fact": 3002200
+     },
+     "currentPeriodCount": {
+      "plan": 83.17981572,
+      "fact": 62
+     },
+     "currentPeriodRub": {
+      "plan": 2412214.656,
+      "fact": 1694050
+     },
+     "cancelledCount": {
+      "plan": 12.03918385,
+      "fact": 27
+     },
+     "cancelledRub": {
+      "plan": 349136.3318,
+      "fact": 988650
+     },
+     "futureCount": {
+      "plan": 14.22812637,
+      "fact": 12
+     },
+     "futureRub": {
+      "plan": 412615.6648,
+      "fact": 319500
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 25.0,
+     "fact": 28
+    },
+    "Авито - звонки": {
+     "plan": 160.0,
+     "fact": 54
+    },
+    "Авито-чат": {
+     "plan": false,
+     "fact": 194
+    },
+    "Google Maps": {
+     "plan": 23.0,
+     "fact": 26
+    },
+    "2 GIS": {
+     "plan": 20.0,
+     "fact": 30
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 45.0,
+     "fact": 41
+    },
+    "SEO google": {
+     "plan": 80.0,
+     "fact": 98
+    },
+    "SEO yandex": {
+     "plan": 40.0,
+     "fact": 51
+    },
+    "ВК": {
+     "plan": 1.0,
+     "fact": 0
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 2
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 0
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 1
+    },
+    "Органика": {
+     "plan": 30.0,
+     "fact": 0
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 45
+    },
+    "Агенты": {
+     "plan": 5.0,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 3
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 429,
+   "weekRanges": [
+    [
+     "2026-06-01 00:00:00",
+     "2026-06-07 00:00:00"
+    ],
+    [
+     "2026-06-08 00:00:00",
+     "2026-06-14 00:00:00"
+    ],
+    [
+     "2026-06-15 00:00:00",
+     "2026-06-21 00:00:00"
+    ],
+    [
+     "2026-06-22 00:00:00",
+     "2026-06-28 00:00:00"
+    ],
+    [
+     "2026-06-29 00:00:00",
+     "2026-06-30 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     1309300,
+     1791850,
+     1682200,
+     2153750,
+     408900
+    ],
+    "cancelledRub": [
+     470500.0,
+     528250.0,
+     500400.0,
+     577250.0,
+     132100.0
+    ]
+   }
+  },
+  "Новосибирск": {
+   "meta": {
+    "Начало месяца": "2026-06-01 00:00:00",
+    "Конец месяца": "2026-06-30 00:00:00",
+    "Текущая дата": "2026-07-01 00:00:00",
+    "Прошло дней": 30
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1000.0,
+     "fact": 506.4600499
+    },
+    "costPerBooking": {
+     "plan": 4000.0,
+     "fact": 1655.342579
+    },
+    "convToLead": {
+     "plan": 0.45,
+     "fact": 0.4640657084
+    },
+    "convToBooking": {
+     "plan": 0.25,
+     "fact": 0.3059548255
+    },
+    "avgCheck": {
+     "plan": 30000.0,
+     "fact": 28845.89744
+    },
+    "pctFuture": {
+     "plan": 0.25,
+     "fact": 0.3556067368
+    },
+    "pctCancel": {
+     "plan": 0.2,
+     "fact": 0.2414339033
+    },
+    "revenue": {
+     "plan": 9328800,
+     "fact": 10199425
+    },
+    "renewals": {
+     "plan": 3000000.0,
+     "fact": 2735775
+    },
+    "alreadyExisting": {
+     "plan": 4386546.0,
+     "fact": 4853152.86
+    },
+    "leadsRequired": {
+     "plan": 325.5016102,
+     "fact": 487
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 271.2513418,
+      "fact": 406
+     },
+     "createdRub": {
+      "plan": 8137540.255,
+      "fact": 13959100
+     },
+     "currentPeriodCount": {
+      "plan": 149.188238,
+      "fact": 195
+     },
+     "currentPeriodRub": {
+      "plan": 4475647.14,
+      "fact": 5624950
+     },
+     "cancelledCount": {
+      "plan": 54.25026836,
+      "fact": 103
+     },
+     "cancelledRub": {
+      "plan": 1627508.051,
+      "fact": 3370200
+     },
+     "futureCount": {
+      "plan": 67.81283545,
+      "fact": 108
+     },
+     "futureRub": {
+      "plan": 2034385.064,
+      "fact": 4963950
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 189.8759393,
+      "fact": 180
+     },
+     "createdRub": {
+      "plan": 5696278.178,
+      "fact": 5494450
+     },
+     "currentPeriodCount": {
+      "plan": 104.4317666,
+      "fact": 114
+     },
+     "currentPeriodRub": {
+      "plan": 3132952.998,
+      "fact": 2693100
+     },
+     "cancelledCount": {
+      "plan": 37.97518785,
+      "fact": 26
+     },
+     "cancelledRub": {
+      "plan": 1139255.636,
+      "fact": 964800
+     },
+     "futureCount": {
+      "plan": 47.46898482,
+      "fact": 40
+     },
+     "futureRub": {
+      "plan": 1424069.545,
+      "fact": 1836550
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 81.37540255,
+      "fact": 226
+     },
+     "createdRub": {
+      "plan": 2441262.076,
+      "fact": 8464650
+     },
+     "currentPeriodCount": {
+      "plan": 44.7564714,
+      "fact": 81
+     },
+     "currentPeriodRub": {
+      "plan": 1342694.142,
+      "fact": 2931850
+     },
+     "cancelledCount": {
+      "plan": 16.27508051,
+      "fact": 77
+     },
+     "cancelledRub": {
+      "plan": 488252.4153,
+      "fact": 2405400
+     },
+     "futureCount": {
+      "plan": 20.34385064,
+      "fact": 68
+     },
+     "futureRub": {
+      "plan": 610315.5191,
+      "fact": 3127400
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 65.0,
+     "fact": 72
+    },
+    "Авито - звонки": {
+     "plan": null,
+     "fact": 7
+    },
+    "Авито-чат": {
+     "plan": false,
+     "fact": 24
+    },
+    "Google Maps": {
+     "plan": 30.0,
+     "fact": 27
+    },
+    "2 GIS": {
+     "plan": 75.0,
+     "fact": 96
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 1
+    },
+    "Яндекс Карты": {
+     "plan": 30.0,
+     "fact": 36
+    },
+    "SEO google": {
+     "plan": 95.0,
+     "fact": 140
+    },
+    "SEO yandex": {
+     "plan": 40.0,
+     "fact": 50
+    },
+    "ВК": {
+     "plan": null,
+     "fact": 0
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 0
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 1
+    },
+    "Органика": {
+     "plan": 65.0,
+     "fact": 0
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 55
+    },
+    "Агенты": {
+     "plan": null,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 2
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 400,
+   "weekRanges": [
+    [
+     "2026-06-01 00:00:00",
+     "2026-06-07 00:00:00"
+    ],
+    [
+     "2026-06-08 00:00:00",
+     "2026-06-14 00:00:00"
+    ],
+    [
+     "2026-06-15 00:00:00",
+     "2026-06-21 00:00:00"
+    ],
+    [
+     "2026-06-22 00:00:00",
+     "2026-06-28 00:00:00"
+    ],
+    [
+     "2026-06-29 00:00:00",
+     "2026-06-30 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     1810400,
+     2724550,
+     2645450,
+     2410625,
+     608400
+    ],
+    "cancelledRub": [
+     471050.0,
+     834250.0,
+     793250.0,
+     1084500.0,
+     187150.0
+    ]
+   }
+  },
+  "Тюмень": {
+   "meta": {
+    "Начало месяца": "2026-06-01 00:00:00",
+    "Конец месяца": "2026-06-30 00:00:00",
+    "Текущая дата": "2026-07-01 00:00:00",
+    "Прошло дней": 30
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 900.0,
+     "fact": 724.5075122
+    },
+    "costPerBooking": {
+     "plan": 4497.751124,
+     "fact": 3806.367825
+    },
+    "convToBooking": {
+     "plan": 0.23,
+     "fact": 0.1647727273
+    },
+    "avgCheck": {
+     "plan": 18000.0,
+     "fact": 19461.81818
+    },
+    "pctFuture": {
+     "plan": 0.13,
+     "fact": 0.230181345
+    },
+    "pctCancel": {
+     "plan": 0.13,
+     "fact": 0.06459901504
+    },
+    "revenue": {
+     "plan": 3356300,
+     "fact": 3006200
+    },
+    "renewals": {
+     "plan": 1000000.0,
+     "fact": 1117200
+    },
+    "alreadyExisting": {
+     "plan": 628896.46,
+     "fact": 1137234.79
+    },
+    "leadsRequired": {
+     "plan": 325.9496489,
+     "fact": 352
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 166.5964872,
+      "fact": 148
+     },
+     "createdRub": {
+      "plan": 2998736.77,
+      "fact": 3035650
+     },
+     "currentPeriodCount": {
+      "plan": 123.2814006,
+      "fact": 110
+     },
+     "currentPeriodRub": {
+      "plan": 2219065.21,
+      "fact": 2140800
+     },
+     "cancelledCount": {
+      "plan": 21.65754334,
+      "fact": 13
+     },
+     "cancelledRub": {
+      "plan": 389835.7801,
+      "fact": 196100
+     },
+     "futureCount": {
+      "plan": 21.65754334,
+      "fact": 25
+     },
+     "futureRub": {
+      "plan": 389835.7801,
+      "fact": 698750
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 91.62806798,
+      "fact": 74
+     },
+     "createdRub": {
+      "plan": 1649305.224,
+      "fact": 1670000
+     },
+     "currentPeriodCount": {
+      "plan": 67.80477031,
+      "fact": 52
+     },
+     "currentPeriodRub": {
+      "plan": 1220485.866,
+      "fact": 1158550
+     },
+     "cancelledCount": {
+      "plan": 11.91164884,
+      "fact": 6
+     },
+     "cancelledRub": {
+      "plan": 214409.6791,
+      "fact": 96000
+     },
+     "futureCount": {
+      "plan": 11.91164884,
+      "fact": 16
+     },
+     "futureRub": {
+      "plan": 214409.6791,
+      "fact": 415450
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 74.96841926,
+      "fact": 74
+     },
+     "createdRub": {
+      "plan": 1349431.547,
+      "fact": 1365650
+     },
+     "currentPeriodCount": {
+      "plan": 55.47663025,
+      "fact": 58
+     },
+     "currentPeriodRub": {
+      "plan": 998579.3445,
+      "fact": 982250
+     },
+     "cancelledCount": {
+      "plan": 9.745894503,
+      "fact": 7
+     },
+     "cancelledRub": {
+      "plan": 175426.1011,
+      "fact": 100100
+     },
+     "futureCount": {
+      "plan": 9.745894503,
+      "fact": 9
+     },
+     "futureRub": {
+      "plan": 175426.1011,
+      "fact": 283300
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 71.0,
+     "fact": 87
+    },
+    "Авито - звонки": {
+     "plan": 121.0,
+     "fact": 40
+    },
+    "Авито-чат": {
+     "plan": false,
+     "fact": 78
+    },
+    "Google Maps": {
+     "plan": 30.0,
+     "fact": 23
+    },
+    "2 GIS": {
+     "plan": 55.0,
+     "fact": 72
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 39.0,
+     "fact": 30
+    },
+    "SEO google": {
+     "plan": 56.0,
+     "fact": 65
+    },
+    "SEO yandex": {
+     "plan": 13.0,
+     "fact": 14
+    },
+    "ВК": {
+     "plan": null,
+     "fact": 0
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 0
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Органика": {
+     "plan": 15.0,
+     "fact": 1
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 19
+    },
+    "Агенты": {
+     "plan": null,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 1
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 400,
+   "weekRanges": [
+    [
+     "2026-06-01 00:00:00",
+     "2026-06-07 00:00:00"
+    ],
+    [
+     "2026-06-08 00:00:00",
+     "2026-06-14 00:00:00"
+    ],
+    [
+     "2026-06-15 00:00:00",
+     "2026-06-21 00:00:00"
+    ],
+    [
+     "2026-06-22 00:00:00",
+     "2026-06-28 00:00:00"
+    ],
+    [
+     "2026-06-29 00:00:00",
+     "2026-06-30 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     599650,
+     772650,
+     660300,
+     801350,
+     172250
+    ],
+    "cancelledRub": [
+     40700.0,
+     0.0,
+     59300.0,
+     53900.0,
+     42200.0
+    ]
+   }
+  },
+  "Красноярск": {
+   "meta": {
+    "Начало месяца": "2026-06-01 00:00:00",
+    "Конец месяца": "2026-06-30 00:00:00",
+    "Текущая дата": "2026-07-01 00:00:00",
+    "Прошло дней": 30
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1000.0,
+     "fact": 697.5551712
+    },
+    "costPerBooking": {
+     "plan": 6493.506494,
+     "fact": 3628.85443
+    },
+    "convToBooking": {
+     "plan": 0.2,
+     "fact": 0.192224622
+    },
+    "avgCheck": {
+     "plan": 25000.0,
+     "fact": 24847.31481
+    },
+    "pctFuture": {
+     "plan": 0.1,
+     "fact": 0.2100691641
+    },
+    "pctCancel": {
+     "plan": 0.23,
+     "fact": 0.1164001864
+    },
+    "revenue": {
+     "plan": 5068800,
+     "fact": 5261275
+    },
+    "renewals": {
+     "plan": 1424700.0,
+     "fact": 1221550
+    },
+    "alreadyExisting": {
+     "plan": 1964654.0,
+     "fact": 2187571.33
+    },
+    "leadsRequired": {
+     "plan": 344.0273039,
+     "fact": 463
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 172.0136519,
+      "fact": 234
+     },
+     "createdRub": {
+      "plan": 4300341.299,
+      "fact": 5976365
+     },
+     "currentPeriodCount": {
+      "plan": 115.2491468,
+      "fact": 162
+     },
+     "currentPeriodRub": {
+      "plan": 2881228.67,
+      "fact": 4025265
+     },
+     "cancelledCount": {
+      "plan": 39.56313995,
+      "fact": 31
+     },
+     "cancelledRub": {
+      "plan": 989078.4987,
+      "fact": 695650
+     },
+     "futureCount": {
+      "plan": 17.20136519,
+      "fact": 41
+     },
+     "futureRub": {
+      "plan": 430034.1299,
+      "fact": 1255450
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 103.2081912,
+      "fact": 120
+     },
+     "createdRub": {
+      "plan": 2580204.779,
+      "fact": 3420125
+     },
+     "currentPeriodCount": {
+      "plan": 69.14948808,
+      "fact": 91
+     },
+     "currentPeriodRub": {
+      "plan": 1728737.202,
+      "fact": 2474775
+     },
+     "cancelledCount": {
+      "plan": 23.73788397,
+      "fact": 6
+     },
+     "cancelledRub": {
+      "plan": 593447.0992,
+      "fact": 143950
+     },
+     "futureCount": {
+      "plan": 10.32081912,
+      "fact": 23
+     },
+     "futureRub": {
+      "plan": 258020.4779,
+      "fact": 801400
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 68.80546078,
+      "fact": 114
+     },
+     "createdRub": {
+      "plan": 1720136.519,
+      "fact": 2556240
+     },
+     "currentPeriodCount": {
+      "plan": 46.09965872,
+      "fact": 71
+     },
+     "currentPeriodRub": {
+      "plan": 1152491.468,
+      "fact": 1550490
+     },
+     "cancelledCount": {
+      "plan": 15.82525598,
+      "fact": 25
+     },
+     "cancelledRub": {
+      "plan": 395631.3995,
+      "fact": 551700
+     },
+     "futureCount": {
+      "plan": 6.880546078,
+      "fact": 18
+     },
+     "futureRub": {
+      "plan": 172013.6519,
+      "fact": 454050
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": 25.0,
+     "fact": 25
+    },
+    "Авито - звонки": {
+     "plan": 160.0,
+     "fact": 105
+    },
+    "Авито-чат": {
+     "plan": false,
+     "fact": 244
+    },
+    "Google Maps": {
+     "plan": 23.0,
+     "fact": 0
+    },
+    "2 GIS": {
+     "plan": 20.0,
+     "fact": 125
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 0
+    },
+    "Яндекс Карты": {
+     "plan": 45.0,
+     "fact": 45
+    },
+    "SEO google": {
+     "plan": 80.0,
+     "fact": 83
+    },
+    "SEO yandex": {
+     "plan": 40.0,
+     "fact": 41
+    },
+    "ВК": {
+     "plan": 1.0,
+     "fact": 1
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 0
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 5
+    },
+    "Органика": {
+     "plan": 30.0,
+     "fact": 0
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 23
+    },
+    "Агенты": {
+     "plan": 5.0,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 0
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 429,
+   "weekRanges": [
+    [
+     "2026-06-01 00:00:00",
+     "2026-06-07 00:00:00"
+    ],
+    [
+     "2026-06-08 00:00:00",
+     "2026-06-14 00:00:00"
+    ],
+    [
+     "2026-06-15 00:00:00",
+     "2026-06-21 00:00:00"
+    ],
+    [
+     "2026-06-22 00:00:00",
+     "2026-06-28 00:00:00"
+    ],
+    [
+     "2026-06-29 00:00:00",
+     "2026-06-30 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     1156800,
+     1364615,
+     1275910,
+     1099250,
+     364700
+    ],
+    "cancelledRub": [
+     194350.0,
+     234800.0,
+     172750.0,
+     48750.0,
+     45000.0
+    ]
+   }
+  },
+  "Иркутск": {
+   "meta": {
+    "Начало месяца": "2026-06-01 00:00:00",
+    "Конец месяца": "2026-06-30 00:00:00",
+    "Текущая дата": "2026-07-01 00:00:00",
+    "Прошло дней": 30
+   },
+   "total": {
+    "costPerLead": {
+     "plan": 1000.0,
+     "fact": 504.7020505
+    },
+    "costPerBooking": {
+     "plan": 1651.651652,
+     "fact": 2008.814102
+    },
+    "convToBooking": {
+     "plan": 0.37,
+     "fact": 0.2512437811
+    },
+    "avgCheck": {
+     "plan": 20000.0,
+     "fact": 25967.85714
+    },
+    "pctFuture": {
+     "plan": 0.35,
+     "fact": 0.3586580351
+    },
+    "pctCancel": {
+     "plan": 0.1,
+     "fact": 0.1084727821
+    },
+    "revenue": {
+     "plan": 5205000,
+     "fact": 5657900
+    },
+    "renewals": {
+     "plan": 800000.0,
+     "fact": 2166950
+    },
+    "alreadyExisting": {
+     "plan": 2093144.0,
+     "fact": 2672790.74
+    },
+    "leadsRequired": {
+     "plan": 205.3142643,
+     "fact": 402
+    }
+   },
+   "segments": {
+    "total": {
+     "createdCount": {
+      "plan": 230.2008418,
+      "fact": 203
+     },
+     "createdRub": {
+      "plan": 4604016.836,
+      "fact": 6140250
+     },
+     "currentPeriodCount": {
+      "plan": 126.610463,
+      "fact": 126
+     },
+     "currentPeriodRub": {
+      "plan": 2532209.26,
+      "fact": 3271950
+     },
+     "cancelledCount": {
+      "plan": 23.02008418,
+      "fact": 19
+     },
+     "cancelledRub": {
+      "plan": 460401.6836,
+      "fact": 666050
+     },
+     "futureCount": {
+      "plan": 80.57029464,
+      "fact": 58
+     },
+     "futureRub": {
+      "plan": 1611405.893,
+      "fact": 2202250
+     }
+    },
+    "repeat": {
+     "createdCount": {
+      "plan": 92.08033673,
+      "fact": 90
+     },
+     "createdRub": {
+      "plan": 1841606.735,
+      "fact": 3146250
+     },
+     "currentPeriodCount": {
+      "plan": 50.6441852,
+      "fact": 62
+     },
+     "currentPeriodRub": {
+      "plan": 1012883.704,
+      "fact": 1836750
+     },
+     "cancelledCount": {
+      "plan": 9.208033673,
+      "fact": 7
+     },
+     "cancelledRub": {
+      "plan": 184160.6735,
+      "fact": 439500
+     },
+     "futureCount": {
+      "plan": 32.22811785,
+      "fact": 21
+     },
+     "futureRub": {
+      "plan": 644562.3571,
+      "fact": 870000
+     }
+    },
+    "new": {
+     "createdCount": {
+      "plan": 138.1205051,
+      "fact": 113
+     },
+     "createdRub": {
+      "plan": 2762410.102,
+      "fact": 2994000
+     },
+     "currentPeriodCount": {
+      "plan": 75.9662778,
+      "fact": 64
+     },
+     "currentPeriodRub": {
+      "plan": 1519325.556,
+      "fact": 1435200
+     },
+     "cancelledCount": {
+      "plan": 13.81205051,
+      "fact": 12
+     },
+     "cancelledRub": {
+      "plan": 276241.0102,
+      "fact": 226550
+     },
+     "futureCount": {
+      "plan": 48.34217678,
+      "fact": 37
+     },
+     "futureRub": {
+      "plan": 966843.5356,
+      "fact": 1332250
+     }
+    }
+   },
+   "channels": {
+    "Яндекс.Директ": {
+     "plan": null,
+     "fact": 91
+    },
+    "Авито - звонки": {
+     "plan": null,
+     "fact": 2
+    },
+    "Авито-чат": {
+     "plan": false,
+     "fact": 3
+    },
+    "Google Maps": {
+     "plan": 10.0,
+     "fact": 11
+    },
+    "2 GIS": {
+     "plan": 75.0,
+     "fact": 104
+    },
+    "Zoon": {
+     "plan": null,
+     "fact": 3
+    },
+    "Яндекс Карты": {
+     "plan": 45.0,
+     "fact": 41
+    },
+    "SEO google": {
+     "plan": 80.0,
+     "fact": 88
+    },
+    "SEO yandex": {
+     "plan": 25.0,
+     "fact": 31
+    },
+    "ВК": {
+     "plan": 1.0,
+     "fact": 1
+    },
+    "Инстаграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Whatsapp": {
+     "plan": null,
+     "fact": 0
+    },
+    "Дзен": {
+     "plan": null,
+     "fact": 0
+    },
+    "Телеграм": {
+     "plan": null,
+     "fact": 0
+    },
+    "Органика": {
+     "plan": 21.0,
+     "fact": 0
+    },
+    "Посетители без рекламной кампании": {
+     "plan": null,
+     "fact": 0
+    },
+    "Прямые Заходы": {
+     "plan": null,
+     "fact": 26
+    },
+    "Агенты": {
+     "plan": 3.0,
+     "fact": 0
+    },
+    "Реферал": {
+     "plan": null,
+     "fact": 4
+    },
+    "Не определено": {
+     "plan": null,
+     "fact": 0
+    }
+   },
+   "channelsChecksumFact": 260,
+   "weekRanges": [
+    [
+     "2026-06-01 00:00:00",
+     "2026-06-07 00:00:00"
+    ],
+    [
+     "2026-06-08 00:00:00",
+     "2026-06-14 00:00:00"
+    ],
+    [
+     "2026-06-15 00:00:00",
+     "2026-06-21 00:00:00"
+    ],
+    [
+     "2026-06-22 00:00:00",
+     "2026-06-28 00:00:00"
+    ],
+    [
+     "2026-06-29 00:00:00",
+     "2026-06-30 00:00:00"
+    ]
+   ],
+   "weekly": {
+    "revenue": [
+     1220650,
+     1484650,
+     1364900,
+     1253250,
+     334450
+    ],
+    "cancelledRub": [
+     128900.0,
+     52900.0,
+     75150.0,
+     30950.0,
+     378150.0
+    ]
+   }
+  }
+ },
  "Июль 2026": {
   "Москва": {
    "meta": {
