@@ -177,6 +177,11 @@
   .week-chart-legend{ display:flex; gap:18px; margin-top:6px; font-size:11.5px; color:var(--text-secondary); }
   .week-chart-legend .lk{ display:inline-block; width:16px; height:0; border-top:2.5px solid var(--accent); margin-right:6px; vertical-align:middle; }
   .week-chart-legend .lk.dashed{ border-top:2px dashed var(--text-muted); }
+  .week-chart-legend .lk.dotted{ border-top:2px dotted var(--series-2); }
+  .yoy-note{ font-size:11.5px; color:var(--text-secondary); margin-top:6px; }
+  .yoy-note b{ font-variant-numeric:tabular-nums; }
+  .yoy-note b.up{ color:var(--good); }
+  .yoy-note b.down{ color:var(--critical); }
 
   /* ---- two-column detail grid ---- */
   .detail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:start; }
@@ -303,6 +308,10 @@ function paceCard(el, title, monthMetric, unit, fmt){
   const status = statusFor(ratio);
   const thisPct = plan>0 ? (fact/plan*100) : NaN;
 
+  const yoy = monthMetric.__path ? yoyFor(state.month, monthMetric.__path[1]) : null;
+  const yoyHtml = yoy && yoy.deltaPct!=null
+    ? `<div class="yoy-note">к ${state.month.replace('2026','2025')}: <b class="${yoy.deltaPct>=0?'up':'down'}">${yoy.deltaPct>=0?'+':''}${(yoy.deltaPct*100).toFixed(1)}%</b></div>` : '';
+
   el.innerHTML = `
     <div class="mini-row">
       <span><span class="mini-label">План</span> <b>${fmt(plan)}</b></span>
@@ -310,6 +319,7 @@ function paceCard(el, title, monthMetric, unit, fmt){
       <span class="status-pill sm ${status}">${fmtPct(ratio*100,0)}</span>
     </div>
     ${meterBarHtml(fact, plan, frac, status, true)}
+    ${yoyHtml}
   `;
 }
 
@@ -359,12 +369,15 @@ function prevMonthOf(monthKey){
 // last month", which a concatenated chart doesn't show directly. Current month: solid line +
 // gradient fill, only as far as weeks have actually happened. Previous month: dashed reference
 // line, full shape, no fill -- it's context, not the headline.
-function weeklyCompareChartSvg(curVals, prevVals, curLabel, prevLabel, uid, fmt){
+// yoy2025 is a single flat weekly-average figure (RNP gives no per-week shape for 2025) -- drawn
+// as a dotted horizontal reference line, deliberately styled differently from both other series
+// so it can't be mistaken for a real week-by-week trend.
+function weeklyCompareChartSvg(curVals, prevVals, curLabel, prevLabel, yoy2025, uid, fmt){
   const n = 5;
   const known = [...curVals, ...prevVals].filter(v=>v!=null);
   if(known.length < 2) return '<div class="empty-note">Недостаточно недель для графика</div>';
   const W = 900, H = 210, padL = 16, padR = 16, padT = 34, padB = 30;
-  const maxV = Math.max(...known, 1);
+  const maxV = Math.max(...known, yoy2025||0, 1);
   const stepX = (W-padL-padR)/(n-1);
   const xAt = i => padL + i*stepX;
   const yAt = v => padT + (1 - v/maxV) * (H-padT-padB);
@@ -386,10 +399,15 @@ function weeklyCompareChartSvg(curVals, prevVals, curLabel, prevLabel, uid, fmt)
   const curDots = curPts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="4" fill="var(--surface-1)" stroke="var(--accent)" stroke-width="2.5"></circle>`).join('');
   const curLabels = curPts.map(p => `<text x="${p[0].toFixed(1)}" y="${(p[1]-11).toFixed(1)}" font-size="10.5" font-weight="700" text-anchor="middle" fill="var(--text-primary)">${fmt(p[2])}</text>`).join('');
 
-  const legend = prevPts.length ? `
+  const yoyY = yoy2025!=null ? yAt(yoy2025) : null;
+  const yoyLine = yoyY!=null ? `<line x1="${padL}" y1="${yoyY.toFixed(1)}" x2="${W-padR}" y2="${yoyY.toFixed(1)}" stroke="var(--series-2)" stroke-width="1.75" stroke-dasharray="1,4" stroke-linecap="round"></line>` : '';
+  const yoyLabel = yoyY!=null ? `<text x="${W-padR}" y="${(yoyY-6).toFixed(1)}" font-size="10" font-weight="700" text-anchor="end" fill="var(--series-2)">2025: ${fmt(yoy2025)}/нед</text>` : '';
+
+  const legend = (prevPts.length || yoyY!=null) ? `
     <div class="week-chart-legend">
       <span><span class="lk solid"></span>${curLabel}</span>
-      <span><span class="lk dashed"></span>${prevLabel} (для сравнения)</span>
+      ${prevPts.length ? `<span><span class="lk dashed"></span>${prevLabel} (для сравнения)</span>` : ''}
+      ${yoyY!=null ? `<span><span class="lk dotted"></span>2025 (в среднем/нед, без формы по неделям)</span>` : ''}
     </div>` : '';
 
   return `
@@ -402,6 +420,7 @@ function weeklyCompareChartSvg(curVals, prevVals, curLabel, prevLabel, uid, fmt)
       </defs>
       <line x1="${padL}" y1="${baseline}" x2="${W-padR}" y2="${baseline}" stroke="var(--baseline)" stroke-width="1"></line>
       ${curArea}
+      ${yoyLine}
       ${prevLine}
       ${curLine}
       ${prevDots}
@@ -409,9 +428,18 @@ function weeklyCompareChartSvg(curVals, prevVals, curLabel, prevLabel, uid, fmt)
       ${prevLabels}
       ${curLabels}
       ${weekAxisLabels}
+      ${yoyLabel}
     </svg>
     ${legend}
   `;
+}
+
+// Only meaningful for exactly one city (per-city cards always render with cityRenderCtx set) --
+// returns null rather than fabricating a combined percentage if ever called with several cities.
+function yoyFor(monthKey, metric){
+  const cities = selectedCities();
+  if(cities.length !== 1) return null;
+  return (DATA[monthKey][cities[0]].yoy || {})[metric] || null;
 }
 
 function renderRevenueWeekly(suffix){
@@ -425,6 +453,7 @@ function renderRevenueWeekly(suffix){
   const curWeekly = weeklyAggregate(state.month, 'revenue');
   const prevMonth = prevMonthOf(state.month);
   const prevWeekly = prevMonth ? weeklyAggregate(prevMonth, 'revenue') : [null,null,null,null,null];
+  const yoy = yoyFor(state.month, 'revenue');
 
   el.innerHTML = `
     <div class="stat-row">
@@ -434,7 +463,8 @@ function renderRevenueWeekly(suffix){
     </div>
     ${meterBarHtml(rev.fact, rev.plan, frac, status)}
     <div class="hint" style="margin:14px 0 0;">По неделям, оба месяца на одной шкале — так видно, в какую неделю была просадка, а в какую рост</div>
-    ${weeklyCompareChartSvg(curWeekly, prevWeekly, state.month, prevMonth || '', suffix.replace(/[^a-zA-Zа-яА-Я0-9]/g,''), fmtRubShort)}
+    ${weeklyCompareChartSvg(curWeekly, prevWeekly, state.month, prevMonth || '', yoy ? yoy.weeklyAvg2025 : null, suffix.replace(/[^a-zA-Zа-яА-Я0-9]/g,''), fmtRubShort)}
+    ${yoy && yoy.deltaPct!=null ? `<div class="yoy-note">К ${state.month.replace('2026','2025')} (по темпу в неделю): <b class="${yoy.deltaPct>=0?'up':'down'}">${yoy.deltaPct>=0?'+':''}${(yoy.deltaPct*100).toFixed(1)}%</b> · весь месяц тогда — ${fmtRubShort(yoy.value2025)}</div>` : ''}
     <div class="hint" style="margin:16px 0 0;">Доля новых и повторных клиентов в выручке текущего периода</div>
     ${(() => {
       const segs = segTotals(state.month, ['segments','SEG','currentPeriodCount'], ['segments','SEG','currentPeriodRub']);
@@ -581,6 +611,11 @@ function renderCancelFuture(suffix){
     <div class="hint" style="margin:10px 0 0;">Будущие брони — состав</div>
     ${newRepeatStackHtml(future.new.rub.fact, future.repeat.rub.fact,
       `Новые: ${fmtNum(future.new.count.fact)} · ${fmtRubShort(future.new.rub.fact)}`, `Постоянные: ${fmtNum(future.repeat.count.fact)} · ${fmtRubShort(future.repeat.rub.fact)}`)}
+    ${(() => {
+      const yoy = yoyFor(state.month, 'cancelledRub');
+      if(!yoy || yoy.deltaPct==null) return '';
+      return `<div class="yoy-note">Отмены к ${state.month.replace('2026','2025')}: <b class="${yoy.deltaPct<=0?'up':'down'}">${yoy.deltaPct>=0?'+':''}${(yoy.deltaPct*100).toFixed(1)}%</b> (меньше — лучше)</div>`;
+    })()}
   `;
 }
 
@@ -804,7 +839,7 @@ function wireStickyToolbar(){
 function renderCaveats(){
   document.getElementById('caveats').innerHTML =
     '<b>Только РНП:</b> по прямому запросу все цифры этого дашборда берутся исключительно из внутренних отчётов РНП (май–август 2026) — никакие другие файлы/выгрузки не использовались.<br>' +
-    '<b>Нет сравнения с прошлым годом:</b> РНП-файлов за 2025 год не было под рукой — сравнение по неделям доступно только между соседними месяцами 2026, которые есть в РНП (у мая сравнивать не с чем — апреля нет). Если найдутся более старые РНП-файлы, можно добавить.<br>' +
+    '<b>Сравнение с 2025 годом:</b> в РНП справа от понедельных колонок есть блок «2025 / Сейчас / Разница» — использован как есть, включая готовую % разницу самого РНП (сверено вручную по нескольким городам и метрикам — формула сходится). Важное ограничение: у 2025 года нет понедельной разбивки, только итог за месяц и среднее в неделю — поэтому на графике это ровная пунктирная линия-ориентир, а не фигурная кривая, как у 2026 года. Есть для выручки, продлений и отменённых броней; для остальных метрик РНП даёт только одно число без % разницы. Сравнение по неделям с ПРЕДЫДУЩИМ месяцем (не годом) доступно только между соседними месяцами 2026, которые есть в РНП — у мая сравнивать не с чем, апреля нет.<br>' +
     '<b>Темп:</b> факт месяца делится на (план × доля прошедших дней месяца) — так август (несколько дней от начала) сравнивается с планом на весь месяц корректно.<br>' +
     '<b>% отмен / % будущих броней:</b> в РНП эти проценты считаются только по городу в целом — разбивки на новых/постоянных клиентов в источнике нет, поэтому здесь она не показана.<br>' +
     '<b>Лиды по каналам:</b> сумма по показанным каналам не всегда совпадает с собственной строкой «Проверка» в РНП — это расхождение существует в самой исходной таблице (одни каналы то учитываются, то нет), не ошибка подсчёта здесь.<br>' +
@@ -1012,6 +1047,48 @@ DATA = {
      388400.0,
      589700.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.2328767123,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 74745.95402,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.1004847073,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.1774402588,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 8601098.0,
+     "weeklyAvg2025": 1942183.419,
+     "deltaPct": -0.2668179608
+    },
+    "renewals": {
+     "value2025": 5758610.0,
+     "weeklyAvg2025": 1300331.29,
+     "deltaPct": -0.4445546259
+    },
+    "cancelledRub": {
+     "value2025": 1598000.0,
+     "weeklyAvg2025": 360838.7097,
+     "deltaPct": -0.0530034865
+    }
    }
   },
   "Екатеринбург": {
@@ -1211,6 +1288,48 @@ DATA = {
      250700.0,
      281300.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.3725490196,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 37180.65657,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.1562942064,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.1205115762,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 10173850.0,
+     "weeklyAvg2025": 2297320.968,
+     "deltaPct": -0.1893183294
+    },
+    "renewals": {
+     "value2025": 4800400.0,
+     "weeklyAvg2025": 1083961.29,
+     "deltaPct": -0.4506289059
+    },
+    "cancelledRub": {
+     "value2025": 1226750.0,
+     "weeklyAvg2025": 277008.0645,
+     "deltaPct": 0.4304060089
+    }
    }
   },
   "Новосибирск": {
@@ -1486,6 +1605,48 @@ DATA = {
      227900.0,
      282700.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.2296450939,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 41434.28571,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.258215614,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.2634191798,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 8341424.0,
+     "weeklyAvg2025": 1883547.355,
+     "deltaPct": -0.1633138419
+    },
+    "renewals": {
+     "value2025": 3228220.0,
+     "weeklyAvg2025": 728952.9032,
+     "deltaPct": -0.1876471067
+    },
+    "cancelledRub": {
+     "value2025": 3194300.0,
+     "weeklyAvg2025": 721293.5484,
+     "deltaPct": -0.5114735176
+    }
    }
   },
   "Тюмень": {
@@ -1685,6 +1846,48 @@ DATA = {
      257100.0,
      535650.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.3094170404,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 18891.5,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.2195626583,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.106535155,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 2793100.0,
+     "weeklyAvg2025": 630700,
+     "deltaPct": 0.035606469
+    },
+    "renewals": {
+     "value2025": 968600.0,
+     "weeklyAvg2025": 218716.129,
+     "deltaPct": -0.02487758473
+    },
+    "cancelledRub": {
+     "value2025": 298650.0,
+     "weeklyAvg2025": 67437.09677,
+     "deltaPct": 3.231217144
+    }
    }
   },
   "Красноярск": {
@@ -1884,6 +2087,48 @@ DATA = {
      99500.0,
      40700.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.2591093117,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 21245,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.3287641454,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.158077801,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 4003000.0,
+     "weeklyAvg2025": 903903.2258,
+     "deltaPct": -0.07538221334
+    },
+    "renewals": {
+     "value2025": 1804170.0,
+     "weeklyAvg2025": 407393.2258,
+     "deltaPct": -0.4966362055
+    },
+    "cancelledRub": {
+     "value2025": 654450.0,
+     "weeklyAvg2025": 147779.0323,
+     "deltaPct": -0.5541992731
+    }
    }
   },
   "Иркутск": {
@@ -2083,6 +2328,48 @@ DATA = {
      80800.0,
      168300.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.3979591837,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 23241.59292,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.4140973823,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.1305146198,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 3921600.0,
+     "weeklyAvg2025": 885522.5806,
+     "deltaPct": 0.08931157836
+    },
+    "renewals": {
+     "value2025": 685950.0,
+     "weeklyAvg2025": 154891.9355,
+     "deltaPct": 1.082154884
+    },
+    "cancelledRub": {
+     "value2025": 752700.0,
+     "weeklyAvg2025": 169964.5161,
+     "deltaPct": -0.4867105088
+    }
    }
   }
  },
@@ -2364,6 +2651,48 @@ DATA = {
      119500.0,
      171650.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.1713395639,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 69314.91667,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.1763053279,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.2201747619,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 7147828.0,
+     "weeklyAvg2025": 1667826.533,
+     "deltaPct": -0.08767910236
+    },
+    "renewals": {
+     "value2025": 3825190.0,
+     "weeklyAvg2025": 892544.3333,
+     "deltaPct": -0.3582929401
+    },
+    "cancelledRub": {
+     "value2025": 1556350.0,
+     "weeklyAvg2025": 363148.3333,
+     "deltaPct": -0.1960144844
+    }
    }
   },
   "Екатеринбург": {
@@ -2639,6 +2968,48 @@ DATA = {
      577250.0,
      132100.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.3127962085,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 36404.01538,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.133742779,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.09947468552,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 11042904.0,
+     "weeklyAvg2025": 2576677.6,
+     "deltaPct": -0.3347763026
+    },
+    "renewals": {
+     "value2025": 4763820.0,
+     "weeklyAvg2025": 1111558,
+     "deltaPct": -0.6005408625
+    },
+    "cancelledRub": {
+     "value2025": 1227900.0,
+     "weeklyAvg2025": 286510,
+     "deltaPct": 0.7986003979
+    }
    }
   },
   "Новосибирск": {
@@ -2918,6 +3289,48 @@ DATA = {
      1084500.0,
      187150.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.2,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 53465.14085,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.224573932,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.2380955751,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 10688681.0,
+     "weeklyAvg2025": 2494025.567,
+     "deltaPct": -0.04577321427
+    },
+    "renewals": {
+     "value2025": 3394330.0,
+     "weeklyAvg2025": 792010.3333,
+     "deltaPct": -0.1940155663
+    },
+    "cancelledRub": {
+     "value2025": 3364100.0,
+     "weeklyAvg2025": 784956.6667,
+     "deltaPct": 0.001813263577
+    }
    }
   },
   "Тюмень": {
@@ -3193,6 +3606,48 @@ DATA = {
      53900.0,
      42200.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.1656626506,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 19970.78652,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.2651278216,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.1306431874,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 2851650.0,
+     "weeklyAvg2025": 665385,
+     "deltaPct": 0.05419719411
+    },
+    "renewals": {
+     "value2025": 1065900.0,
+     "weeklyAvg2025": 248710,
+     "deltaPct": 0.04812834225
+    },
+    "cancelledRub": {
+     "value2025": 384300.0,
+     "weeklyAvg2025": 89670,
+     "deltaPct": -0.4897178544
+    }
    }
   },
   "Красноярск": {
@@ -3468,6 +3923,38 @@ DATA = {
      48750.0,
      45000.0
     ]
+   },
+   "yoy": {
+    "avgCheck": {
+     "value2025": 22274.01575,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.2417218543,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.2305661785,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 4775100.0,
+     "weeklyAvg2025": 1114190,
+     "deltaPct": 0.1018147713
+    },
+    "renewals": {
+     "value2025": 1822150.0,
+     "weeklyAvg2025": 425168.3333,
+     "deltaPct": -0.3296090568
+    },
+    "cancelledRub": {
+     "value2025": 1235950.0,
+     "weeklyAvg2025": 288388.3333,
+     "deltaPct": -0.4371512948
+    }
    }
   },
   "Иркутск": {
@@ -3743,6 +4230,48 @@ DATA = {
      30950.0,
      378150.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.3190578158,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 23967.28395,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.3601878553,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.06636730658,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 5944500.0,
+     "weeklyAvg2025": 1387050,
+     "deltaPct": -0.04821239321
+    },
+    "renewals": {
+     "value2025": 762800.0,
+     "weeklyAvg2025": 177986.6667,
+     "deltaPct": 1.840785827
+    },
+    "cancelledRub": {
+     "value2025": 402750.0,
+     "weeklyAvg2025": 93975,
+     "deltaPct": 0.6537589785
+    }
    }
   }
  },
@@ -4024,6 +4553,53 @@ DATA = {
      476100.0,
      118000.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToLead": {
+     "value2025": 0.1900311526,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.1308411215,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 79416.89796,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.1784677946,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.1847373318,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 9771446.0,
+     "weeklyAvg2025": 2206455.548,
+     "deltaPct": -0.1163760351
+    },
+    "renewals": {
+     "value2025": 4730931.0,
+     "weeklyAvg2025": 1068274.742,
+     "deltaPct": -0.1941005753
+    },
+    "cancelledRub": {
+     "value2025": 1750125.0,
+     "weeklyAvg2025": 395189.5161,
+     "deltaPct": 0.005871825482
+    }
    }
   },
   "Екатеринбург": {
@@ -4303,6 +4879,48 @@ DATA = {
      285150.0,
      513950.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.327014218,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 43028.9272,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.1057909739,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.08651824957,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 12872410.0,
+     "weeklyAvg2025": 2906673.226,
+     "deltaPct": -0.2783127524
+    },
+    "renewals": {
+     "value2025": 5827420.0,
+     "weeklyAvg2025": 1315869.032,
+     "deltaPct": -0.5076721284
+    },
+    "cancelledRub": {
+     "value2025": 1086600.0,
+     "weeklyAvg2025": 245361.2903,
+     "deltaPct": 0.992131682
+    }
    }
   },
   "Новосибирск": {
@@ -4582,6 +5200,48 @@ DATA = {
      1410050.0,
      535500.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.09927007299,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 49211.13475,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.2579625429,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.4725178244,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 13335360.0,
+     "weeklyAvg2025": 3011210.323,
+     "deltaPct": -0.1474169105
+    },
+    "renewals": {
+     "value2025": 3606040.0,
+     "weeklyAvg2025": 814267.0968,
+     "deltaPct": -0.09363155785
+    },
+    "cancelledRub": {
+     "value2025": 4418500.0,
+     "weeklyAvg2025": 997725.8065,
+     "deltaPct": 0.2661544804
+    }
    }
   },
   "Тюмень": {
@@ -4861,6 +5521,48 @@ DATA = {
      44800.0,
      327800.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.1355421687,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 18693.75,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.3399256455,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.1665167128,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 2909050.0,
+     "weeklyAvg2025": 656882.2581,
+     "deltaPct": 0.04567750395
+    },
+    "renewals": {
+     "value2025": 570550.0,
+     "weeklyAvg2025": 128833.871,
+     "deltaPct": 0.09153748889
+    },
+    "cancelledRub": {
+     "value2025": 490450.0,
+     "weeklyAvg2025": 110746.7742,
+     "deltaPct": 0.120610518
+    }
    }
   },
   "Красноярск": {
@@ -5140,6 +5842,38 @@ DATA = {
      78600.0,
      171100.0
     ]
+   },
+   "yoy": {
+    "avgCheck": {
+     "value2025": 23138.4058,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.3105763729,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.2079649361,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 5338600.0,
+     "weeklyAvg2025": 1205490.323,
+     "deltaPct": 0.125763496
+    },
+    "renewals": {
+     "value2025": 1640950.0,
+     "weeklyAvg2025": 370537.0968,
+     "deltaPct": -0.222736394
+    },
+    "cancelledRub": {
+     "value2025": 963200.0,
+     "weeklyAvg2025": 217496.7742,
+     "deltaPct": 0.2009971227
+    }
    }
   },
   "Иркутск": {
@@ -5419,6 +6153,48 @@ DATA = {
      756700.0,
      26100.0
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.2462526767,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 27293.53448,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.4026489816,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.1892493609,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 6918270.0,
+     "weeklyAvg2025": 1562190,
+     "deltaPct": -0.04145078384
+    },
+    "renewals": {
+     "value2025": 729650.0,
+     "weeklyAvg2025": 164759.6774,
+     "deltaPct": 2.179473329
+    },
+    "cancelledRub": {
+     "value2025": 1003050.0,
+     "weeklyAvg2025": 226495.1613,
+     "deltaPct": 0.4998775164
+    }
    }
   }
  },
@@ -5700,6 +6476,53 @@ DATA = {
      null,
      null
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToLead": {
+     "value2025": 0.1183800623,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.1183800623,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 98381.87,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.04301580667,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.1099810543,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 9241004.0,
+     "weeklyAvg2025": 2086678.323,
+     "deltaPct": 0.07195008248
+    },
+    "renewals": {
+     "value2025": 4710261.0,
+     "weeklyAvg2025": 1063607.323,
+     "deltaPct": -0.3492006069
+    },
+    "cancelledRub": {
+     "value2025": 1130650.0,
+     "weeklyAvg2025": 255308.0645,
+     "deltaPct": -0.2460089329
+    }
    }
   },
   "Екатеринбург": {
@@ -5979,6 +6802,48 @@ DATA = {
      null,
      null
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.2630331754,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 34409.23695,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.1196880651,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.09196921749,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 11095010.0,
+     "weeklyAvg2025": 2505324.839,
+     "deltaPct": -0.1429953646
+    },
+    "renewals": {
+     "value2025": 4204080.0,
+     "weeklyAvg2025": 949308.3871,
+     "deltaPct": -0.122334732
+    },
+    "cancelledRub": {
+     "value2025": 895118.0,
+     "weeklyAvg2025": 202123.4194,
+     "deltaPct": -0.8129855505
+    }
    }
   },
   "Новосибирск": {
@@ -6258,6 +7123,48 @@ DATA = {
      null,
      null
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.09051094891,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 36458.22368,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.3488872401,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.4846173413,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 11921950.0,
+     "weeklyAvg2025": 2692053.226,
+     "deltaPct": -0.1242242251
+    },
+    "renewals": {
+     "value2025": 3417530.0,
+     "weeklyAvg2025": 771700.3226,
+     "deltaPct": -0.6004277943
+    },
+    "cancelledRub": {
+     "value2025": 4124600.0,
+     "weeklyAvg2025": 931361.2903,
+     "deltaPct": 1.251381952
+    }
    }
   },
   "Тюмень": {
@@ -6537,6 +7444,48 @@ DATA = {
      null,
      null
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.171686747,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 25654.8,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.09249511843,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.09958400543,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 3662350.0,
+     "weeklyAvg2025": 826982.2581,
+     "deltaPct": -0.2504675959
+    },
+    "renewals": {
+     "value2025": 1170250.0,
+     "weeklyAvg2025": 264250,
+     "deltaPct": -0.3543046358
+    },
+    "cancelledRub": {
+     "value2025": 351900.0,
+     "weeklyAvg2025": 79461.29032,
+     "deltaPct": -1
+    }
    }
   },
   "Красноярск": {
@@ -6816,6 +7765,38 @@ DATA = {
      null,
      null
     ]
+   },
+   "yoy": {
+    "avgCheck": {
+     "value2025": 26535.03937,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.181325689,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.2455452039,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 4789200.0,
+     "weeklyAvg2025": 1081432.258,
+     "deltaPct": 0.3360060135
+    },
+    "renewals": {
+     "value2025": 1204800.0,
+     "weeklyAvg2025": 272051.6129,
+     "deltaPct": -0.4969704515
+    },
+    "cancelledRub": {
+     "value2025": 1010750.0,
+     "weeklyAvg2025": 228233.871,
+     "deltaPct": -0.8589166461
+    }
    }
   },
   "Иркутск": {
@@ -7095,6 +8076,48 @@ DATA = {
      null,
      null
     ]
+   },
+   "yoy": {
+    "costPerLead": {
+     "value2025": 0,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "convToBooking": {
+     "value2025": 0.2291220557,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "avgCheck": {
+     "value2025": 27119.50355,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctFuture": {
+     "value2025": 0.2648421579,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "pctCancel": {
+     "value2025": 0.2651497674,
+     "weeklyAvg2025": null,
+     "deltaPct": null
+    },
+    "revenue": {
+     "value2025": 6880100.0,
+     "weeklyAvg2025": 1553570.968,
+     "deltaPct": 0.003317538989
+    },
+    "renewals": {
+     "value2025": 1777300.0,
+     "weeklyAvg2025": 401325.8065,
+     "deltaPct": -0.05027288584
+    },
+    "cancelledRub": {
+     "value2025": 1379150.0,
+     "weeklyAvg2025": 311420.9677,
+     "deltaPct": 0.3357321539
+    }
    }
   }
  }
