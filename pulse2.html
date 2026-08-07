@@ -15,6 +15,7 @@
     --gridline:       #e1e0d9;
     --baseline:       #c3c2b7;
     --card-border:    rgba(11,11,11,0.08);
+    --card-shadow:    0 1px 2px rgba(11,11,11,0.04), 0 6px 16px -8px rgba(11,11,11,0.10);
     --accent:         #2a78d6;
     --accent-light:   #86b6ef;
     --accent-wash:    rgba(42,120,214,0.10);
@@ -28,6 +29,7 @@
       color-scheme: dark;
       --surface-1: #1a1a19; --page-plane: #0d0d0d; --text-primary: #ffffff; --text-secondary: #c3c2b7; --text-muted: #898781;
       --gridline: #2c2c2a; --baseline: #383835; --card-border: rgba(255,255,255,0.08);
+      --card-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 20px -10px rgba(0,0,0,0.5);
       --accent: #3987e5; --accent-light: #184f95; --accent-wash: rgba(57,135,229,0.14);
       --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
       --good: #0ca30c; --warning: #fab219; --critical: #e66767;
@@ -51,23 +53,23 @@
   .wrap{ max-width:1180px; margin:0 auto; padding:28px 20px 64px; }
   header.top{ display:flex; flex-direction:column; gap:4px; margin-bottom:20px; }
   .eyebrow{ font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); }
-  h1{ font-size:26px; font-weight:700; margin:2px 0 0; letter-spacing:-0.01em; }
+  h1{ font-size:28px; font-weight:800; margin:2px 0 0; letter-spacing:-0.02em; }
   .subtitle{ font-size:13.5px; color:var(--text-secondary); margin-top:2px; }
-  .toolbar{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; background:var(--surface-1); border:1px solid var(--card-border); border-radius:12px; padding:12px 14px; margin-bottom:20px; }
+  .toolbar{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; background:var(--surface-1); border-radius:12px; padding:12px 14px; margin-bottom:20px; box-shadow:var(--card-shadow); }
   .sep{ width:1px; align-self:stretch; background:var(--gridline); }
   .chip{ font: inherit; font-size:12px; color:var(--text-secondary); background:var(--chip-bg); border:1px solid transparent; border-radius:20px; padding:5px 12px; cursor:pointer; }
   .chip:hover{ background:var(--chip-bg-hover); }
   .chip.active{ background:var(--accent-wash); color:var(--accent); font-weight:600; }
   .chips-row{ display:flex; flex-wrap:wrap; gap:6px; }
 
-  .card{ background:var(--surface-1); border:1px solid var(--card-border); border-radius:14px; padding:14px 16px; margin-bottom:10px; }
+  .card{ background:var(--surface-1); border-radius:14px; padding:14px 16px; margin-bottom:10px; box-shadow:var(--card-shadow); }
   .card h2{ font-size:13.5px; font-weight:700; margin:0 0 3px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
   .card .hint{ font-size:11.5px; color:var(--text-muted); margin-bottom:8px; }
   .expand-btn{ font:inherit; font-size:11.5px; color:var(--accent); background:none; border:none; cursor:pointer; font-weight:600; white-space:nowrap; }
 
   .stat-row{ display:flex; gap:24px; flex-wrap:wrap; align-items:baseline; }
   .stat-tile .stat-label{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:4px; }
-  .stat-tile .stat-value{ font-size:22px; font-weight:700; letter-spacing:-0.01em; }
+  .stat-tile .stat-value{ font-size:23px; font-weight:800; letter-spacing:-0.015em; }
   .stat-tile .stat-sub{ font-size:11.5px; color:var(--text-secondary); margin-top:2px; }
 
   /* Compact one-line metric row: label/value pairs + a status pill, used for the simpler cards
@@ -80,7 +82,12 @@
   .mini-metric-name{ font-weight:700; min-width:96px; color:var(--text-secondary); }
 
   .status-pill{ display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; padding:3px 9px; border-radius:999px; }
-  .status-pill.sm{ font-size:11px; padding:2px 8px; margin-left:auto; }
+  .status-pill.sm{ background:none !important; padding:0; margin-left:auto; font-size:12px; }
+  .status-pill.sm.good{ color:var(--good); }
+  .status-pill.sm.warning{ color:#8a5a00; }
+  :root[data-theme="dark"] .status-pill.sm.warning{ color:var(--warning); }
+  @media (prefers-color-scheme:dark){ .status-pill.sm.warning{ color:var(--warning); } }
+  .status-pill.sm.critical{ color:var(--critical); }
   .status-pill.good{ background:var(--good-wash); color:var(--good); }
   .status-pill.warning{ background:var(--warning-wash); color:#8a5a00; }
   :root[data-theme="dark"] .status-pill.warning{ color:var(--warning); }
@@ -150,33 +157,23 @@
     border-radius:0; border-left:none; border-right:none; border-top:none;
     transition:box-shadow .15s, border-color .15s;
   }
-  .toolbar.stuck{ box-shadow:0 6px 16px -8px rgba(0,0,0,0.25); border-bottom-color:var(--card-border); }
+  .toolbar.stuck{ box-shadow:0 10px 24px -12px rgba(0,0,0,0.35); }
 
   /* ---- KPI strip (headline cards with sparklines) ---- */
   .kpi-strip{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
   @media (max-width:900px){ .kpi-strip{ grid-template-columns:repeat(2,1fr); } }
-  .kpi-card{ background:var(--surface-1); border:1px solid var(--card-border); border-radius:14px; padding:16px 18px; }
+  .kpi-card{ background:var(--surface-1); border-radius:14px; padding:16px 18px; box-shadow:var(--card-shadow); }
   .kpi-card .kpi-label{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:6px; }
   .kpi-card .kpi-value-row{ display:flex; align-items:baseline; gap:8px; margin-bottom:2px; }
-  .kpi-card .kpi-value{ font-size:24px; font-weight:700; letter-spacing:-0.01em; }
+  .kpi-card .kpi-value{ font-size:27px; font-weight:800; letter-spacing:-0.02em; }
   .kpi-card .kpi-delta{ font-size:11.5px; font-weight:700; padding:2px 7px; border-radius:999px; }
   .kpi-card .kpi-delta.up{ background:var(--good-wash); color:var(--good); }
   .kpi-card .kpi-delta.down{ background:var(--critical-wash); color:var(--critical); }
   .kpi-card .kpi-sub{ font-size:11px; color:var(--text-secondary); margin-bottom:8px; }
   .kpi-card .kpi-spark{ display:block; width:100%; height:32px; }
 
-  /* ---- weekly trend chart (bars, months visually separated) ---- */
-  .week-chart{ display:flex; align-items:stretch; gap:6px; height:170px; }
-  .week-chart .wk-group{ display:flex; flex-direction:column; min-width:0; border-radius:8px; padding:8px 4px 0; }
-  .week-chart .wk-group.jul{ background:color-mix(in srgb, var(--series-1) 6%, transparent); }
-  .week-chart .wk-group.aug{ background:color-mix(in srgb, var(--series-3) 6%, transparent); }
-  .week-chart .wk-group-title{ font-size:11px; font-weight:700; color:var(--text-secondary); text-align:center; margin-bottom:8px; }
-  .week-chart .wk-group-bars{ display:flex; gap:6px; align-items:flex-end; flex:1; }
-  .week-chart .wk-col{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; min-width:0; }
-  .week-chart .wk-val{ font-size:10px; font-weight:700; margin-bottom:4px; color:var(--text-primary); white-space:nowrap; }
-  .week-chart .wk-bar{ width:70%; border-radius:3px 3px 0 0; }
-  .week-chart .wk-lbl{ font-size:9.5px; color:var(--text-muted); margin-top:5px; white-space:nowrap; }
-  .month-divider{ width:1px; align-self:stretch; background:var(--gridline); }
+  /* ---- weekly revenue: hero area chart (gradient fill, line, endpoint dots) ---- */
+  .week-area-chart{ display:block; width:100%; height:210px; overflow:visible; }
 
   /* ---- two-column detail grid ---- */
   .detail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:start; }
@@ -185,20 +182,26 @@
 
   /* ---- per-city collapsible cards ---- */
   .city-cards{ display:flex; flex-direction:column; gap:12px; margin-bottom:16px; }
-  .city-card{ background:var(--surface-1); border:1px solid var(--card-border); border-radius:14px; overflow:hidden; }
+  .city-card{ background:var(--surface-1); border-radius:14px; overflow:hidden; box-shadow:var(--card-shadow); }
   .city-head{
     display:block; width:100%; text-align:left; font:inherit; color:inherit;
     background:none; border:none; cursor:pointer; padding:16px 18px;
   }
   .city-head:hover{ background:var(--chip-bg-hover); }
-  .city-head-top{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-  .city-head-top .chevron{ font-size:11px; color:var(--text-muted); width:10px; flex:none; transition:transform .15s; }
-  .city-head-top .city-name{ font-size:15.5px; font-weight:700; flex:1; }
+  .city-head-top{ display:flex; align-items:baseline; gap:10px; margin-bottom:10px; }
+  .city-head-top .chevron{ font-size:11px; color:var(--text-muted); width:10px; flex:none; align-self:center; transition:transform .15s; }
+  .city-head-top .city-name{ font-size:15.5px; font-weight:700; flex:1; align-self:center; }
+  .city-head-top .city-pace{ font-size:24px; font-weight:800; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; }
+  .city-head-top .city-pace.good{ color:var(--good); }
+  .city-head-top .city-pace.warning{ color:#8a5a00; }
+  :root[data-theme="dark"] .city-head-top .city-pace.warning{ color:var(--warning); }
+  @media (prefers-color-scheme:dark){ .city-head-top .city-pace.warning{ color:var(--warning); } }
+  .city-head-top .city-pace.critical{ color:var(--critical); }
   .city-head-meter{ margin-bottom:8px; }
   .city-head-mini{ display:flex; gap:18px; flex-wrap:wrap; font-size:12px; color:var(--text-secondary); }
   .city-head-mini b{ color:var(--text-primary); font-variant-numeric:tabular-nums; }
   .city-body{ padding:0 18px 18px; }
-  .city-body .card{ background:var(--page-plane); margin-bottom:14px; }
+  .city-body .card{ background:var(--page-plane); margin-bottom:14px; box-shadow:none; }
   .city-body .detail-grid{ margin-bottom:0; }
 </style>
 </head>
@@ -340,6 +343,54 @@ function weekRangeLabel(monthKey, idx){
 // The card the user pointed at directly: flat "July vs August" bars made it impossible to see
 // week-to-week movement without paging between month chips. Both months' weeks now render
 // side by side, always, with a visible divider and distinct hues -- no paging needed to compare.
+// Hero visual for the card: a gradient area chart (line + fill + endpoint dots), both months'
+// weeks in one continuous series so a dip or a rise reads as a shape, not a row of same-height
+// bars. `uid` keeps the SVG gradient id unique per city (multiple charts share one DOM).
+function weeklyAreaChartSvg(points, uid, fmt){
+  if(points.length < 2) return '<div class="empty-note">Недостаточно недель для графика</div>';
+  const W = 900, H = 210, padL = 16, padR = 16, padT = 40, padB = 30;
+  const n = points.length;
+  const maxV = Math.max(...points.map(p=>p.value), 1);
+  const stepX = (W-padL-padR)/(n-1);
+  const xAt = i => padL + i*stepX;
+  const yAt = v => padT + (1 - v/maxV) * (H-padT-padB);
+  const baseline = H-padB;
+
+  const linePts = points.map((p,i) => [xAt(i), yAt(p.value)]);
+  const lineD = linePts.map((pt,i) => (i===0?'M':'L')+pt[0].toFixed(1)+','+pt[1].toFixed(1)).join(' ');
+  const areaD = lineD + ` L${xAt(n-1).toFixed(1)},${baseline} L${xAt(0).toFixed(1)},${baseline} Z`;
+
+  const spans = [];
+  let curMonth = points[0].month, start = 0;
+  points.forEach((p,i) => { if(p.month !== curMonth){ spans.push({month:curMonth, from:start, to:i-1}); curMonth=p.month; start=i; } });
+  spans.push({month:curMonth, from:start, to:n-1});
+  const monthLabels = spans.map(s => `<text x="${((xAt(s.from)+xAt(s.to))/2).toFixed(1)}" y="18" font-size="12" font-weight="700" text-anchor="middle" fill="var(--text-secondary)">${s.month}</text>`).join('');
+  const dividers = spans.slice(0,-1).map(s => { const dx=((xAt(s.to)+xAt(s.to+1))/2).toFixed(1); return `<line x1="${dx}" y1="26" x2="${dx}" y2="${baseline}" stroke="var(--gridline)" stroke-width="1" stroke-dasharray="3,3"></line>`; }).join('');
+
+  const dots = linePts.map(pt => `<circle cx="${pt[0].toFixed(1)}" cy="${pt[1].toFixed(1)}" r="4" fill="var(--surface-1)" stroke="var(--accent)" stroke-width="2.5"></circle>`).join('');
+  const valueLabels = linePts.map((pt,i) => `<text x="${pt[0].toFixed(1)}" y="${(pt[1]-11).toFixed(1)}" font-size="10.5" font-weight="700" text-anchor="middle" fill="var(--text-primary)">${fmt(points[i].value)}</text>`).join('');
+  const weekLabels = linePts.map((pt,i) => `<text x="${pt[0].toFixed(1)}" y="${baseline+18}" font-size="10" text-anchor="middle" fill="var(--text-muted)">${points[i].label}</text>`).join('');
+
+  return `
+    <svg class="week-area-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="revGrad${uid}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.30"></stop>
+          <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"></stop>
+        </linearGradient>
+      </defs>
+      <line x1="${padL}" y1="${baseline}" x2="${W-padR}" y2="${baseline}" stroke="var(--baseline)" stroke-width="1"></line>
+      ${dividers}
+      <path d="${areaD}" fill="url(#revGrad${uid})" stroke="none"></path>
+      <path d="${lineD}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></path>
+      ${dots}
+      ${monthLabels}
+      ${valueLabels}
+      ${weekLabels}
+    </svg>
+  `;
+}
+
 function renderRevenueWeekly(suffix){
   const el = document.getElementById('m-revenue'+suffix);
   const rev = sumMetric(state.month, ['total','revenue']);
@@ -350,28 +401,9 @@ function renderRevenueWeekly(suffix){
 
   const julWeekly = weeklyAggregate(MONTHS[0], 'revenue');
   const augWeekly = weeklyAggregate(MONTHS[1], 'revenue');
-  const maxV = Math.max(...julWeekly.filter(v=>v!=null), ...augWeekly.filter(v=>v!=null), 1);
-
-  // Each month's group is only as wide as the weeks it actually has, so a single-week August
-  // doesn't stretch to match July's five weeks -- bars stay the same width everywhere on the chart.
-  const groupHtml = (monthKey, vals, cls, colorVar) => {
-    const known = vals.filter(v=>v!=null);
-    if(!known.length) return '';
-    return `
-    <div class="wk-group ${cls}" style="flex:${known.length};">
-      <div class="wk-group-title">${monthKey}</div>
-      <div class="wk-group-bars">
-        ${vals.map((v,i) => v==null ? '' : `
-          <div class="wk-col">
-            <div class="wk-val">${fmtRubShort(v)}</div>
-            <div class="wk-bar" style="height:${Math.max(4, v/maxV*100)}%; background:${colorVar};"></div>
-            <div class="wk-lbl">${weekRangeLabel(monthKey,i)}</div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `;
-  };
+  const points = [];
+  julWeekly.forEach((v,i) => { if(v!=null) points.push({label: weekRangeLabel(MONTHS[0],i), value:v, month:MONTHS[0]}); });
+  augWeekly.forEach((v,i) => { if(v!=null) points.push({label: weekRangeLabel(MONTHS[1],i), value:v, month:MONTHS[1]}); });
 
   el.innerHTML = `
     <div class="stat-row">
@@ -381,11 +413,7 @@ function renderRevenueWeekly(suffix){
     </div>
     ${meterBarHtml(rev.fact, rev.plan, frac, status)}
     <div class="hint" style="margin:14px 0 0;">По неделям, оба месяца на одной шкале — так видно, в какую неделю была просадка, а в какую рост</div>
-    <div class="week-chart">
-      ${groupHtml(MONTHS[0], julWeekly, 'jul', 'var(--series-1)')}
-      <div class="month-divider"></div>
-      ${groupHtml(MONTHS[1], augWeekly, 'aug', 'var(--series-3)')}
-    </div>
+    ${weeklyAreaChartSvg(points, suffix.replace(/[^a-zA-Zа-яА-Я0-9]/g,''), fmtRubShort)}
     <div class="hint" style="margin:16px 0 0;">Доля новых и повторных клиентов в выручке текущего периода</div>
     ${(() => {
       const segs = segTotals(state.month, ['segments','SEG','currentPeriodCount'], ['segments','SEG','currentPeriodRub']);
@@ -639,7 +667,7 @@ function cityCardShellHtml(city){
         <div class="city-head-top">
           <span class="chevron">▸</span>
           <span class="city-name">${city}</span>
-          <span class="status-pill" id="cityStatus${suf}"></span>
+          <span class="city-pace" id="cityStatus${suf}"></span>
         </div>
         <div class="city-head-meter" id="cityMeter${suf}"></div>
         <div class="city-head-mini" id="cityMini${suf}"></div>
@@ -682,9 +710,10 @@ function renderCityHead(city){
   const conv = weightedRate(state.month, ['total','convToBooking'], ['total','leadsRequired']);
   const cancel = weightedRate(state.month, ['total','pctCancel'], ['segments','total','createdCount']);
 
-  const pill = document.getElementById('cityStatus'+suf);
-  pill.className = 'status-pill '+status;
-  pill.textContent = statusLabel(status);
+  const paceEl = document.getElementById('cityStatus'+suf);
+  paceEl.className = 'city-pace '+status;
+  paceEl.textContent = fmtPct(ratio*100,0);
+  paceEl.title = statusLabel(status);
   document.getElementById('cityMeter'+suf).innerHTML = meterBarHtml(rev.fact, rev.plan, frac, status);
   document.getElementById('cityMini'+suf).innerHTML = `
     <span><b>${fmtRubShort(rev.fact)}</b> из ${fmtRubShort(rev.plan)} · ${fmtPct(rev.plan>0?rev.fact/rev.plan*100:NaN,0)}</span>
