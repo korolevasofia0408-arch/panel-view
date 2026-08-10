@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CARS&GO · Аналитика переписок — август 2026</title>
+<style>
+  :root{
+    --bg:#EEF0EE; --surface:#FAFBF9; --surface-2:#E4E7E3;
+    --ink:#1A1D1C; --ink-muted:#5B5F5A; --ink-faint:#8B8F89;
+    --line: rgba(26,29,28,.12); --line-strong: rgba(26,29,28,.22);
+    --accent:#B5701A; --accent-ink:#FFFFFF;
+    --good:#3E6B42; --warn:#96690F; --critical:#A03B2E;
+    --good-bg: rgba(62,107,66,.10); --warn-bg: rgba(150,105,15,.10);
+    --critical-bg: rgba(160,59,46,.09); --neutral-bg: rgba(91,95,90,.10);
+    --city-ekb:#3F5F94; --city-irk:#6E4E96; --city-krsk:#A24A5E; --city-msk:#5F6B2E; --city-nsk:#237A7E;
+    --rank1:#A03B2E; --rank2:#B5701A; --rank3:#96690F; --rank4:#3F5F94; --rank5:#5B5F5A;
+    --shadow: 0 1px 2px rgba(20,22,20,.04), 0 8px 24px -12px rgba(20,22,20,.18);
+    --radius: 10px;
+    --font-sans: ui-sans-serif, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#14171A; --surface:#1C2023; --surface-2:#242A2D;
+      --ink:#E9EBE6; --ink-muted:#A4A9A2; --ink-faint:#71766F;
+      --line: rgba(233,235,230,.11); --line-strong: rgba(233,235,230,.2);
+      --accent:#E3A34C; --accent-ink:#1A1508;
+      --good:#7CB584; --warn:#D9B054; --critical:#E38879;
+      --good-bg: rgba(124,181,132,.13); --warn-bg: rgba(217,176,84,.13);
+      --critical-bg: rgba(227,136,121,.13); --neutral-bg: rgba(164,169,162,.12);
+      --city-ekb:#7C9BD6; --city-irk:#B79BE0; --city-krsk:#E098AC; --city-msk:#AEC073; --city-nsk:#57C4C9;
+      --rank1:#E38879; --rank2:#E3A34C; --rank3:#D9B054; --rank4:#7C9BD6; --rank5:#A4A9A2;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.55);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14171A; --surface:#1C2023; --surface-2:#242A2D; --ink:#E9EBE6; --ink-muted:#A4A9A2; --ink-faint:#71766F;
+    --line: rgba(233,235,230,.11); --line-strong: rgba(233,235,230,.2);
+    --accent:#E3A34C; --accent-ink:#1A1508;
+    --good:#7CB584; --warn:#D9B054; --critical:#E38879;
+    --good-bg: rgba(124,181,132,.13); --warn-bg: rgba(217,176,84,.13); --critical-bg: rgba(227,136,121,.13); --neutral-bg: rgba(164,169,162,.12);
+    --city-ekb:#7C9BD6; --city-irk:#B79BE0; --city-krsk:#E098AC; --city-msk:#AEC073; --city-nsk:#57C4C9;
+    --rank1:#E38879; --rank2:#E3A34C; --rank3:#D9B054; --rank4:#7C9BD6; --rank5:#A4A9A2;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.55);
+  }
+  :root[data-theme="light"]{
+    --bg:#EEF0EE; --surface:#FAFBF9; --surface-2:#E4E7E3; --ink:#1A1D1C; --ink-muted:#5B5F5A; --ink-faint:#8B8F89;
+    --line: rgba(26,29,28,.12); --line-strong: rgba(26,29,28,.22);
+    --accent:#B5701A; --accent-ink:#FFFFFF;
+    --good:#3E6B42; --warn:#96690F; --critical:#A03B2E;
+    --good-bg: rgba(62,107,66,.10); --warn-bg: rgba(150,105,15,.10); --critical-bg: rgba(160,59,46,.09); --neutral-bg: rgba(91,95,90,.10);
+    --city-ekb:#3F5F94; --city-irk:#6E4E96; --city-krsk:#A24A5E; --city-msk:#5F6B2E; --city-nsk:#237A7E;
+    --rank1:#A03B2E; --rank2:#B5701A; --rank3:#96690F; --rank4:#3F5F94; --rank5:#5B5F5A;
+    --shadow: 0 1px 2px rgba(20,22,20,.04), 0 8px 24px -12px rgba(20,22,20,.18);
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ background:var(--bg); color:var(--ink); font-family:var(--font-sans); -webkit-font-smoothing:antialiased; line-height:1.5; }
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+
+  .icon{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; flex:none; }
+  .icon-lg{ width:26px; height:26px; }
+  .icon-sm{ width:14px; height:14px; }
+  .icon-fill{ fill:currentColor; stroke:none; }
+
+  .wrap{ max-width:1220px; margin:0 auto; padding:0 24px 90px; }
+
+  .masthead{
+    background: linear-gradient(155deg,#14171A 0%,#1D2126 60%,#181B1E 100%);
+    color:#F1F0EA; margin:0 0 26px; padding:22px 24px 20px;
+  }
+  .masthead-inner{ max-width:1220px; margin:0 auto; }
+  .brand-row{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .brand-mark{ display:flex; align-items:center; gap:9px; font-family:var(--font-mono); font-weight:700; font-size:14px; letter-spacing:.03em; color:#F1F0EA; }
+  .brand-mark .dot{ width:8px; height:8px; border-radius:50%; background:#E3A34C; }
+  .mast-stats{ display:flex; gap:26px; flex-wrap:wrap; }
+  .mast-stat{ display:flex; align-items:center; gap:9px; }
+  .mast-stat .icon{ color:#E3A34C; }
+  .mast-stat b{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-size:17px; font-weight:700; display:block; }
+  .mast-stat span{ font-size:10.5px; color:#B7BAB3; text-transform:uppercase; letter-spacing:.06em; }
+  .mast-title{ font-size:clamp(24px,3.6vw,34px); font-weight:800; letter-spacing:-.01em; margin:18px 0 6px; text-wrap:balance; }
+  .mast-sub{ font-size:14px; color:#C4C6BE; max-width:70ch; margin:0; }
+
+  .tabs{ display:inline-flex; background:var(--surface-2); border:1px solid var(--line-strong); border-radius:999px; padding:3px; gap:2px; margin-bottom:26px; flex-wrap:wrap; }
+  .tab{ appearance:none; border:none; background:transparent; cursor:pointer; display:inline-flex; align-items:center; gap:7px; font-family:var(--font-sans); font-size:13.5px; font-weight:600; color:var(--ink-muted); padding:9px 20px; border-radius:999px; transition:background .15s ease, color .15s ease; }
+  .tab[aria-selected="true"]{ background:var(--accent); color:var(--accent-ink); }
+  .tab:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  .panel{ display:none; }
+  .panel.active{ display:block; animation:fade .25s ease; }
+  @keyframes fade{ from{ opacity:0; transform:translateY(4px);} to{ opacity:1; transform:translateY(0);} }
+
+  h2.section-title{ display:flex; align-items:center; gap:9px; font-size:15px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; margin:38px 0 14px; color:var(--ink); }
+  h2.section-title .icon{ color:var(--accent); }
+  h2.section-title:first-child{ margin-top:0; }
+  p.section-note{ font-size:13px; color:var(--ink-muted); margin:-8px 0 18px; max-width:78ch; }
+
+  .grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px; }
+  .card{ background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--city); border-radius:var(--radius); padding:18px 20px 20px; box-shadow:var(--shadow); transition:transform .15s ease; }
+  .card:hover{ transform:translateY(-2px); }
+  .card-head{ display:flex; align-items:center; gap:10px; justify-content:space-between; margin-bottom:4px; }
+  .city-id{ display:flex; align-items:center; gap:9px; }
+  .city-avatar{ width:30px; height:30px; border-radius:8px; background:var(--city); color:#fff; display:flex; align-items:center; justify-content:center; flex:none; }
+  .city-avatar .icon{ width:16px; height:16px; stroke:#fff; }
+  .city-name{ font-size:16.5px; font-weight:800; letter-spacing:-.01em; }
+  .dlg-count{ font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); white-space:nowrap; font-variant-numeric:tabular-nums; }
+
+  .chips{ display:flex; flex-wrap:wrap; gap:6px; margin:11px 0 13px; }
+  .chip{ font-size:11px; font-weight:700; letter-spacing:.01em; padding:4px 9px 4px 7px; border-radius:5px; display:inline-flex; align-items:center; gap:5px; }
+  .chip .icon{ width:12px; height:12px; }
+  .chip.crit{ background:var(--critical-bg); color:var(--critical); }
+  .chip.warn{ background:var(--warn-bg); color:var(--warn); }
+  .chip.good{ background:var(--good-bg); color:var(--good); }
+
+  .card ul.details{ margin:0 0 13px; padding-left:0; list-style:none; display:grid; gap:6px; }
+  .card ul.details li{ font-size:13.2px; color:var(--ink-muted); padding-left:14px; position:relative; }
+  .card ul.details li::before{ content:"·"; position:absolute; left:0; color:var(--city); font-weight:900; }
+  .card ul.details li b{ color:var(--ink); font-weight:600; }
+
+  .tagrow{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:13px; }
+  .tag{ font-family:var(--font-mono); font-size:10.5px; background:var(--surface-2); border:1px solid var(--line); color:var(--ink-muted); padding:3px 7px; border-radius:5px; }
+
+  .reco{ font-size:12.6px; border-top:1px solid var(--line); padding-top:11px; color:var(--ink); }
+  .reco span{ color:var(--ink-faint); text-transform:uppercase; font-size:10.5px; letter-spacing:.06em; display:block; margin-bottom:3px; }
+
+  .priority-list{ display:grid; gap:10px; }
+  .priority-item{ display:grid; grid-template-columns:auto 1fr auto; gap:14px; align-items:center; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:13px 16px; }
+  .priority-icon{ width:38px; height:38px; border-radius:9px; display:flex; align-items:center; justify-content:center; background:var(--rank-bg); color:var(--rank-fg); flex:none; }
+  .priority-title{ font-size:13.6px; font-weight:700; margin:0 0 3px; }
+  .priority-desc{ font-size:12.4px; color:var(--ink-muted); margin:0 0 5px; }
+  .priority-city{ font-family:var(--font-mono); font-size:10.5px; color:var(--ink-faint); }
+  .priority-badge{ font-family:var(--font-mono); font-size:11px; font-weight:800; color:#fff; background:var(--rank-bg); padding:5px 10px; border-radius:999px; white-space:nowrap; }
+
+  .two-col{ display:grid; grid-template-columns:1fr; gap:20px; }
+  @media (min-width:980px){ .two-col{ grid-template-columns:1.05fr 1fr; align-items:start; } }
+  .matrix-wrap{ overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
+  table.matrix{ border-collapse:collapse; width:100%; min-width:560px; }
+  table.matrix th, table.matrix td{ padding:11px 12px; text-align:center; border-bottom:1px solid var(--line); font-size:12.6px; }
+  table.matrix th{ font-size:10.8px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); font-weight:700; }
+  table.matrix td:first-child, table.matrix th:first-child{ text-align:left; font-weight:700; color:var(--ink); position:sticky; left:0; background:var(--surface); }
+  table.matrix tr:last-child td{ border-bottom:none; }
+  .status-ico{ display:inline-flex; }
+  .status-ico.good{ color:var(--good); }
+  .status-ico.warn{ color:var(--warn); }
+  .status-ico.crit{ color:var(--critical); }
+  .status-ico.none{ color:var(--ink-faint); }
+  .legend-row{ display:flex; flex-wrap:wrap; gap:14px; padding:13px 16px; border-top:1px solid var(--line); }
+  .legend-row .li{ display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--ink-muted); }
+
+  .overview-row{ display:grid; grid-template-columns:1fr; gap:16px; }
+  @media (min-width:760px){ .overview-row{ grid-template-columns:1fr 1fr; } }
+  .overview-card{ border-radius:var(--radius); padding:20px 22px; box-shadow:var(--shadow); border:1px solid var(--line); }
+  .overview-card.good{ background:var(--good-bg); border-color:color-mix(in srgb, var(--good) 35%, transparent); }
+  .overview-card.bad{ background:var(--critical-bg); border-color:color-mix(in srgb, var(--critical) 35%, transparent); }
+  .overview-head{ display:flex; align-items:center; gap:9px; margin-bottom:12px; }
+  .overview-head .icon{ width:22px; height:22px; }
+  .overview-card.good .overview-head{ color:var(--good); }
+  .overview-card.bad .overview-head{ color:var(--critical); }
+  .overview-head h3{ margin:0; font-size:14px; text-transform:uppercase; letter-spacing:.04em; }
+  .overview-card ul{ margin:0; padding-left:0; list-style:none; display:grid; gap:8px; }
+  .overview-card li{ font-size:13.6px; color:var(--ink); display:flex; gap:9px; align-items:flex-start; }
+  .overview-card li .icon{ margin-top:2px; }
+  .overview-card.good li .icon{ color:var(--good); }
+  .overview-card.bad li .icon{ color:var(--critical); }
+
+  .conclusion{ background:var(--surface); border:1px solid var(--line-strong); border-left:3px solid var(--accent); border-radius:var(--radius); padding:16px 20px; margin-top:16px; font-size:14px; color:var(--ink); display:flex; gap:12px; align-items:flex-start; }
+  .conclusion .icon{ color:var(--accent); margin-top:2px; flex:none; }
+  .conclusion b{ color:var(--accent); }
+
+  .problem-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px,1fr)); gap:14px; }
+  .problem-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow); }
+  .problem-num{ font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); }
+  .problem-head{ display:flex; align-items:center; gap:10px; margin:6px 0 8px; }
+  .problem-icon{ width:34px; height:34px; border-radius:8px; background:var(--critical-bg); color:var(--critical); display:flex; align-items:center; justify-content:center; flex:none; }
+  .problem-title{ font-size:13.6px; font-weight:700; margin:0; }
+  .problem-desc{ font-size:12.6px; color:var(--ink-muted); margin:0; }
+
+  .profile-wrap{ overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
+  table.profile{ border-collapse:collapse; width:100%; min-width:720px; }
+  table.profile th{ text-align:left; font-size:10.8px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); font-weight:700; padding:12px 16px; border-bottom:1px solid var(--line-strong); }
+  table.profile td{ padding:14px 16px; border-bottom:1px solid var(--line); vertical-align:top; font-size:13px; color:var(--ink-muted); }
+  table.profile tr:last-child td{ border-bottom:none; }
+  table.profile td.city-cell{ display:flex; align-items:center; gap:9px; font-weight:800; color:var(--ink); white-space:nowrap; }
+  table.profile td b.num{ color:var(--ink); font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+
+  footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); font-size:12px; color:var(--ink-faint); }
+  footer p{ max-width:90ch; }
+
+  /* ---------- comparison-tab specific ---------- */
+  .caveat-banner{ display:flex; gap:12px; align-items:flex-start; background:var(--warn-bg); border:1px solid color-mix(in srgb, var(--warn) 35%, transparent); border-radius:var(--radius); padding:14px 18px; margin:0 0 26px; font-size:13px; color:var(--ink); }
+  .caveat-banner .icon{ color:var(--warn); margin-top:2px; flex:none; }
+  .caveat-banner b{ color:var(--warn); }
+
+  .kpi-row{ display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr)); gap:16px; margin-bottom:8px; }
+  .kpi-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px; box-shadow:var(--shadow); }
+  .kpi-label{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); font-weight:700; margin-bottom:10px; }
+  .kpi-nums{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .kpi-then{ font-family:var(--font-mono); font-size:15px; color:var(--ink-faint); font-variant-numeric:tabular-nums; }
+  .kpi-arrow{ color:var(--ink-faint); }
+  .kpi-now{ font-family:var(--font-mono); font-size:26px; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums; }
+  .trend{ display:inline-flex; align-items:center; gap:4px; font-family:var(--font-mono); font-size:12px; font-weight:700; padding:3px 8px; border-radius:999px; margin-top:10px; }
+  .trend.good{ background:var(--good-bg); color:var(--good); }
+  .trend.bad{ background:var(--critical-bg); color:var(--critical); }
+  .trend.flat{ background:var(--neutral-bg); color:var(--ink-muted); }
+  .trend .icon{ width:13px; height:13px; }
+  .kpi-context{ font-size:11.5px; color:var(--ink-faint); margin-top:8px; }
+
+  .delta-wrap{ overflow-x:auto; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
+  table.delta{ border-collapse:collapse; width:100%; min-width:860px; }
+  table.delta th{ text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); font-weight:700; padding:11px 14px; border-bottom:1px solid var(--line-strong); }
+  table.delta td{ padding:13px 14px; border-bottom:1px solid var(--line); font-size:13px; vertical-align:middle; }
+  table.delta tr:last-child td{ border-bottom:none; }
+  table.delta td.city-cell{ display:flex; align-items:center; gap:9px; font-weight:800; color:var(--ink); white-space:nowrap; }
+  table.delta .metric-pair{ font-family:var(--font-mono); font-variant-numeric:tabular-nums; color:var(--ink-muted); white-space:nowrap; }
+  table.delta .metric-pair b{ color:var(--ink); }
+  table.delta .dchip{ display:inline-flex; align-items:center; gap:3px; font-family:var(--font-mono); font-size:11.5px; font-weight:800; padding:2px 7px; border-radius:999px; margin-left:8px; }
+  table.delta .dchip.good{ background:var(--good-bg); color:var(--good); }
+  table.delta .dchip.bad{ background:var(--critical-bg); color:var(--critical); }
+  table.delta .dchip.flat{ background:var(--neutral-bg); color:var(--ink-muted); }
+  table.delta .n-cell{ font-family:var(--font-mono); font-size:12px; color:var(--ink-faint); white-space:nowrap; }
+
+  .finding-cols{ display:grid; grid-template-columns:1fr; gap:16px; }
+  @media (min-width:900px){ .finding-cols{ grid-template-columns:1fr 1fr; } }
+  .finding-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px; box-shadow:var(--shadow); }
+  .finding-card h4{ display:flex; align-items:center; gap:8px; margin:0 0 13px; font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; }
+  .finding-card.persist h4{ color:var(--critical); }
+  .finding-card.improve h4{ color:var(--good); }
+  .finding-item{ display:flex; gap:10px; padding:11px 0; border-top:1px solid var(--line); }
+  .finding-item:first-of-type{ border-top:none; padding-top:0; }
+  .finding-item .icon{ flex:none; margin-top:2px; }
+  .finding-card.persist .finding-item .icon{ color:var(--critical); }
+  .finding-card.improve .finding-item .icon{ color:var(--good); }
+  .finding-item p{ margin:0; font-size:13px; color:var(--ink-muted); }
+  .finding-item p b{ color:var(--ink); font-weight:700; }
+</style>
+</head>
+<body>
+
+<svg style="display:none" aria-hidden="true">
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-4 4V5z"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18"/><line x1="9" y1="7" x2="9" y2="7.01"/><line x1="15" y1="7" x2="15" y2="7.01"/><line x1="9" y1="11" x2="9" y2="11.01"/><line x1="15" y1="11" x2="15" y2="11.01"/><line x1="9" y1="15" x2="15" y2="15"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="1.5"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24"><path d="M4 16v-3l2-5h12l2 5v3"/><path d="M4 16h16v2H4z"/><circle cx="7.5" cy="16.5" r="1.6"/><circle cx="16.5" cy="16.5" r="1.6"/></symbol>
+  <symbol id="i-van" viewBox="0 0 24 24"><path d="M3 16V8h11l4 4v4"/><path d="M3 16h18v1.5H3z"/><circle cx="7.5" cy="17" r="1.7"/><circle cx="17" cy="17" r="1.7"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></symbol>
+  <symbol id="i-diamond" viewBox="0 0 24 24"><path d="M4 9 8 3h8l4 6-10 12L4 9z"/><path d="M4 9h16M8 3l2 6-2 3M16 3l-2 6 2 3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline points="4 13 9 18 20 6"/></symbol>
+  <symbol id="i-cross" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3z"/><line x1="12" y1="10" x2="12" y2="14.5"/><line x1="12" y1="17" x2="12" y2="17.01"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.5 15 9l7 1-5 5 1.3 7L12 18.5 5.7 22 7 15 2 10l7-1 3-6.5z"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h8.4a2 2 0 0 0 2-1.6L22 7H6"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2 20 5v6c0 5-3.4 8.7-8 11-4.6-2.3-8-6-8-11V5l8-3z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.2-4 4-6 7.5-6s6.3 2 7.5 6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="20" y1="20" x2="15.3" y2="15.3"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 5h13l-3 4 3 4H5"/></symbol>
+  <symbol id="i-trend-up" viewBox="0 0 24 24"><polyline points="3 17 10 10 14 14 21 6"/><polyline points="15 6 21 6 21 12"/></symbol>
+  <symbol id="i-trend-down" viewBox="0 0 24 24"><polyline points="3 7 10 14 14 10 21 18"/><polyline points="15 18 21 18 21 12"/></symbol>
+  <symbol id="i-percent" viewBox="0 0 24 24"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="7.5" cy="7.5" r="2.3"/><circle cx="16.5" cy="16.5" r="2.3"/></symbol>
+  <symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 3v18M5 7h14M5 7 2 14a3 3 0 0 0 6 0L5 7zM19 7l-3 7a3 3 0 0 0 6 0l-3-7z"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+</svg>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand-row">
+      <div class="brand-mark"><span class="dot"></span>CARS&amp;GO · Клуб проката автомобилей</div>
+      <div class="mast-stats">
+        <div class="mast-stat"><svg class="icon"><use href="#i-chat"/></svg><div><b>381</b><span>диалогов</span></div></div>
+        <div class="mast-stat"><svg class="icon"><use href="#i-building"/></svg><div><b>5</b><span>городов</span></div></div>
+        <div class="mast-stat"><svg class="icon"><use href="#i-calendar"/></svg><div><b>9 дней</b><span>1–9 августа</span></div></div>
+      </div>
+    </div>
+    <h1 class="mast-title">Что говорят переписки менеджеров с клиентами</h1>
+    <p class="mast-sub">Август 2026 — чего не хватает в автопарке, как менеджеры продают, и что изменилось по сравнению с июлем.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="tabs" role="tablist" aria-label="Разделы отчёта">
+    <button class="tab" id="tab-fleet" role="tab" aria-selected="true" aria-controls="panel-fleet"><svg class="icon icon-sm"><use href="#i-car"/></svg>Автопарк</button>
+    <button class="tab" id="tab-sales" role="tab" aria-selected="false" aria-controls="panel-sales"><svg class="icon icon-sm"><use href="#i-cart"/></svg>Продажи</button>
+    <button class="tab" id="tab-trend" role="tab" aria-selected="false" aria-controls="panel-trend"><svg class="icon icon-sm"><use href="#i-scale"/></svg>Июль → Август</button>
+  </div>
+
+  <!-- ============ TAB 1 — АВТОПАРК ============ -->
+  <section id="panel-fleet" class="panel active" role="tabpanel" aria-labelledby="tab-fleet">
+
+    <p class="section-note"><b>Важно про период:</b> выгрузка охватывает только 1–9 августа (9 дней), а не весь месяц — данные свежие, но выборка меньше июльской в разы. По Москве и Красноярску (35 и 69 диалогов) выводы стоит читать с поправкой на небольшой объём.</p>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-building"/></svg>Пробелы по городам</h2>
+    <div class="grid">
+
+      <article class="card" style="--city:var(--city-ekb)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Екатеринбург</span></div>
+          <span class="dlg-count">100 диалогов</span>
+        </div>
+        <div class="chips">
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>3 пробела подтверждены</span>
+          <span class="chip warn"><svg class="icon"><use href="#i-warn"/></svg>Кабриолет — 1 экземпляр</span>
+        </div>
+        <ul class="details">
+          <li><b>Zeekr</b> и <b>Voyah Li9</b> — «нет», «Ли9 нет в автопарке» (Li7 отдельно просто занята)</li>
+          <li><b>Минивэн/7-местные</b> — целый сегмент отсутствует</li>
+          <li>Единственный кабриолет (Ford Mustang) — за него конкурируют 4-5 клиентов подряд</li>
+          <li>Потеряны горячие лиды: Dodge Challenger продан, Mercedes S63 AMG выбыл прямо во время торга</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Минивэн — приоритет; второй экземпляр кабриолета снял бы очередь.</div>
+      </article>
+
+      <article class="card" style="--city:var(--city-irk)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Иркутск</span></div>
+          <span class="dlg-count">74 диалога</span>
+        </div>
+        <div class="chips">
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>Минивэны — нет вообще</span>
+          <span class="chip warn"><svg class="icon"><use href="#i-warn"/></svg>«Свободных машин нет» ×5</span>
+        </div>
+        <ul class="details">
+          <li><b>Минивэны/микроавтобусы</b> — «таких автомобилей у нас в автопарке нет» (тот же пробел, что и в июле)</li>
+          <li>5 раз за 9 дней клиенту отвечают «из всего автопарка вообще нет свободных» — не дефицит класса, а нехватка машин под срочный спрос</li>
+          <li>Топовые премиум-SUV (Lexus GX460, Li L7) месяцами в помесячной аренде у постоянных клиентов — новым не остаётся</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Резерв 1-2 машин под срочный спрос день-в-день снял бы самую частую причину отказа.</div>
+      </article>
+
+      <article class="card" style="--city:var(--city-krsk)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Красноярск</span></div>
+          <span class="dlg-count">69 диалогов</span>
+        </div>
+        <div class="chips">
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>7-местные — нет вообще</span>
+          <span class="chip warn"><svg class="icon"><use href="#i-warn"/></svg>Бизнес/премиум ~15%</span>
+        </div>
+        <ul class="details">
+          <li><b>7-местный/минивэн класс</b> — за весь период ни разу не предложена ни одна модель</li>
+          <li>Бизнес/премиум (Mercedes, BMW, Land Cruiser) — «занят» систематически, почти каждый день выборки</li>
+          <li>Дважды «эконома нет», хотя эконом активно бронируется в других диалогах — похоже на невнимательность менеджера, не реальный дефицит</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Минивэн/7-местный — приоритет; отдельно стоит проверить качество консультаций по эконому.</div>
+      </article>
+
+      <article class="card" style="--city:var(--city-msk)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Москва</span></div>
+          <span class="dlg-count">35 диалогов</span>
+        </div>
+        <div class="chips">
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>4 пробела, нишевые</span>
+          <span class="chip warn"><svg class="icon"><use href="#i-warn"/></svg>Кабриолеты ~15%</span>
+        </div>
+        <ul class="details">
+          <li><b>Audi TT</b> — дважды разным клиентам «недоступна», похоже, выведена из парка</li>
+          <li><b>Dodge RAM TRX</b> — «не свободен до октября»; <b>Минивэны</b> как класс — «недоступны»</li>
+          <li>Cadillac Escalade/Tahoe нет — но корректно заменили на Mercedes GLS (тот же класс)</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Самый маленький объём выборки — держать в поле зрения, не спешить с закупкой на 35 диалогах.</div>
+      </article>
+
+      <article class="card" style="--city:var(--city-nsk)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Новосибирск</span></div>
+          <span class="dlg-count">103 диалога</span>
+        </div>
+        <div class="chips">
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>Voyah Dream выведен</span>
+          <span class="chip warn"><svg class="icon"><use href="#i-warn"/></svg>Эконом — самая частая жалоба</span>
+        </div>
+        <ul class="details">
+          <li><b>Voyah Dream</b> (премиум-минивэн) выведен из парка — подтверждено дважды</li>
+          <li><b>Эконом-класс</b> — «весь сегмент разбронирован» повторяется 6+ раз за 4 разных дня, самая громкая жалоба во всей выборке</li>
+          <li>Минивэны держатся только на одном Kia Carnival</li>
+          <li>Найдена путаница: BMW 530i то «нет в парке», то свободно предлагается другому клиенту</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Эконом — точно приоритет №1 здесь; стоит сверить актуальность парка между менеджерами.</div>
+      </article>
+
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-flag"/></svg>Что докупить — приоритеты и картина по классам</h2>
+    <div class="two-col">
+
+      <div class="priority-list">
+        <div class="priority-item" style="--rank-bg:var(--rank1); --rank-fg:#fff">
+          <span class="priority-icon"><svg class="icon"><use href="#i-van"/></svg></span>
+          <div><p class="priority-title">Минивэны / 7-местные</p><p class="priority-desc">Подтверждённое отсутствие в 4 из 5 городов — тот же пробел, что был и в июле. Самый убедительный сигнал во всём отчёте.</p><p class="priority-city">Екатеринбург, Иркутск, Красноярск, Москва</p></div>
+          <span class="priority-badge">№1</span>
+        </div>
+        <div class="priority-item" style="--rank-bg:var(--rank2); --rank-fg:#fff">
+          <span class="priority-icon"><svg class="icon"><use href="#i-car"/></svg></span>
+          <div><p class="priority-title">Эконом-класс</p><p class="priority-desc">Самая громкая и частая жалоба в Новосибирске, заметна и в Екатеринбурге по выходным.</p><p class="priority-city">Новосибирск, Екатеринбург</p></div>
+          <span class="priority-badge">№2</span>
+        </div>
+        <div class="priority-item" style="--rank-bg:var(--rank3); --rank-fg:#fff">
+          <span class="priority-icon"><svg class="icon"><use href="#i-bolt"/></svg></span>
+          <div><p class="priority-title">Премиальные электро (Zeekr / Voyah)</p><p class="priority-desc">Хронический паттерн — единственный экземпляр либо выведен, либо занят постоянно, и в июле, и в августе.</p><p class="priority-city">Екатеринбург, Новосибирск</p></div>
+          <span class="priority-badge">№3</span>
+        </div>
+        <div class="priority-item" style="--rank-bg:var(--rank4); --rank-fg:#fff">
+          <span class="priority-icon"><svg class="icon"><use href="#i-diamond"/></svg></span>
+          <div><p class="priority-title">Бизнес/премиум сегмент</p><p class="priority-desc">Систематическая занятость ~15% диалогов — не отсутствие класса, а нехватка юнитов.</p><p class="priority-city">Красноярск, Екатеринбург</p></div>
+          <span class="priority-badge">№4</span>
+        </div>
+        <div class="priority-item" style="--rank-bg:var(--rank5); --rank-fg:#fff">
+          <span class="priority-icon"><svg class="icon"><use href="#i-star"/></svg></span>
+          <div><p class="priority-title">Нишевые потери горячих лидов</p><p class="priority-desc">Разовые, но обидные: машина выбывает из парка прямо во время торга с клиентом.</p><p class="priority-city">Екатеринбург, Москва</p></div>
+          <span class="priority-badge">№5</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="matrix-wrap">
+          <table class="matrix">
+            <thead><tr><th>Город</th><th>Эконом</th><th>Минивэны/7мест</th><th>Электро</th><th>Бизнес/премиум</th><th>Кабриолеты</th></tr></thead>
+            <tbody>
+              <tr><td>Екатеринбург</td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+              </tr>
+              <tr><td>Иркутск</td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+              </tr>
+              <tr><td>Красноярск</td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+              </tr>
+              <tr><td>Москва</td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+              </tr>
+              <tr><td>Новосибирск</td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico good"><svg class="icon icon-sm"><use href="#i-check"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="legend-row">
+            <span class="li"><span class="status-ico good"><svg class="icon icon-sm"><use href="#i-check"/></svg></span>достаточно</span>
+            <span class="li"><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span>дефицит юнитов</span>
+            <span class="li"><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span>отсутствует в парке</span>
+            <span class="li"><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span>мало запросов / нет данных</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ TAB 2 — ПРОДАЖИ ============ -->
+  <section id="panel-sales" class="panel" role="tabpanel" aria-labelledby="tab-sales">
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-user"/></svg>Портрет отдела</h2>
+    <div class="overview-row">
+      <div class="overview-card good">
+        <div class="overview-head"><svg class="icon"><use href="#i-check"/></svg><h3>Сильная сторона</h3></div>
+        <ul>
+          <li><svg class="icon icon-sm"><use href="#i-check"/></svg>Закрывающий вопрос «Бронируем?» используется системно во всех городах</li>
+          <li><svg class="icon icon-sm"><use href="#i-check"/></svg>Персонализация постоянных клиентов — помнят историю, переносят бонусы/залог</li>
+          <li><svg class="icon icon-sm"><use href="#i-check"/></svg>Апсейл пакета снижения ответственности почти в каждой брони</li>
+          <li><svg class="icon icon-sm"><use href="#i-check"/></svg>Новосибирск — низкая доля брошенных лидов за счёт настойчивого фоллоу-апа</li>
+        </ul>
+      </div>
+      <div class="overview-card bad">
+        <div class="overview-head"><svg class="icon"><use href="#i-cross"/></svg><h3>Слабая сторона</h3></div>
+        <ul>
+          <li><svg class="icon icon-sm"><use href="#i-cross"/></svg>Лист ожидания на дефицитные заявки почти никогда не предлагается — во всех 5 городах</li>
+          <li><svg class="icon icon-sm"><use href="#i-cross"/></svg>Одна попытка контакта и тишина на части холодных лидов, особенно в Иркутске</li>
+          <li><svg class="icon icon-sm"><use href="#i-cross"/></svg>Медленный ответ на вечерние/ночные обращения — почти повсеместно</li>
+          <li><svg class="icon icon-sm"><use href="#i-cross"/></svg>Скидка предлагается раньше аргумента ценности</li>
+        </ul>
+      </div>
+    </div>
+    <div class="conclusion"><svg class="icon"><use href="#i-flag"/></svg><div><b>Главный вывод.</b> Команда хорошо закрывает уже тёплых клиентов, но систематически теряет тех, кому отказала из-за нехватки машины — ни разу за 381 диалог не встретилось «запишем вас, сообщим при освобождении».</div></div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-warn"/></svg>Топ-6 сквозных проблем продаж</h2>
+    <div class="problem-grid">
+      <div class="problem-card"><p class="problem-num">01</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-search"/></svg></span><p class="problem-title">Нет листа ожидания</p></div><p class="problem-desc">При отказе из-за занятости/отсутствия ни разу не предложили «сообщим, когда освободится» — во всех 5 городах.</p></div>
+      <div class="problem-card"><p class="problem-num">02</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-clock"/></svg></span><p class="problem-title">Одна попытка — и тишина</p></div><p class="problem-desc">Часть холодных лидов получает один ответ и больше не сопровождается, особенно заметно в Иркутске.</p></div>
+      <div class="problem-card"><p class="problem-num">03</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-percent"/></svg></span><p class="problem-title">Скидка вместо ценности</p></div><p class="problem-desc">На возражение по цене сразу дают скидку, без аргумента, за что клиент платит.</p></div>
+      <div class="problem-card"><p class="problem-num">04</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-clock"/></svg></span><p class="problem-title">Медленный вечерний ответ</p></div><p class="problem-desc">Сообщения после 20:00 почти всегда получают содержательный ответ только на следующее утро.</p></div>
+      <div class="problem-card"><p class="problem-num">05</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-warn"/></svg></span><p class="problem-title">Противоречивая информация</p></div><p class="problem-desc">Один и тот же автомобиль в одном треде то «доступен», то «занят» — путает клиента.</p></div>
+      <div class="problem-card"><p class="problem-num">06</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-bolt"/></svg></span><p class="problem-title">Нет ощущения срочности</p></div><p class="problem-desc">Даже при реальном дефиците (кабриолет, бизнес-класс) подача сухая, без «бронируйте сейчас».</p></div>
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-building"/></svg>Профиль по городам</h2>
+    <div class="profile-wrap">
+      <table class="profile">
+        <thead><tr><th>Город</th><th>Конверсия в бронь</th><th>Загасшие лиды</th><th>Отказ из-за нехватки</th><th>Заметка</th></tr></thead>
+        <tbody>
+          <tr><td class="city-cell"><span class="city-avatar" style="--city:var(--city-krsk); width:22px;height:22px;background:var(--city-krsk)"></span>Красноярск</td><td><b class="num">46.4%</b> — лучшая в выборке</td><td><b class="num">18.8%</b></td><td><b class="num">29.2%</b> отказов</td><td>Лучшая конверсия, но и высокая доля брошенных лидов — «бьётся за то, за что бьётся»</td></tr>
+          <tr><td class="city-cell"><span class="city-avatar" style="--city:var(--city-msk); width:22px;height:22px;background:var(--city-msk)"></span>Москва</td><td><b class="num">42.9%</b></td><td><b class="num">17.1%</b></td><td><b class="num">35.7%</b> отказов</td><td>Маленькая выборка (35) — читать с осторожностью</td></tr>
+          <tr><td class="city-cell"><span class="city-avatar" style="--city:var(--city-nsk); width:22px;height:22px;background:var(--city-nsk)"></span>Новосибирск</td><td><b class="num">39.8%</b></td><td><b class="num">7.8%</b> — лучшая в выборке</td><td><b class="num">24.1%</b> отказов</td><td>Меньше всех теряет лидов без ответа — заметный проактивный фоллоу-ап</td></tr>
+          <tr><td class="city-cell"><span class="city-avatar" style="--city:var(--city-ekb); width:22px;height:22px;background:var(--city-ekb)"></span>Екатеринбург</td><td><b class="num">38.0%</b></td><td><b class="num">16.0%</b></td><td><b class="num">28.3%</b> отказов</td><td>Стабильная середина по всем метрикам</td></tr>
+          <tr><td class="city-cell"><span class="city-avatar" style="--city:var(--city-irk); width:22px;height:22px;background:var(--city-irk)"></span>Иркутск</td><td><b class="num">23.0%</b> — худшая в выборке</td><td><b class="num">16.2%</b></td><td><b class="num">35.6%</b> отказов</td><td>Самая низкая конверсия — см. вкладку сравнения, картина неоднозначная</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+  <!-- ============ TAB 3 — СРАВНЕНИЕ ============ -->
+  <section id="panel-trend" class="panel" role="tabpanel" aria-labelledby="tab-trend">
+
+    <div class="caveat-banner">
+      <svg class="icon"><use href="#i-warn"/></svg>
+      <div><b>Про сопоставимость периодов.</b> Июль — это полный месяц, 1280 диалогов за 31 день. Август — только первые 9 дней, 381 диалог. Сетевые (общие по 5 городам) тренды на такой выборке уже читаемы, но по отдельным городам — особенно Москве (35 диалогов) и Красноярску (69) — пара-тройка диалогов туда-сюда двигают проценты на несколько пунктов. Ниже — то, что реально посчитано по обеим выгрузкам, без сглаживания.</div>
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-scale"/></svg>Сеть в целом: июль → август</h2>
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">Конверсия в бронь</div>
+        <div class="kpi-nums"><span class="kpi-then">38.1%</span><span class="kpi-arrow">→</span><span class="kpi-now">37.5%</span></div>
+        <div class="trend flat"><svg class="icon"><use href="#i-minus"/></svg>−0.6 п.п., без изменений</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Загасшие лиды (без ответа)</div>
+        <div class="kpi-nums"><span class="kpi-then">18.8%</span><span class="kpi-arrow">→</span><span class="kpi-now">14.4%</span></div>
+        <div class="trend good"><svg class="icon"><use href="#i-trend-down"/></svg>−4.4 п.п., лучше</div>
+        <div class="kpi-context">Главный сдвиг — почти весь эффект дают Красноярск и Иркутск (см. таблицу ниже)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Отказ из-за нехватки машины</div>
+        <div class="kpi-nums"><span class="kpi-then">34.4%</span><span class="kpi-arrow">→</span><span class="kpi-now">29.5%</span></div>
+        <div class="trend good"><svg class="icon"><use href="#i-trend-down"/></svg>−4.9 п.п., лучше</div>
+        <div class="kpi-context">Доля от всех отказов, где текст явно говорит о занятости/отсутствии</div>
+      </div>
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-building"/></svg>По городам</h2>
+    <div class="delta-wrap">
+      <table class="delta">
+        <thead><tr><th>Город</th><th>Диалогов</th><th>Конверсия</th><th>Загасшие</th><th>Отказ из-за нехватки</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="width:22px;height:22px;background:var(--city-ekb)"></span>Екатеринбург</td>
+            <td class="n-cell">406 → 100</td>
+            <td class="metric-pair">37.4→<b>38.0%</b><span class="dchip flat">+0.6</span></td>
+            <td class="metric-pair">8.4→<b>16.0%</b><span class="dchip bad">+7.6</span></td>
+            <td class="metric-pair">34.5→<b>28.3%</b><span class="dchip good">−6.2</span></td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="width:22px;height:22px;background:var(--city-irk)"></span>Иркутск</td>
+            <td class="n-cell">190 → 74</td>
+            <td class="metric-pair">33.2→<b>23.0%</b><span class="dchip bad">−10.2</span></td>
+            <td class="metric-pair">36.3→<b>16.2%</b><span class="dchip good">−20.1</span></td>
+            <td class="metric-pair">55.2→<b>35.6%</b><span class="dchip good">−19.6</span></td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="width:22px;height:22px;background:var(--city-krsk)"></span>Красноярск</td>
+            <td class="n-cell">237 → 69</td>
+            <td class="metric-pair">42.2→<b>46.4%</b><span class="dchip good">+4.2</span></td>
+            <td class="metric-pair">38.0→<b>18.8%</b><span class="dchip good">−19.2</span></td>
+            <td class="metric-pair">46.8→<b>29.2%</b><span class="dchip good">−17.6</span></td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="width:22px;height:22px;background:var(--city-msk)"></span>Москва</td>
+            <td class="n-cell">152 → 35</td>
+            <td class="metric-pair">32.9→<b>42.9%</b><span class="dchip good">+10.0</span></td>
+            <td class="metric-pair">15.1→<b>17.1%</b><span class="dchip flat">+2.0</span></td>
+            <td class="metric-pair">31.6→<b>35.7%</b><span class="dchip flat">+4.1</span></td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="width:22px;height:22px;background:var(--city-nsk)"></span>Новосибирск</td>
+            <td class="n-cell">295 → 103</td>
+            <td class="metric-pair">41.7→<b>39.8%</b><span class="dchip flat">−1.9</span></td>
+            <td class="metric-pair">8.1→<b>7.8%</b><span class="dchip flat">−0.3</span></td>
+            <td class="metric-pair">23.6→<b>24.1%</b><span class="dchip flat">+0.5</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-car"/></svg>Автопарк: что решилось, что нет</h2>
+    <div class="finding-cols">
+      <div class="finding-card persist">
+        <h4><svg class="icon icon-sm"><use href="#i-cross"/></svg>Не изменилось за 2 месяца</h4>
+        <div class="finding-item"><svg class="icon icon-sm"><use href="#i-van"/></svg><p><b>Минивэны/7-местные</b> — подтверждённое «нет в парке» звучало в Екатеринбурге, Иркутске, Красноярске и Москве и в июле, и в августе. Это не совпадение выборки — самый устойчивый сигнал во всём отчёте за оба месяца.</p></div>
+        <div class="finding-item"><svg class="icon icon-sm"><use href="#i-bolt"/></svg><p><b>Единственный экземпляр премиум-электро</b> (Zeekr/Voyah) — в июле фигурировал как «выведен/постоянно занят» в Новосибирске и Иркутске, в августе снова: Zeekr нет в Екатеринбурге, Voyah Dream выведен в Новосибирске. Компания явно не масштабирует этот сегмент, хотя спрос точечно, но стабильно есть.</p></div>
+        <div class="finding-item"><svg class="icon icon-sm"><use href="#i-search"/></svg><p>Лист ожидания на дефицитные заявки — по-прежнему не используется ни в одном городе, ни в одном месяце.</p></div>
+      </div>
+      <div class="finding-card improve">
+        <h4><svg class="icon icon-sm"><use href="#i-check"/></svg>Похоже на улучшение</h4>
+        <div class="finding-item"><svg class="icon icon-sm"><use href="#i-car"/></svg><p><b>Жалобы на нехватку дизельных моделей</b> — в июле это была громкая, повторяющаяся тема в Новосибирске, Иркутске и Екатеринбурге («дизель на вес золота», «весь дизель забронирован до конца месяца»). В августовской выборке (все 5 городов) дизель не упомянут как проблема ни разу. Осторожно: окно всего 9 дней, отсутствие жалоб — не то же самое, что доказанное решение, но сигнал заметный.</p></div>
+        <div class="finding-item"><svg class="icon icon-sm"><use href="#i-warn"/></svg><p>Новый, разовый кейс в Красноярске — на запрос «японский» предложили китайский Tank 300 (несовпадение по бренду). Не паттерн, единичный случай, но раньше такого не отмечалось.</p></div>
+      </div>
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-user"/></svg>Менеджеры: что решилось, что нет</h2>
+    <div class="finding-cols">
+      <div class="finding-card improve">
+        <h4><svg class="icon icon-sm"><use href="#i-check"/></svg>Похоже на улучшение</h4>
+        <div class="finding-item"><svg class="icon icon-sm"><use href="#i-trend-down"/></svg><p>Доля загасших лидов по сети упала почти вдвое (18.8%→14.4%). Основной вклад — <b>Красноярск</b> (38.0%→18.8%) и <b>Иркутск</b> (36.3%→16.2%) — ровно те два города, где июльский разбор чатов прямо называл «одна попытка контакта и тишина» главной проблемой продаж. Похоже на реальное исправление поведения, а не случайное колебание — эффект слишком большой и в обоих городах сразу.</p></div>
+        <div class="finding-item"><svg class="icon icon-sm"><use href="#i-star"/></svg><p><b>Новосибирск</b> стабильно лучший по этой метрике оба месяца (8.1%→7.8%) — их шаблон повторного контакта («Видим, что вы заходили в личный кабинет...») стоит разобрать как образец для остальных городов.</p></div>
+      </div>
+      <div class="finding-card persist">
+        <h4><svg class="icon icon-sm"><use href="#i-warn"/></svg>Не решено / под вопросом</h4>
+        <div class="finding-item"><svg class="icon icon-sm"><use href="#i-clock"/></svg><p>Медленный ответ на вечерние/ночные сообщения — универсальная проблема в обоих периодах, во всех городах без исключения.</p></div>
+        <div class="finding-item"><svg class="icon icon-sm"><use href="#i-search"/></svg><p><b>Иркутск — открытый вопрос.</b> Загасшие лиды и отказы из-за нехватки машин заметно снизились, но конверсия в бронь при этом упала (33.2%→23.0%). Меньше отказов «нет машины», меньше брошенных лидов — а бронирований в итоге меньше. Причина не видна напрямую из переписок (возможно, сезонность спроса в начале августа или более сложный состав обращений); отмечаем как факт, не додумываем объяснение.</p></div>
+      </div>
+    </div>
+
+  </section>
+
+  <footer>
+    <p>Источники: <code>Чаты итог июль.xlsx</code> (лист «История чатов», 1280 диалогов, 1–31 июля 2026) и <code>выгрузка август.xlsx</code> (381 диалог, 1–9 августа 2026). Конверсия и доля загасших лидов посчитаны напрямую по колонке «Статус». «Отказ из-за нехватки» — доля диалогов со статусом «Отказ», где текст переписки содержит явные признаки занятости/отсутствия машины (регекс по ключевым словам, ручная проверка на выборке). Фактические пробелы в парке и оценки менеджеров получены построчным прочтением переписок по каждому городу отдельно. Ни один процент в этом отчёте не выдуман — если оценка качественная (не посчитана), это указано текстом, а не числом.</p>
+  </footer>
+</div>
+
+<script>
+  const tabs = [
+    ['tab-fleet','panel-fleet'],
+    ['tab-sales','panel-sales'],
+    ['tab-trend','panel-trend'],
+  ];
+  tabs.forEach(([tabId, panelId]) => {
+    document.getElementById(tabId).addEventListener('click', () => {
+      tabs.forEach(([t, p]) => {
+        const active = t === tabId;
+        document.getElementById(t).setAttribute('aria-selected', active ? 'true' : 'false');
+        document.getElementById(p).classList.toggle('active', active);
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
