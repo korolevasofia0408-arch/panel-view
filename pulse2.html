@@ -125,6 +125,21 @@
   .meter-pace{ position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--text-primary); }
   .meter-legend{ display:flex; justify-content:space-between; font-size:10.5px; color:var(--text-muted); margin-bottom:4px; }
 
+  /* ---- deviation bar: for metrics where "план" is a baseline/midpoint and "факт" drifts above
+     or below it (e.g. "Уже имеющиеся брони"), not a 0-to-target pace metric. Centre = план,
+     fill grows left (critical) or right (good) from centre by the deviation %. ---- */
+  .dev-track{ position:relative; height:14px; border-radius:7px; background:var(--gridline); margin:12px 0 5px; overflow:hidden; }
+  .dev-track.sm{ height:8px; margin:8px 0 0; border-radius:4px; }
+  .dev-center{ position:absolute; left:50%; top:-3px; bottom:-3px; width:2px; background:var(--text-primary); z-index:1; }
+  .dev-fill{ position:absolute; top:0; height:100%; transition:width .2s, left .2s; }
+  .dev-fill.good{ background:var(--good); }
+  .dev-fill.critical{ background:var(--critical); }
+  .dev-legend{ display:flex; justify-content:space-between; font-size:10.5px; color:var(--text-muted); margin-bottom:4px; }
+  .dev-sum{ font-size:12px; margin-top:2px; }
+  .dev-sum b{ font-variant-numeric:tabular-nums; }
+  .dev-sum b.up{ color:var(--good); }
+  .dev-sum b.down{ color:var(--critical); }
+
   /* ---- month-over-month mini bar chart ---- */
   .mcompare{ display:flex; gap:16px; align-items:flex-end; height:70px; margin-top:6px; padding-top:18px; }
   .mcompare .mc-col{ flex:1; max-width:70px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; }
@@ -331,12 +346,49 @@ function paceCard(el, title, monthMetric, unit, fmt){
   `;
 }
 
+// For metrics where "план" is a fixed baseline and "факт" drifts above or below it during the
+// month (e.g. "Уже имеющиеся брони" -- revenue from bookings made before the period even started,
+// so it isn't a 0-to-target pace metric, it moves as those pre-existing bookings get cancelled or
+// added to). Shows the actual deviation sum, not a percent-of-plan progress bar.
+function deviationCard(el, monthMetric, fmt){
+  const {plan, fact} = monthMetric;
+  const delta = fact - plan;
+  const deltaPct = plan ? delta/plan*100 : null;
+  const status = delta>=0 ? 'good' : 'critical';
+  const pctText = deltaPct!=null ? (delta>=0?'+':'')+deltaPct.toFixed(1)+'%' : '—';
+
+  // Cap the visible bar at +-50% so one outlier city doesn't flatten the scale for everyone else
+  // -- the exact rouble sum is always in the text regardless of how the bar is capped.
+  const capPct = deltaPct==null ? 0 : Math.max(-50, Math.min(50, deltaPct));
+  const fillStyle = capPct>=0
+    ? `left:50%; width:${capPct/2}%;`
+    : `left:${50+capPct/2}%; width:${-capPct/2}%;`;
+
+  const yoy = monthMetric.__path ? yoyFor(state.month, monthMetric.__path[1]) : null;
+  const yoyHtml = yoy && yoy.deltaPct!=null
+    ? `<div class="yoy-note">к ${state.month.replace('2026','2025')}: <b class="${yoy.deltaPct>=0?'up':'down'}">${yoy.deltaPct>=0?'+':''}${(yoy.deltaPct*100).toFixed(1)}%</b></div>` : '';
+
+  el.innerHTML = `
+    <div class="mini-row">
+      <span><span class="mini-label">План (базовое значение)</span> <b>${fmt(plan)}</b></span>
+      <span><span class="mini-label">Факт</span> <b>${fmt(fact)}</b></span>
+      <span class="status-pill sm ${status}">${pctText}</span>
+    </div>
+    <div class="dev-track sm">
+      <div class="dev-center"></div>
+      <div class="dev-fill ${status}" style="${fillStyle}"></div>
+    </div>
+    <div class="dev-sum">Отклонение от плана: <b class="${status==='good'?'up':'down'}">${delta>=0?'+':'−'}${fmt(Math.abs(delta))}</b></div>
+    ${yoyHtml}
+  `;
+}
+
 function renderSimple(suffix){
   const ren = sumMetric(state.month, ['total','renewals']); ren.__path=['total','renewals'];
   paceCard(document.getElementById('m-renewals'+suffix), 'Продления', ren, 'rub', fmtRubShort);
 
   const ae = sumMetric(state.month, ['total','alreadyExisting']); ae.__path=['total','alreadyExisting'];
-  paceCard(document.getElementById('m-already'+suffix), 'Уже имеющиеся брони', ae, 'rub', fmtRubShort);
+  deviationCard(document.getElementById('m-already'+suffix), ae, fmtRubShort);
 }
 
 // Sums a per-city weekly array (5 slots, null past the elapsed weeks) across selected cities.
@@ -740,7 +792,7 @@ function cityCardShellHtml(city){
         <section class="card"><h2>Выручка — по неделям</h2><div class="hint">Оба месяца рядом — сравнивайте недели без переключения</div><div id="m-revenue${suf}"></div></section>
         <div class="detail-grid">
           <section class="card"><h2>Продления</h2><div class="hint">Запланированные продления существующих аренд</div><div id="m-renewals${suf}"></div></section>
-          <section class="card"><h2>Уже имеющиеся брони</h2><div class="hint">Выручка, гарантированная бронями до начала месяца</div><div id="m-already${suf}"></div></section>
+          <section class="card"><h2>Уже имеющиеся брони</h2><div class="hint">План — базовое значение на начало месяца; факт отклоняется от него по мере отмен/довесков в уже сделанных бронях</div><div id="m-already${suf}"></div></section>
           <section class="card"><h2>Конверсия</h2><div class="hint">Из заявки в бронь</div><div id="m-conv${suf}"></div></section>
           <section class="card"><h2>% отмен и % будущих броней</h2><div class="hint">Только общие — источник не делит по новым/постоянным</div><div id="m-pctpair${suf}"></div></section>
           <section class="card"><h2>Кол-во и выручка на текущий период</h2><div class="hint">Брони, приходящиеся на выбранный месяц</div><div id="m-current${suf}"></div></section>
