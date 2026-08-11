@@ -155,12 +155,6 @@
   .stack-legend .sw{ display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px; vertical-align:middle; }
   .stack-legend b{ color:var(--text-primary); font-variant-numeric:tabular-nums; }
 
-  /* ---- rate gauge (percent with a plan tick) ---- */
-  .gauge-track{ position:relative; height:10px; border-radius:5px; background:var(--gridline); margin:8px 0 2px; }
-  .gauge-track.sm{ height:7px; margin:6px 0 0; }
-  .gauge-fill{ position:absolute; left:0; top:0; height:100%; border-radius:5px; background:var(--accent); }
-  .gauge-plan-tick{ position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--text-primary); }
-
   /* ---- small twin bars (plan vs fact) ---- */
 
   /* ---- sticky toolbar ---- */
@@ -189,10 +183,18 @@
 
   /* ---- weekly revenue: hero area chart (gradient fill, line, endpoint dots) ---- */
   .week-area-chart{ display:block; width:100%; height:210px; overflow:visible; }
-  .week-chart-legend{ display:flex; gap:18px; margin-top:6px; font-size:11.5px; color:var(--text-secondary); }
-  .week-chart-legend .lk{ display:inline-block; width:16px; height:0; border-top:2.5px solid var(--accent); margin-right:6px; vertical-align:middle; }
+  .week-chart-legend{ display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; font-size:11.5px; color:var(--text-secondary); }
+  .week-chart-legend button.lk-toggle{
+    display:inline-flex; align-items:center; gap:6px; font:inherit; font-size:11.5px; color:var(--text-secondary);
+    background:var(--chip-bg); border:1px solid transparent; border-radius:999px; padding:4px 10px 4px 8px; cursor:pointer;
+  }
+  .week-chart-legend button.lk-toggle:hover{ background:var(--chip-bg-hover); }
+  .week-chart-legend button.lk-toggle.off{ opacity:.45; }
+  .week-chart-legend button.lk-toggle.off .lk{ opacity:.5; }
+  .week-chart-legend .lk{ display:inline-block; width:16px; height:0; border-top:2.5px solid var(--accent); vertical-align:middle; }
   .week-chart-legend .lk.dashed{ border-top:2px dashed var(--text-muted); }
   .week-chart-legend .lk.dotted{ border-top:2px dotted var(--series-2); }
+  .week-chart-legend .lk.plandash{ border-top:2px dashed var(--series-3); }
   .yoy-note{ font-size:11.5px; color:var(--text-secondary); margin-top:6px; }
   .yoy-note b{ font-variant-numeric:tabular-nums; }
   .yoy-note b.up{ color:var(--good); }
@@ -275,6 +277,11 @@ const state = { month: MONTHS[MONTHS.length-1] };
 // KPI strip and anything else rendered with no city context set.
 let cityRenderCtx = null;
 function selectedCities(){ return cityRenderCtx ? [cityRenderCtx] : CITIES; }
+
+// Global on/off state for the weekly revenue chart's series -- shared across every city's chart
+// (not per-instance) since "hide the previous-month line" is a reading preference, not a
+// per-city setting. Survives re-renders same way expandedCities does.
+const seriesVisible = { cur:true, prev:true, plan:true, yoy:true };
 
 function elapsedFraction(monthKey){
   const cities = selectedCities();
@@ -383,6 +390,42 @@ function deviationCard(el, monthMetric, fmt){
   `;
 }
 
+// Same "план is a fixed reference point, факт can sit above or below it" treatment as
+// deviationCard(), for rate metrics (конверсия, % отмен, % будущих броней) -- these were on a
+// 0-to-fact gauge with a plan tick mark, which is closer to right than the old pace-bar already
+// was, but still didn't show the actual point-deviation as a number. Deviation is in percentage
+// points (факт% - план%), not a relative %, since these are already percentages themselves --
+// "+5 п.п." reads directly, "+25%" of a percentage would just confuse plan and fact's own scale.
+// opts.invert: true when higher-than-plan is the BAD direction (cancellations, future-bookings
+// leakage) rather than the default GOOD direction (conversion).
+function deviationRateCard(plan, fact, opts){
+  opts = opts || {};
+  const planPct = plan*100, factPct = fact*100;
+  const deltaPP = factPct - planPct;
+  const isFiniteDelta = isFinite(deltaPP);
+  const good = isFiniteDelta ? (opts.invert ? deltaPP<=0 : deltaPP>=0) : true;
+  const status = good ? 'good' : 'critical';
+  const ppText = isFiniteDelta ? (deltaPP>=0?'+':'')+deltaPP.toFixed(1)+' п.п.' : '—';
+
+  const capPP = Math.max(-15, Math.min(15, isFiniteDelta ? deltaPP : 0));
+  const halfWidth = Math.abs(capPP)/15*50;
+  const fillStyle = capPP>=0
+    ? `left:50%; width:${halfWidth}%;`
+    : `left:${50-halfWidth}%; width:${halfWidth}%;`;
+
+  return `
+    <div class="mini-row">
+      <span><span class="mini-label">План</span> <b>${fmtPct(planPct,1)}</b></span>
+      <span><span class="mini-label">Факт</span> <b>${fmtPct(factPct,1)}</b></span>
+      <span class="status-pill sm ${status}">${ppText}</span>
+    </div>
+    <div class="dev-track sm">
+      <div class="dev-center"></div>
+      <div class="dev-fill ${status}" style="${fillStyle}"></div>
+    </div>
+  `;
+}
+
 function renderSimple(suffix){
   const ren = sumMetric(state.month, ['total','renewals']); ren.__path=['total','renewals'];
   paceCard(document.getElementById('m-renewals'+suffix), 'Продления', ren, 'rub', fmtRubShort);
@@ -399,6 +442,25 @@ function weeklyAggregate(monthKey, metric){
     arrs.forEach(a => { if(a[i] != null) sum = (sum||0) + a[i]; });
     return sum;
   });
+}
+// Prorates a monthly plan total across the 5 RNP weeks by each week's ACTUAL day count, not an
+// even 1/5 split -- RNP's own week boundaries are uneven (e.g. August week 1 is only 1-2 Aug,
+// while week 2 runs 3-9 Aug), so a flat split would make short weeks look like they're
+// underperforming and long weeks look like they're overperforming for no real reason. Week
+// ranges are read from the first selected city since they're identical across all 6 city sheets
+// within a given month (verified against raw cells in an earlier pass).
+function weeklyPlanSeries(monthKey, planTotal){
+  const cities = selectedCities();
+  if(!cities.length || !planTotal) return [null,null,null,null,null];
+  const wr = DATA[monthKey][cities[0]].weekRanges;
+  if(!wr) return [null,null,null,null,null];
+  const daysArr = wr.map(w => {
+    if(!w || !w[0]) return null;
+    if(!w[1]) return 1;
+    return Math.round((new Date(w[1]) - new Date(w[0])) / 86400000) + 1;
+  });
+  const totalDays = daysArr.reduce((s,d) => s + (d||0), 0) || 1;
+  return daysArr.map(d => d!=null ? planTotal * d/totalDays : null);
 }
 function weekRangeLabel(monthKey, idx){
   const shortDate = d => new Date(d).toLocaleDateString('ru-RU', {day:'2-digit', month:'2-digit'});
@@ -432,9 +494,9 @@ function prevMonthOf(monthKey){
 // yoy2025 is a single flat weekly-average figure (RNP gives no per-week shape for 2025) -- drawn
 // as a dotted horizontal reference line, deliberately styled differently from both other series
 // so it can't be mistaken for a real week-by-week trend.
-function weeklyCompareChartSvg(curVals, prevVals, curLabel, prevLabel, yoy2025, uid, fmt){
+function weeklyCompareChartSvg(curVals, prevVals, planVals, curLabel, prevLabel, yoy2025, uid, fmt){
   const n = 5;
-  const known = [...curVals, ...prevVals].filter(v=>v!=null);
+  const known = [...curVals, ...prevVals, ...(planVals||[])].filter(v=>v!=null);
   if(known.length < 2) return '<div class="empty-note">Недостаточно недель для графика</div>';
   const W = 900, H = 210, padL = 16, padR = 16, padT = 34, padB = 30;
   const maxV = Math.max(...known, yoy2025||0, 1);
@@ -444,7 +506,7 @@ function weeklyCompareChartSvg(curVals, prevVals, curLabel, prevLabel, yoy2025, 
   const baseline = H-padB;
 
   const ptsOf = vals => { const out=[]; vals.forEach((v,i)=>{ if(v!=null) out.push([xAt(i), yAt(v), v]); }); return out; };
-  const curPts = ptsOf(curVals), prevPts = ptsOf(prevVals);
+  const curPts = ptsOf(curVals), prevPts = ptsOf(prevVals), planPts = ptsOf(planVals||[]);
   const lineD = pts => pts.map((p,i) => (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
   const areaD = pts => pts.length ? lineD(pts) + ` L${pts[pts.length-1][0].toFixed(1)},${baseline} L${pts[0][0].toFixed(1)},${baseline} Z` : '';
 
@@ -453,22 +515,34 @@ function weeklyCompareChartSvg(curVals, prevVals, curLabel, prevLabel, yoy2025, 
   const prevLine = prevPts.length>1 ? `<path d="${lineD(prevPts)}" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-dasharray="5,4" stroke-linejoin="round" stroke-linecap="round"></path>` : '';
   const prevDots = prevPts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="var(--surface-1)" stroke="var(--text-muted)" stroke-width="2"></circle>`).join('');
   const prevLabels = prevPts.map(p => `<text x="${p[0].toFixed(1)}" y="${(p[1]+16).toFixed(1)}" font-size="9.5" text-anchor="middle" fill="var(--text-muted)">${fmt(p[2])}</text>`).join('');
+  const prevGroup = prevPts.length ? `<g class="s-toggle" ${seriesVisible.prev?'':'style="display:none"'}>${prevLine}${prevDots}${prevLabels}</g>` : '';
 
   const curArea = curPts.length ? `<path d="${areaD(curPts)}" fill="url(#revGrad${uid})" stroke="none"></path>` : '';
   const curLine = curPts.length>1 ? `<path d="${lineD(curPts)}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></path>` : '';
   const curDots = curPts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="4" fill="var(--surface-1)" stroke="var(--accent)" stroke-width="2.5"></circle>`).join('');
   const curLabels = curPts.map(p => `<text x="${p[0].toFixed(1)}" y="${(p[1]-11).toFixed(1)}" font-size="10.5" font-weight="700" text-anchor="middle" fill="var(--text-primary)">${fmt(p[2])}</text>`).join('');
+  const curGroup = curPts.length ? `<g class="s-toggle" ${seriesVisible.cur?'':'style="display:none"'}>${curArea}${curLine}${curDots}${curLabels}</g>` : '';
+
+  // Plan, prorated per week by that week's actual day count (RNP's own week boundaries aren't
+  // even -- e.g. August's week 1 is only 1-2 Aug -- so a flat plan/5 would misrepresent short
+  // weeks as underperforming and long weeks as overperforming for no real reason).
+  const planLine = planPts.length>1 ? `<path d="${lineD(planPts)}" fill="none" stroke="var(--series-3)" stroke-width="2" stroke-dasharray="7,3" stroke-linejoin="round" stroke-linecap="round"></path>` : '';
+  const planDots = planPts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="var(--surface-1)" stroke="var(--series-3)" stroke-width="2"></circle>`).join('');
+  const planGroup = planPts.length ? `<g class="s-toggle" ${seriesVisible.plan?'':'style="display:none"'}>${planLine}${planDots}</g>` : '';
 
   const yoyY = yoy2025!=null ? yAt(yoy2025) : null;
   const yoyLine = yoyY!=null ? `<line x1="${padL}" y1="${yoyY.toFixed(1)}" x2="${W-padR}" y2="${yoyY.toFixed(1)}" stroke="var(--series-2)" stroke-width="1.75" stroke-dasharray="1,4" stroke-linecap="round"></line>` : '';
   const yoyLabel = yoyY!=null ? `<text x="${W-padR}" y="${(yoyY-6).toFixed(1)}" font-size="10" font-weight="700" text-anchor="end" fill="var(--series-2)">2025: ${fmt(yoy2025)}/нед</text>` : '';
+  const yoyGroup = yoyY!=null ? `<g class="s-toggle" ${seriesVisible.yoy?'':'style="display:none"'}>${yoyLine}${yoyLabel}</g>` : '';
 
-  const legend = (prevPts.length || yoyY!=null) ? `
-    <div class="week-chart-legend">
-      <span><span class="lk solid"></span>${curLabel}</span>
-      ${prevPts.length ? `<span><span class="lk dashed"></span>${prevLabel} (для сравнения)</span>` : ''}
-      ${yoyY!=null ? `<span><span class="lk dotted"></span>2025 (в среднем/нед, без формы по неделям)</span>` : ''}
-    </div>` : '';
+  const toggleBtn = (key, lkClass, label) => `<button type="button" class="lk-toggle ${seriesVisible[key]?'':'off'}" data-series="${key}"><span class="lk ${lkClass}"></span>${label}</button>`;
+  const legendItems = [
+    curPts.length ? toggleBtn('cur','solid', curLabel) : '',
+    prevPts.length ? toggleBtn('prev','dashed', prevLabel+' (для сравнения)') : '',
+    planPts.length ? toggleBtn('plan','plandash', 'План (по дням недели)') : '',
+    yoyY!=null ? toggleBtn('yoy','dotted', '2025 (в среднем/нед, без формы по неделям)') : '',
+  ].filter(Boolean).join('');
+  const legend = legendItems ? `<div class="week-chart-legend">${legendItems}</div>` : '';
 
   return `
     <svg class="week-area-chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
@@ -479,16 +553,11 @@ function weeklyCompareChartSvg(curVals, prevVals, curLabel, prevLabel, yoy2025, 
         </linearGradient>
       </defs>
       <line x1="${padL}" y1="${baseline}" x2="${W-padR}" y2="${baseline}" stroke="var(--baseline)" stroke-width="1"></line>
-      ${curArea}
-      ${yoyLine}
-      ${prevLine}
-      ${curLine}
-      ${prevDots}
-      ${curDots}
-      ${prevLabels}
-      ${curLabels}
+      ${yoyGroup}
+      ${planGroup}
+      ${prevGroup}
+      ${curGroup}
       ${weekAxisLabels}
-      ${yoyLabel}
     </svg>
     ${legend}
   `;
@@ -513,6 +582,7 @@ function renderRevenueWeekly(suffix){
   const curWeekly = weeklyAggregate(state.month, 'revenue');
   const prevMonth = prevMonthOf(state.month);
   const prevWeekly = prevMonth ? weeklyAggregate(prevMonth, 'revenue') : [null,null,null,null,null];
+  const planWeekly = weeklyPlanSeries(state.month, rev.plan);
   const yoy = yoyFor(state.month, 'revenue');
 
   el.innerHTML = `
@@ -522,8 +592,8 @@ function renderRevenueWeekly(suffix){
       <div class="stat-tile"><div class="stat-label">Темп</div><div class="stat-value"><span class="status-pill ${status}">${fmtPct(ratio*100,0)}</span></div></div>
     </div>
     ${meterBarHtml(rev.fact, rev.plan, frac, status)}
-    <div class="hint" style="margin:14px 0 0;">По неделям, оба месяца на одной шкале — так видно, в какую неделю была просадка, а в какую рост</div>
-    ${weeklyCompareChartSvg(curWeekly, prevWeekly, state.month, prevMonth || '', yoy ? yoy.weeklyAvg2025 : null, suffix.replace(/[^a-zA-Zа-яА-Я0-9]/g,''), fmtRubShort)}
+    <div class="hint" style="margin:14px 0 0;">По неделям, оба месяца на одной шкале — так видно, в какую неделю была просадка, а в какую рост. Линии можно включать/выключать в легенде под графиком.</div>
+    ${weeklyCompareChartSvg(curWeekly, prevWeekly, planWeekly, state.month, prevMonth || '', yoy ? yoy.weeklyAvg2025 : null, suffix.replace(/[^a-zA-Zа-яА-Я0-9]/g,''), fmtRubShort)}
     ${yoy && yoy.deltaPct!=null ? `<div class="yoy-note">К ${state.month.replace('2026','2025')} (по темпу в неделю): <b class="${yoy.deltaPct>=0?'up':'down'}">${yoy.deltaPct>=0?'+':''}${(yoy.deltaPct*100).toFixed(1)}%</b> · весь месяц тогда — ${fmtRubShort(yoy.value2025)}</div>` : ''}
     <div class="hint" style="margin:16px 0 0;">Доля новых и повторных клиентов в выручке текущего периода</div>
     ${(() => {
@@ -533,6 +603,14 @@ function renderRevenueWeekly(suffix){
         `Постоянные: ${fmtNum(segs.repeat.count.fact)} · ${fmtRubShort(segs.repeat.rub.fact)}`);
     })()}
   `;
+  el.querySelectorAll('.lk-toggle').forEach(btn => {
+    btn.onclick = () => {
+      const key = btn.dataset.series;
+      seriesVisible[key] = !seriesVisible[key];
+      // Global setting -- re-render every currently-expanded city's chart, not just this one.
+      expandedCities.forEach(renderCityDetail);
+    };
+  });
 }
 
 // ---------- KPI strip: headline cards with sparklines ----------
@@ -597,16 +675,7 @@ function renderKpiStrip(){
 function renderConv(suffix){
   const el = document.getElementById('m-conv'+suffix);
   const r = weightedRate(state.month, ['total','convToBooking'], ['total','leadsRequired']);
-  const ratio = r.plan>0 ? r.fact/r.plan : (r.fact>0?1:0);
-  const status = statusFor(ratio);
-  el.innerHTML = `
-    <div class="mini-row">
-      <span><span class="mini-label">План</span> <b>${fmtPct(r.plan*100,1)}</b></span>
-      <span><span class="mini-label">Факт</span> <b>${fmtPct(r.fact*100,1)}</b></span>
-      <span class="status-pill sm ${status}">${fmtPct(ratio*100,0)}</span>
-    </div>
-    <div class="gauge-track sm"><div class="gauge-fill" style="width:${Math.min(100,r.fact*100)}%;"></div><div class="gauge-plan-tick" style="left:${Math.min(100,r.plan*100)}%;" title="План"></div></div>
-  `;
+  el.innerHTML = deviationRateCard(r.plan, r.fact);
 }
 
 function segTotals(monthKey, countPath, rubPath){
@@ -683,16 +752,15 @@ function renderPctPair(suffix){
   const el = document.getElementById('m-pctpair'+suffix);
   const cancel = weightedRate(state.month, ['total','pctCancel'], ['segments','total','createdCount']);
   const future = weightedRate(state.month, ['total','pctFuture'], ['segments','total','createdCount']);
-  const gauge = (fact,plan) => `<div class="gauge-track"><div class="gauge-fill" style="width:${Math.min(100,fact*100)}%;"></div><div class="gauge-plan-tick" style="left:${Math.min(100,plan*100)}%;" title="План"></div></div>`;
   el.innerHTML = `
     <div class="stat-row">
       <div class="stat-tile" style="flex:1; min-width:220px;">
-        <div class="stat-label">% отмен (факт/план)</div><div class="stat-value">${fmtPct(cancel.fact*100,1)}</div><div class="stat-sub">план ${fmtPct(cancel.plan*100,1)}</div>
-        ${gauge(cancel.fact, cancel.plan)}
+        <div class="stat-label">% отмен</div>
+        ${deviationRateCard(cancel.plan, cancel.fact, {invert:true})}
       </div>
       <div class="stat-tile" style="flex:1; min-width:220px;">
-        <div class="stat-label">% будущих броней (факт/план)</div><div class="stat-value">${fmtPct(future.fact*100,1)}</div><div class="stat-sub">план ${fmtPct(future.plan*100,1)}</div>
-        ${gauge(future.fact, future.plan)}
+        <div class="stat-label">% будущих броней</div>
+        ${deviationRateCard(future.plan, future.fact, {invert:true})}
       </div>
     </div>
   `;
