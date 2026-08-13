@@ -280,8 +280,15 @@
   .finding-item p b{ color:var(--ink); font-weight:700; }
 
   /* ---- deep-dive tab: split sales-vs-consultation skill cards, response-time note ---- */
-  .skill-card{ background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--city); border-radius:var(--radius); padding:18px 20px; box-shadow:var(--shadow); margin-bottom:16px; }
-  .skill-card .city-name{ font-size:15px; font-weight:800; margin-bottom:14px; display:flex; align-items:center; gap:9px; }
+  .skill-card{ background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--city); border-radius:var(--radius); padding:14px 20px; box-shadow:var(--shadow); margin-bottom:10px; }
+  .skill-card[open]{ padding:18px 20px; }
+  .skill-card .city-name{ font-size:15px; font-weight:800; display:flex; align-items:center; gap:9px; }
+  summary.city-name{ cursor:pointer; list-style:none; margin-bottom:0; user-select:none; }
+  .skill-card[open] summary.city-name{ margin-bottom:14px; }
+  summary.city-name::-webkit-details-marker{ display:none; }
+  summary.city-name::after{ content:"▾"; margin-left:auto; font-size:11px; color:var(--ink-faint); transition:transform .15s; flex:none; }
+  .skill-card[open] summary.city-name::after{ transform:rotate(180deg); }
+  summary.city-name:hover{ color:var(--accent); }
   .skill-cols{ display:grid; grid-template-columns:1fr; gap:18px; }
   @media (min-width:760px){ .skill-cols{ grid-template-columns:1fr 1fr; } }
   .skill-axis-label{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--accent); font-weight:800; margin-bottom:9px; }
@@ -984,8 +991,8 @@
     <h2 class="section-title"><svg class="icon"><use href="#i-user"/></svg>Продажи и консультация — раздельная оценка</h2>
     <p class="section-note">Два разных навыка, специально не смешаны в одну оценку: «Продажи» — закрытие сделки, допродажа, работа с возражениями, дожим остывших лидов. «Консультация» — точность и последовательность информации, доведение вопроса клиента до ответа, корректность расчётов. Менеджер может быть слабым продавцом, но точным консультантом, и наоборот — эта разбивка как раз должна такое показывать.</p>
 
-    <div class="skill-card" style="--city:var(--city-krsk)">
-      <div class="city-name"><span class="city-avatar" style="background:var(--city-krsk); width:24px; height:24px; border-radius:6px;"><svg class="icon" style="width:13px;height:13px;stroke:#fff"><use href="#i-building"/></svg></span>Красноярск</div>
+    <details class="skill-card" style="--city:var(--city-krsk)">
+      <summary class="city-name"><span class="city-avatar" style="background:var(--city-krsk); width:24px; height:24px; border-radius:6px;"><svg class="icon" style="width:13px;height:13px;stroke:#fff"><use href="#i-building"/></svg></span>Красноярск</summary>
       <div class="skill-cols">
         <div class="skill-axis"><div class="skill-axis-label">Продажи</div><ul>
           <li>Закрывающий вопрос звучит в ~10 из 69 диалогов («Оформляем бронь?»)</li>
@@ -1000,10 +1007,10 @@
           <li class="bad">Обрывки шаблонного текста («......») делают часть условий нечитаемой для клиента</li>
         </ul></div>
       </div>
-    </div>
+    </details>
 
-    <div class="skill-card" style="--city:var(--city-nsk)">
-      <div class="city-name"><span class="city-avatar" style="background:var(--city-nsk); width:24px; height:24px; border-radius:6px;"><svg class="icon" style="width:13px;height:13px;stroke:#fff"><use href="#i-building"/></svg></span>Новосибирск</div>
+    <details class="skill-card" style="--city:var(--city-nsk)">
+      <summary class="city-name"><span class="city-avatar" style="background:var(--city-nsk); width:24px; height:24px; border-radius:6px;"><svg class="icon" style="width:13px;height:13px;stroke:#fff"><use href="#i-building"/></svg></span>Новосибирск</summary>
       <div class="skill-cols">
         <div class="skill-axis"><div class="skill-axis-label">Продажи</div><ul>
           <li>Не поддаётся на просьбу скидки без причины — объясняет условия лояльности</li>
@@ -1018,10 +1025,10 @@
           <li class="bad">На «непонятно» от клиента менеджер отвечает просто «?»</li>
         </ul></div>
       </div>
-    </div>
+    </details>
 
-    <div class="skill-card" style="--city:var(--city-ekb)">
-      <div class="city-name"><span class="city-avatar" style="background:var(--city-ekb); width:24px; height:24px; border-radius:6px;"><svg class="icon" style="width:13px;height:13px;stroke:#fff"><use href="#i-building"/></svg></span>Екатеринбург</div>
+    <details class="skill-card" style="--city:var(--city-ekb)">
+      <summary class="city-name"><span class="city-avatar" style="background:var(--city-ekb); width:24px; height:24px; border-radius:6px;"><svg class="icon" style="width:13px;height:13px;stroke:#fff"><use href="#i-building"/></svg></span>Екатеринбург</summary>
       <div class="skill-cols">
         <div class="skill-axis"><div class="skill-axis-label">Продажи</div><ul>
           <li>Закрывающий вопрос в ~10 из 100 диалогов; допродажа пакета почти при каждой брони</li>
@@ -1036,10 +1043,10 @@
           <li class="bad">Дублирующийся автоответ иногда мешает получить содержательный ответ</li>
         </ul></div>
       </div>
-    </div>
+    </details>
 
-    <div class="skill-card" style="--city:var(--city-msk)">
-      <div class="city-name"><span class="city-avatar" style="background:var(--city-msk); width:24px; height:24px; border-radius:6px;"><svg class="icon" style="width:13px;height:13px;stroke:#fff"><use href="#i-building"/></svg></span>Москва</div>
+    <details class="skill-card" style="--city:var(--city-msk)">
+      <summary class="city-name"><span class="city-avatar" style="background:var(--city-msk); width:24px; height:24px; border-radius:6px;"><svg class="icon" style="width:13px;height:13px;stroke:#fff"><use href="#i-building"/></svg></span>Москва</summary>
       <div class="skill-cols">
         <div class="skill-axis"><div class="skill-axis-label">Продажи</div><ul>
           <li>Закрывающий вопрос использован как минимум дважды, с быстрым результатом</li>
@@ -1053,10 +1060,10 @@
           <li class="bad">Депозит вырос 40 000→80 000→150 000₽ в одном диалоге без объяснения — клиент растерялся</li>
         </ul></div>
       </div>
-    </div>
+    </details>
 
-    <div class="skill-card" style="--city:var(--city-irk)">
-      <div class="city-name"><span class="city-avatar" style="background:var(--city-irk); width:24px; height:24px; border-radius:6px;"><svg class="icon" style="width:13px;height:13px;stroke:#fff"><use href="#i-building"/></svg></span>Иркутск</div>
+    <details class="skill-card" style="--city:var(--city-irk)">
+      <summary class="city-name"><span class="city-avatar" style="background:var(--city-irk); width:24px; height:24px; border-radius:6px;"><svg class="icon" style="width:13px;height:13px;stroke:#fff"><use href="#i-building"/></svg></span>Иркутск</summary>
       <div class="skill-cols">
         <div class="skill-axis"><div class="skill-axis-label">Продажи</div><ul>
           <li>Изредка реактивирует остывшие лиды («Подскажите, что решили?»)</li>
@@ -1071,7 +1078,7 @@
           <li class="bad">Путаница с датой/машиной внутри одного диалога, менеджер повторяется</li>
         </ul></div>
       </div>
-    </div>
+    </details>
 
     <h2 class="section-title"><svg class="icon"><use href="#i-user"/></svg>По менеджерам, по городам (тест-режим)</h2>
     <div class="caveat-banner">
@@ -1090,8 +1097,8 @@
           </tbody>
         </table>
       </div>
-      <div class="skill-card" style="--city:var(--city-krsk)">
-        <div class="city-name">Сантросян А.К. <span class="mtag">лучший результат в выборке</span></div>
+      <details class="skill-card" style="--city:var(--city-krsk)">
+        <summary class="city-name">Сантросян А.К. <span class="mtag">лучший результат в выборке</span></summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Системное выяснение потребности почти в каждой брони: «Куда планируется поездка?», «Мойка, пакеты?» — минимум в 8-9 из 26 (#349, #350, #354, #356, #361)</li>
@@ -1105,9 +1112,9 @@
             <li class="bad">Не всегда доводит диалог до фиксации контакта — в #348 клиент прислал только телефон, дальше диалог не продолжен</li>
           </ul></div>
         </div>
-      </div>
-      <div class="skill-card" style="--city:var(--city-krsk)">
-        <div class="city-name">Некрасов В.Ю. <span class="mtag">быстрый ответ, но слабый результат</span></div>
+      </details>
+      <details class="skill-card" style="--city:var(--city-krsk)">
+        <summary class="city-name">Некрасов В.Ю. <span class="mtag">быстрый ответ, но слабый результат</span></summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Проактивное сопровождение после брони — сам сообщает о штрафе и предлагает варианты оплаты (#340)</li>
@@ -1121,7 +1128,7 @@
             <li class="bad">Слабое закрытие возражения: на «Что то не густо» отвечает просто «Все что есть» (#347)</li>
           </ul></div>
         </div>
-      </div>
+      </details>
     </div>
 
     <div class="mgr-city-block">
@@ -1135,8 +1142,8 @@
           </tbody>
         </table>
       </div>
-      <div class="skill-card" style="--city:var(--city-nsk)">
-        <div class="city-name">Башлыков Г.Б. <span class="mtag">лучший результат в выборке</span></div>
+      <details class="skill-card" style="--city:var(--city-nsk)">
+        <summary class="city-name">Башлыков Г.Б. <span class="mtag">лучший результат в выборке</span></summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Системное выяснение потребности перед подбором — минимум в 8 из 47 (#22, #85, #98, #100)</li>
@@ -1150,9 +1157,9 @@
             <li class="bad">Отдельные технические огрехи от спешки — дублирует блок условий, самокоррекция опечатки в сумме (#23, #22)</li>
           </ul></div>
         </div>
-      </div>
-      <div class="skill-card" style="--city:var(--city-nsk)">
-        <div class="city-name">Суслов П.В. <span class="mtag">самый медленный первый ответ в выборке</span></div>
+      </details>
+      <details class="skill-card" style="--city:var(--city-nsk)">
+        <summary class="city-name">Суслов П.В. <span class="mtag">самый медленный первый ответ в выборке</span></summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Проактивно предупреждает об ограничениях до вопроса клиента — про суточный лимит пробега (#70)</li>
@@ -1165,7 +1172,7 @@
             <li class="bad">Остывшие лиды без дожима — 4 вопроса клиента подряд без единого ответа (#30); клиент ушёл к конкуренту без попытки удержания (#74)</li>
           </ul></div>
         </div>
-      </div>
+      </details>
     </div>
 
     <div class="mgr-city-block">
@@ -1179,8 +1186,8 @@
           </tbody>
         </table>
       </div>
-      <div class="skill-card" style="--city:var(--city-ekb)">
-        <div class="city-name">Макаров И.С.</div>
+      <details class="skill-card" style="--city:var(--city-ekb)">
+        <summary class="city-name">Макаров И.С.</summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Системный допродаж пакета — минимум в 8 из 18 подтверждённых броней (#133, #149, #151, #153, #154, #158, #166, #167)</li>
@@ -1195,9 +1202,9 @@
             <li class="bad"><b>Спутал клиента с однофамильцем</b> и, похоже, обратился к чужим паспортным данным — клиент указал на это прямо (#139)</li>
           </ul></div>
         </div>
-      </div>
-      <div class="skill-card" style="--city:var(--city-ekb)">
-        <div class="city-name">Буцырин С.Е.</div>
+      </details>
+      <details class="skill-card" style="--city:var(--city-ekb)">
+        <summary class="city-name">Буцырин С.Е.</summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Системно возвращается к остывшим диалогам — минимум 6 из 43 получили повторный контакт (#130, #137, #155, #193)</li>
@@ -1212,7 +1219,7 @@
             <li class="bad">Явное намерение купить остывает без дожима — только 2 ссылки без цены и подтверждения (#171)</li>
           </ul></div>
         </div>
-      </div>
+      </details>
     </div>
 
     <div class="mgr-city-block">
@@ -1227,8 +1234,8 @@
           </tbody>
         </table>
       </div>
-      <div class="skill-card" style="--city:var(--city-irk)">
-        <div class="city-name">Невидомский В.И. <span class="mtag">худшая конверсия в выборке</span></div>
+      <details class="skill-card" style="--city:var(--city-irk)">
+        <summary class="city-name">Невидомский В.И. <span class="mtag">худшая конверсия в выборке</span></summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Выясняет маршрут перед подбором класса, включая специфику острова Ольхон (#209, #226)</li>
@@ -1243,9 +1250,9 @@
             <li class="bad">После крупного расчёта не закрывает явным призывом к действию — диалог просто обрывается (#222, #231)</li>
           </ul></div>
         </div>
-      </div>
-      <div class="skill-card" style="--city:var(--city-irk)">
-        <div class="city-name">Потапов К.О. <span class="mtag">высокий загасился при неплохой конверсии</span></div>
+      </details>
+      <details class="skill-card" style="--city:var(--city-irk)">
+        <summary class="city-name">Потапов К.О. <span class="mtag">высокий загасился при неплохой конверсии</span></summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Системный апсейл — предлагает пакет во всех 7 диалогах-бронях (#207, #208, #257, #260, #261, #264, #267)</li>
@@ -1260,7 +1267,7 @@
             <li class="bad">Пассивная модель «ответил и жду» — не предлагает альтернатив после первого отказа (#211)</li>
           </ul></div>
         </div>
-      </div>
+      </details>
       <div class="stat-note">Черных Я.М. — только 5 диалогов за период, недостаточно для содержательной характеристики сильных/слабых сторон.</div>
     </div>
 
@@ -1276,8 +1283,8 @@
         </table>
       </div>
       <p class="section-note">Обе выборки маленькие (9 и 11 диалогов) — читать как наблюдения, не устойчивые паттерны.</p>
-      <div class="skill-card" style="--city:var(--city-msk)">
-        <div class="city-name">Рязанцев А.А.</div>
+      <details class="skill-card" style="--city:var(--city-msk)">
+        <summary class="city-name">Рязанцев А.А.</summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Чёткие однозначные ответы на уточнения клиента (#277)</li>
@@ -1290,9 +1297,9 @@
             <li class="bad">Клиент ушёл к конкуренту — только вежливое прощание, без попытки удержать (#282)</li>
           </ul></div>
         </div>
-      </div>
-      <div class="skill-card" style="--city:var(--city-msk)">
-        <div class="city-name">Тягунов Д.А.</div>
+      </details>
+      <details class="skill-card" style="--city:var(--city-msk)">
+        <summary class="city-name">Тягунов Д.А.</summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Проактивная забота о клиенте сверх формальной транзакции — спросил, всё ли в порядке после ДТП (#305)</li>
@@ -1305,7 +1312,7 @@
             <li class="bad">Медленная реакция — до 2 часов и до следующего дня на поздние сообщения (#311, #309, #310)</li>
           </ul></div>
         </div>
-      </div>
+      </details>
     </div>
 
     <div class="conclusion"><svg class="icon"><use href="#i-flag"/></svg><div><b>Скорость ответа не объясняет разницу в результате.</b> У Некрасова В.Ю. — один из самых быстрых ответов в выборке (1 мин), но конверсия одна из низких (33.3%) и высокий загасился (25.6%). Городская статистика Красноярска («лучшая конверсия сети, но и худший загасился») оказалась смесью двух разных людей: Сантросян А.К. держит 65.4%/3.8%, Некрасов В.Ю. на тех же условиях — 33.3%/25.6%. То же в Новосибирске: Башлыков Г.Б. (50.9%/3.8%) и Суслов П.В. (26.8%/12.2%) работают один город, но с разным результатом. Нагрузка (диалогов/смену) тоже не даёт прямой связи — у Суслова П.В. нагрузка выше среднего (13.7), но результат один из слабых.</div></div>
@@ -1327,8 +1334,8 @@
           </tbody>
         </table>
       </div>
-      <div class="skill-card" style="--city:var(--city-krsk)">
-        <div class="city-name">Сантросян А.К. <span class="mtag">→ разительно улучшился к августу</span></div>
+      <details class="skill-card" style="--city:var(--city-krsk)">
+        <summary class="city-name">Сантросян А.К. <span class="mtag">→ разительно улучшился к августу</span></summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Чётко закрывает сделку прямым вопросом — «Бронируем?» системно, не намёками (#1170, #1225)</li>
@@ -1344,9 +1351,9 @@
           </ul></div>
         </div>
         <div class="reco"><span>Что изменилось к августу</span>Ровно эта привычка «один ответ и тишина» — единственное реальное отличие от сильных сторон, которые уже были в июле. Если в августе он начал делать вторые/третьи касания по остывающим лидам — это напрямую объясняет падение загасших с 41.7% до 3.8%.</div>
-      </div>
-      <div class="skill-card" style="--city:var(--city-krsk)">
-        <div class="city-name">Некрасов В.Ю.</div>
+      </details>
+      <details class="skill-card" style="--city:var(--city-krsk)">
+        <summary class="city-name">Некрасов В.Ю.</summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Настойчиво закрывает сделку, включая повторные вопросы (#1094, #1259)</li>
@@ -1361,7 +1368,7 @@
             <li class="bad">Негибко реагирует на возражение по документам — потерял готового платить клиента (#1162)</li>
           </ul></div>
         </div>
-      </div>
+      </details>
     </div>
 
     <div class="mgr-city-block">
@@ -1375,8 +1382,8 @@
           </tbody>
         </table>
       </div>
-      <div class="skill-card" style="--city:var(--city-nsk)">
-        <div class="city-name">Суслов П.В. <span class="mtag">→ был лучшим в июле, стал худшим в августе</span></div>
+      <details class="skill-card" style="--city:var(--city-nsk)">
+        <summary class="city-name">Суслов П.В. <span class="mtag">→ был лучшим в июле, стал худшим в августе</span></summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны (июль)</div><ul>
             <li>Систематические дожимы «зависших» клиентов — минимум 6-8 из 159 (#11, #58, #156, #290)</li>
@@ -1391,9 +1398,9 @@
           </ul></div>
         </div>
         <div class="reco"><span>Что изменилось к августу</span>Именно то, что в июле было сильной стороной (проактивные дожимы), в августе, судя по цифрам, ослабло — рост загасших с 7.5% до 12.2% и падение конверсии с 41.5% до 26.8% указывают на обратный дрейф, а не на новую проблему.</div>
-      </div>
-      <div class="skill-card" style="--city:var(--city-nsk)">
-        <div class="city-name">Башлыков Г.Б. <span class="mtag">→ был худшим в июле, стал лучшим в августе</span></div>
+      </details>
+      <details class="skill-card" style="--city:var(--city-nsk)">
+        <summary class="city-name">Башлыков Г.Б. <span class="mtag">→ был худшим в июле, стал лучшим в августе</span></summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны (июль)</div><ul>
             <li>Стабильная квалификация потребности почти в каждом обращении (#31, #47, #89, #204)</li>
@@ -1409,7 +1416,7 @@
           </ul></div>
         </div>
         <div class="reco"><span>Что изменилось к августу</span>Эти четыре слабости (противоречия по датам, перегруз шаблонным текстом, путаница по пакетам, отсутствие дожима) — правдоподобное объяснение и низкой конверсии, и загасания в июле; их устранение логично объясняет скачок обоих показателей в августе (конверсия 40.2%→50.9%, загасился 9.1%→3.8%).</div>
-      </div>
+      </details>
     </div>
 
     <div class="mgr-city-block">
@@ -1424,8 +1431,8 @@
           </tbody>
         </table>
       </div>
-      <div class="skill-card" style="--city:var(--city-ekb)">
-        <div class="city-name">Макаров И.С.</div>
+      <details class="skill-card" style="--city:var(--city-ekb)">
+        <summary class="city-name">Макаров И.С.</summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Системно возвращается к старым заявкам сам — минимум 15-20 из 172 (#295, #369, #691)</li>
@@ -1440,9 +1447,9 @@
             <li class="bad">Регулярные опечатки и путаница в переписке — три попытки одной цифры подряд (#605)</li>
           </ul></div>
         </div>
-      </div>
-      <div class="skill-card" style="--city:var(--city-ekb)">
-        <div class="city-name">Буцырин С.Е.</div>
+      </details>
+      <details class="skill-card" style="--city:var(--city-ekb)">
+        <summary class="city-name">Буцырин С.Е.</summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Возвращается к «зависшим» клиентам с прямым вопросом о статусе (#316, #398, #492, #656)</li>
@@ -1457,7 +1464,7 @@
             <li class="bad">Крупный лид завис без сопровождения почти 2 недели (#316)</li>
           </ul></div>
         </div>
-      </div>
+      </details>
     </div>
 
     <div class="mgr-city-block">
@@ -1473,8 +1480,8 @@
           </tbody>
         </table>
       </div>
-      <div class="skill-card" style="--city:var(--city-irk)">
-        <div class="city-name">Невидомский В.И.</div>
+      <details class="skill-card" style="--city:var(--city-irk)">
+        <summary class="city-name">Невидомский В.И.</summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Дисциплинированное закрытие сделки — почти всегда просит сверить данные перед финалом (#886, #888-890)</li>
@@ -1489,9 +1496,9 @@
             <li class="bad">Противоречивое объяснение условий использования в одном сообщении (#839)</li>
           </ul></div>
         </div>
-      </div>
-      <div class="skill-card" style="--city:var(--city-irk)">
-        <div class="city-name">Потапов К.О. <span class="mtag">худший загасился в июльской выборке</span></div>
+      </details>
+      <details class="skill-card" style="--city:var(--city-irk)">
+        <summary class="city-name">Потапов К.О. <span class="mtag">худший загасился в июльской выборке</span></summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Точно выявляет потребность перед подбором — класс и маршрут (#721, #764, #784)</li>
@@ -1507,7 +1514,7 @@
           </ul></div>
         </div>
         <div class="reco"><span>Вывод</span>Продуктовые/консультационные навыки сильные, но работает реактивно — отвечает только когда клиент пишет сам, ни разу не инициирует повторный контакт после «подумаю». Это прямо объясняет аномально высокий загасился.</div>
-      </div>
+      </details>
     </div>
 
     <div class="mgr-city-block">
@@ -1521,8 +1528,8 @@
           </tbody>
         </table>
       </div>
-      <div class="skill-card" style="--city:var(--city-msk)">
-        <div class="city-name">Рязанцев А.А.</div>
+      <details class="skill-card" style="--city:var(--city-msk)">
+        <summary class="city-name">Рязанцев А.А.</summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Реактивирует зависшие заявки сам, спустя дни — минимум 4-5 случаев (#935, #961, #1025, #1028)</li>
@@ -1537,9 +1544,9 @@
             <li class="bad">Пропускает заявленный клиентом критерий (дизель) (#963)</li>
           </ul></div>
         </div>
-      </div>
-      <div class="skill-card" style="--city:var(--city-msk)">
-        <div class="city-name">Тягунов Д.А. <span class="mtag">худшая конверсия в июльской Москве</span></div>
+      </details>
+      <details class="skill-card" style="--city:var(--city-msk)">
+        <summary class="city-name">Тягунов Д.А. <span class="mtag">худшая конверсия в июльской Москве</span></summary>
         <div class="skill-cols">
           <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
             <li>Стабильно задаёт закрывающий вопрос — 6 из 31 (#942, #1008, #1010, #1011)</li>
@@ -1554,7 +1561,7 @@
           </ul></div>
         </div>
         <div class="reco"><span>Вывод</span>Слабые стороны концентрируются не в качестве консультации (она обычно полная и по делу), а в скорости реакции и доведении тёплых лидов до брони.</div>
-      </div>
+      </details>
     </div>
 
   </section>
