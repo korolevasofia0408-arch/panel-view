@@ -1310,10 +1310,257 @@
 
     <div class="conclusion"><svg class="icon"><use href="#i-flag"/></svg><div><b>Скорость ответа не объясняет разницу в результате.</b> У Некрасова В.Ю. — один из самых быстрых ответов в выборке (1 мин), но конверсия одна из низких (33.3%) и высокий загасился (25.6%). Городская статистика Красноярска («лучшая конверсия сети, но и худший загасился») оказалась смесью двух разных людей: Сантросян А.К. держит 65.4%/3.8%, Некрасов В.Ю. на тех же условиях — 33.3%/25.6%. То же в Новосибирске: Башлыков Г.Б. (50.9%/3.8%) и Суслов П.В. (26.8%/12.2%) работают один город, но с разным результатом. Нагрузка (диалогов/смену) тоже не даёт прямой связи — у Суслова П.В. нагрузка выше среднего (13.7), но результат один из слабых.</div></div>
 
+    <h2 class="section-title"><svg class="icon"><use href="#i-scale"/></svg>По менеджерам — июль 2026 (полный месяц, для сравнения)</h2>
+    <p class="section-note">Тот же метод, но на полном июльском датасете (1280 диалогов, 31 день) и том же реальном журнале смен — покрытие ещё выше: <b>1141 из 1280 (89%)</b>. В июле в некоторых городах работали ещё и другие люди, которых в августе уже не было (Тюленев И.С., Ларин И.К., Креймер А.Г.) — у них слишком мало диалогов для характеристики, показаны только цифрами.</p>
+
+    <div class="stat-note"><b>Главная находка этого раздела — два человека изменились сильнее всего:</b> Сантросян А.К. в июле терял 41.7% лидов «в никуда» (при лучшей конверсии в городе), а в августе — всего 3.8%. В Новосибирске Суслов П.В. и Башлыков Г.Б. буквально поменялись местами: в июле лучшим был Суслов (5★), в августе — Башлыков (5★), и наоборот. Это не шум — выборки большие (100+ диалогов в июле). Подробности — в карточках ниже.</div>
+
+    <div class="mgr-city-block">
+      <div class="mgr-city-heading"><span class="city-avatar" style="background:var(--city-krsk)"></span>Красноярск — июль</div>
+      <div class="profile-wrap" style="margin-bottom:16px;">
+        <table class="profile">
+          <thead><tr><th>Менеджер</th><th>★</th><th>Диалогов</th><th>Смен</th><th>Диал./смену</th><th>Конверсия</th><th>Загасился</th><th>1й ответ</th><th>Ответ далее</th></tr></thead>
+          <tbody>
+            <tr><td class="city-cell">Сантросян А.К.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">120</td><td class="num">17</td><td class="num">7.1</td><td class="num good">48.3%</td><td class="num bad">41.7%</td><td class="num good">1 мин</td><td class="num good">3 мин</td></tr>
+            <tr><td class="city-cell">Некрасов В.Ю.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">111</td><td class="num">13</td><td class="num">8.5</td><td class="num mid">36.0%</td><td class="num mid">33.3%</td><td class="num good">1 мин</td><td class="num good">3 мин</td></tr>
+            <tr><td class="city-cell">Креймер А.Г. <span class="mtag">мало данных, уже не работает</span></td><td>—</td><td class="num">6</td><td class="num">1</td><td class="num">6.0</td><td class="num mid">33.3%</td><td class="num bad">50.0%</td><td class="num good">0 мин</td><td class="num good">1 мин</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="skill-card" style="--city:var(--city-krsk)">
+        <div class="city-name">Сантросян А.К. <span class="mtag">→ разительно улучшился к августу</span></div>
+        <div class="skill-cols">
+          <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
+            <li>Чётко закрывает сделку прямым вопросом — «Бронируем?» системно, не намёками (#1170, #1225)</li>
+            <li>Реактивирует остывающие лиды новым триггером вместо того, чтобы бросить (#1126, #1258)</li>
+            <li>Точечный, а не шаблонный апсейл под конкретную поездку (#1111, #1124)</li>
+            <li>Удерживает постоянных клиентов гибкостью по цене и бонусам (#1233, #1243)</li>
+          </ul></div>
+          <div class="skill-axis"><div class="skill-axis-label">Слабые стороны (июль)</div><ul>
+            <li class="bad"><b>Главная причина 41.7% загасших</b> — часть лидов получает вообще нулевой ответ, диалог просто обрывается (#1085, #1276)</li>
+            <li class="bad">Ещё чаще — один ответ и тишина, даже при явном интересе клиента (#1096, #1238)</li>
+            <li class="bad">Путаница в объяснении цены пакетов теряет клиента (#1080, #1124)</li>
+            <li class="bad">На «Бронь»-ветках follow-up системный, а на холодных лидах — почти нет второй попытки (минимум 5-6 ниток)</li>
+          </ul></div>
+        </div>
+        <div class="reco"><span>Что изменилось к августу</span>Ровно эта привычка «один ответ и тишина» — единственное реальное отличие от сильных сторон, которые уже были в июле. Если в августе он начал делать вторые/третьи касания по остывающим лидам — это напрямую объясняет падение загасших с 41.7% до 3.8%.</div>
+      </div>
+      <div class="skill-card" style="--city:var(--city-krsk)">
+        <div class="city-name">Некрасов В.Ю.</div>
+        <div class="skill-cols">
+          <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
+            <li>Настойчиво закрывает сделку, включая повторные вопросы (#1094, #1259)</li>
+            <li>Автоматически предлагает допуслуги при каждой брони, не дожидаясь вопроса (#1140, #1203)</li>
+            <li>Не бросает клиента при недоступности авто — сразу подбирает альтернативу (#1049, #1091)</li>
+            <li>Поддерживает личный контакт с постоянными клиентами (#1174)</li>
+          </ul></div>
+          <div class="skill-axis"><div class="skill-axis-label">Слабые стороны</div><ul>
+            <li class="bad">Скидка как первая реакция на «дорого», без аргументации ценности (#1153)</li>
+            <li class="bad">Оставляет прямой вопрос клиента без ответа (#1092)</li>
+            <li class="bad">Противоречит себе по датам в одном сообщении (#1098)</li>
+            <li class="bad">Негибко реагирует на возражение по документам — потерял готового платить клиента (#1162)</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mgr-city-block">
+      <div class="mgr-city-heading"><span class="city-avatar" style="background:var(--city-nsk)"></span>Новосибирск — июль</div>
+      <div class="profile-wrap" style="margin-bottom:16px;">
+        <table class="profile">
+          <thead><tr><th>Менеджер</th><th>★</th><th>Диалогов</th><th>Смен</th><th>Диал./смену</th><th>Конверсия</th><th>Загасился</th><th>1й ответ</th><th>Ответ далее</th></tr></thead>
+          <tbody>
+            <tr><td class="city-cell">Суслов П.В.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></span></td><td class="num">159</td><td class="num">16</td><td class="num">9.9</td><td class="num good">41.5%</td><td class="num good">7.5%</td><td class="num mid">9 мин</td><td class="num mid">5 мин</td></tr>
+            <tr><td class="city-cell">Башлыков Г.Б.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">132</td><td class="num">14</td><td class="num">9.4</td><td class="num mid">40.2%</td><td class="num mid">9.1%</td><td class="num mid">3 мин</td><td class="num mid">2 мин</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="skill-card" style="--city:var(--city-nsk)">
+        <div class="city-name">Суслов П.В. <span class="mtag">→ был лучшим в июле, стал худшим в августе</span></div>
+        <div class="skill-cols">
+          <div class="skill-axis"><div class="skill-axis-label">Сильные стороны (июль)</div><ul>
+            <li>Систематические дожимы «зависших» клиентов — минимум 6-8 из 159 (#11, #58, #156, #290)</li>
+            <li>Устойчивое выявление потребности перед расчётом — 10+ раз (#76, #130, #193)</li>
+            <li>Аргументированный, не механический апсейл — предложил творческое решение вместо отказа (#42)</li>
+            <li>Терпеливая техподдержка вне скрипта — помог клиенту дистанционно, по фото (#274)</li>
+          </ul></div>
+          <div class="skill-axis"><div class="skill-axis-label">Слабые стороны</div><ul>
+            <li class="bad">Задержки в ответах, клиент вынужден напоминать о себе трижды (#4, #0)</li>
+            <li class="bad">Противоречивые сообщения о наличии авто в одном диалоге (#10)</li>
+            <li class="bad">Ошибка с суммой предоплаты — клиент перевёл больше, чем нужно (#125)</li>
+          </ul></div>
+        </div>
+        <div class="reco"><span>Что изменилось к августу</span>Именно то, что в июле было сильной стороной (проактивные дожимы), в августе, судя по цифрам, ослабло — рост загасших с 7.5% до 12.2% и падение конверсии с 41.5% до 26.8% указывают на обратный дрейф, а не на новую проблему.</div>
+      </div>
+      <div class="skill-card" style="--city:var(--city-nsk)">
+        <div class="city-name">Башлыков Г.Б. <span class="mtag">→ был худшим в июле, стал лучшим в августе</span></div>
+        <div class="skill-cols">
+          <div class="skill-axis"><div class="skill-axis-label">Сильные стороны (июль)</div><ul>
+            <li>Стабильная квалификация потребности почти в каждом обращении (#31, #47, #89, #204)</li>
+            <li>Прямой закрывающий вопрос после подбора моделей (#25, #218, #261)</li>
+            <li>Активный дожим зависших броней — минимум в 10+ диалогах (#150, #219-222, #251, #261)</li>
+            <li>Спокойная, конкретная работа с возражением по топливному кризису июля (#96, #227, #256)</li>
+          </ul></div>
+          <div class="skill-axis"><div class="skill-axis-label">Слабые стороны (июль)</div><ul>
+            <li class="bad">Сам себе противоречит по датам внутри одного диалога — трижды подряд (#19), бронь потеряна</li>
+            <li class="bad">Заваливает клиента копипастой условий — клиент прямо жалуется на «простыни текста» (#151)</li>
+            <li class="bad">Путано объясняет пакеты, теряя заинтересованного клиента (#176)</li>
+            <li class="bad">На части холодных лидов не задаёт закрывающий вопрос и не намекает на срочность (#97, #148, #217, #222, #256)</li>
+          </ul></div>
+        </div>
+        <div class="reco"><span>Что изменилось к августу</span>Эти четыре слабости (противоречия по датам, перегруз шаблонным текстом, путаница по пакетам, отсутствие дожима) — правдоподобное объяснение и низкой конверсии, и загасания в июле; их устранение логично объясняет скачок обоих показателей в августе (конверсия 40.2%→50.9%, загасился 9.1%→3.8%).</div>
+      </div>
+    </div>
+
+    <div class="mgr-city-block">
+      <div class="mgr-city-heading"><span class="city-avatar" style="background:var(--city-ekb)"></span>Екатеринбург — июль</div>
+      <div class="profile-wrap" style="margin-bottom:16px;">
+        <table class="profile">
+          <thead><tr><th>Менеджер</th><th>★</th><th>Диалогов</th><th>Смен</th><th>Диал./смену</th><th>Конверсия</th><th>Загасился</th><th>1й ответ</th><th>Ответ далее</th></tr></thead>
+          <tbody>
+            <tr><td class="city-cell">Тюленев И.С. <span class="mtag">мало данных, уже не работает</span></td><td>—</td><td class="num">10</td><td class="num">1</td><td class="num">10.0</td><td class="num good">60.0%</td><td class="num good">0.0%</td><td class="num mid">10 мин</td><td class="num mid">3 мин</td></tr>
+            <tr><td class="city-cell">Макаров И.С.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">172</td><td class="num">13</td><td class="num">13.2</td><td class="num good">40.1%</td><td class="num good">4.7%</td><td class="num good">4 мин</td><td class="num good">1 мин</td></tr>
+            <tr><td class="city-cell">Буцырин С.Е.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">130</td><td class="num">10</td><td class="num">13.0</td><td class="num mid">35.4%</td><td class="num mid">11.5%</td><td class="num good">3 мин</td><td class="num good">1 мин</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="skill-card" style="--city:var(--city-ekb)">
+        <div class="city-name">Макаров И.С.</div>
+        <div class="skill-cols">
+          <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
+            <li>Системно возвращается к старым заявкам сам — минимум 15-20 из 172 (#295, #369, #691)</li>
+            <li>Почти всегда предлагает пакет и допуслуги при брони — более 20 раз (#588, #677)</li>
+            <li>Хорошо держит удар в кризисных ситуациях с клиентом — ночной прокол колеса, ДТП (#364, #465)</li>
+            <li>Даёт точные, развёрнутые технические ответы по шинам/топливу/страховке (#588, #692)</li>
+          </ul></div>
+          <div class="skill-axis"><div class="skill-axis-label">Слабые стороны</div><ul>
+            <li class="bad">Частые многочасовые/ночные разрывы в ответах на вечерние обращения (#614, #623-629)</li>
+            <li class="bad">После отказа СБ или занятости авто не пытается спасти сделку (#391, #478)</li>
+            <li class="bad">Резкая подача информации без объяснения вызывает негатив клиента (#388)</li>
+            <li class="bad">Регулярные опечатки и путаница в переписке — три попытки одной цифры подряд (#605)</li>
+          </ul></div>
+        </div>
+      </div>
+      <div class="skill-card" style="--city:var(--city-ekb)">
+        <div class="city-name">Буцырин С.Е.</div>
+        <div class="skill-cols">
+          <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
+            <li>Возвращается к «зависшим» клиентам с прямым вопросом о статусе (#316, #398, #492, #656)</li>
+            <li>Всегда предлагает альтернативы вместо голого «нет в наличии», с конкретными ссылками (#427, #436, #495)</li>
+            <li>Грамотно погасил конфликт по жалобе клиента, удержал сделку (#491)</li>
+            <li>Системно закрывает сделку прямым вопросом и уточняет маршрут перед залогом (#455, #494, #504)</li>
+          </ul></div>
+          <div class="skill-axis"><div class="skill-axis-label">Слабые стороны</div><ul>
+            <li class="bad">Прямое противоречие в переписке по датам/времени — сам признал ошибку (#453)</li>
+            <li class="bad">Вопросы клиента остаются без ответа при отказе СБ (#557, #574)</li>
+            <li class="bad">Применил скидку без согласования и не сообщил об этом сразу (#515)</li>
+            <li class="bad">Крупный лид завис без сопровождения почти 2 недели (#316)</li>
+          </ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mgr-city-block">
+      <div class="mgr-city-heading"><span class="city-avatar" style="background:var(--city-irk)"></span>Иркутск — июль</div>
+      <div class="profile-wrap" style="margin-bottom:16px;">
+        <table class="profile">
+          <thead><tr><th>Менеджер</th><th>★</th><th>Диалогов</th><th>Смен</th><th>Диал./смену</th><th>Конверсия</th><th>Загасился</th><th>1й ответ</th><th>Ответ далее</th></tr></thead>
+          <tbody>
+            <tr><td class="city-cell">Невидомский В.И.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">95</td><td class="num">15</td><td class="num">6.3</td><td class="num mid">33.7%</td><td class="num bad">31.6%</td><td class="num mid">11 мин</td><td class="num mid">3 мин</td></tr>
+            <tr><td class="city-cell">Потапов К.О.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">67</td><td class="num">12</td><td class="num">5.6</td><td class="num mid">31.3%</td><td class="num bad">40.3%</td><td class="num good">3 мин</td><td class="num good">1 мин</td></tr>
+            <tr><td class="city-cell">Ларин И.К. <span class="mtag">мало данных, уже не работает</span></td><td>—</td><td class="num">18</td><td class="num">2</td><td class="num">9.0</td><td class="num mid">38.9%</td><td class="num bad">38.9%</td><td class="num mid">52 мин</td><td class="num good">2 мин</td></tr>
+            <tr><td class="city-cell">Черных Я.М. <span class="mtag">мало данных</span></td><td>—</td><td class="num">10</td><td class="num">2</td><td class="num">5.0</td><td class="num mid">30.0%</td><td class="num bad">50.0%</td><td class="num good">3 мин</td><td class="num good">1 мин</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="skill-card" style="--city:var(--city-irk)">
+        <div class="city-name">Невидомский В.И.</div>
+        <div class="skill-cols">
+          <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
+            <li>Дисциплинированное закрытие сделки — почти всегда просит сверить данные перед финалом (#886, #888-890)</li>
+            <li>Проактивный дожим колеблющихся клиентов, когда включается (#840, #857)</li>
+            <li>Системный апсейл допуслуг в каждом расчёте (#820, #841)</li>
+            <li>Гибкая работа с заменой авто под запрос клиента (#705)</li>
+          </ul></div>
+          <div class="skill-axis"><div class="skill-axis-label">Слабые стороны</div><ul>
+            <li class="bad">Экстремальная задержка ответа на заявку — 4 дня (#825)</li>
+            <li class="bad">Арифметическая нестыковка в расчёте — 2200₽ расхождение (#728)</li>
+            <li class="bad">Тёплые лиды обрываются без дожима после ответа на вопрос (#726, #742)</li>
+            <li class="bad">Противоречивое объяснение условий использования в одном сообщении (#839)</li>
+          </ul></div>
+        </div>
+      </div>
+      <div class="skill-card" style="--city:var(--city-irk)">
+        <div class="city-name">Потапов К.О. <span class="mtag">худший загасился в июльской выборке</span></div>
+        <div class="skill-cols">
+          <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
+            <li>Точно выявляет потребность перед подбором — класс и маршрут (#721, #764, #784)</li>
+            <li>Ненавязчивый кросс-сейл на основе личного опыта (#722)</li>
+            <li>Сам замечает и применяет скидку постоянного клиента (#724)</li>
+            <li>Даёт развёрнутый точный расчёт при оформлении (#793)</li>
+          </ul></div>
+          <div class="skill-axis"><div class="skill-axis-label">Слабые стороны</div><ul>
+            <li class="bad"><b>Главная причина 40.3% загасших</b> — систематически не дожимает «тёплые» отказы; минимум 8 диалогов без единого follow-up после «подумаю» (#722, #761, #770, #784, #789, #791, #792, #802)</li>
+            <li class="bad">Долгие задержки ответа — до 18 часов (#802, #810)</li>
+            <li class="bad">Отказ без альтернативы или уточнения гибкости дат (#712, #779, #805, #809)</li>
+            <li class="bad">Технические небрежности — дублирует блок условий, путает даты (#769, #771)</li>
+          </ul></div>
+        </div>
+        <div class="reco"><span>Вывод</span>Продуктовые/консультационные навыки сильные, но работает реактивно — отвечает только когда клиент пишет сам, ни разу не инициирует повторный контакт после «подумаю». Это прямо объясняет аномально высокий загасился.</div>
+      </div>
+    </div>
+
+    <div class="mgr-city-block">
+      <div class="mgr-city-heading"><span class="city-avatar" style="background:var(--city-msk)"></span>Москва — июль</div>
+      <div class="profile-wrap" style="margin-bottom:16px;">
+        <table class="profile">
+          <thead><tr><th>Менеджер</th><th>★</th><th>Диалогов</th><th>Смен</th><th>Диал./смену</th><th>Конверсия</th><th>Загасился</th><th>1й ответ</th><th>Ответ далее</th></tr></thead>
+          <tbody>
+            <tr><td class="city-cell">Рязанцев А.А.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg></span></td><td class="num">80</td><td class="num">16</td><td class="num">5.0</td><td class="num mid">35.0%</td><td class="num mid">15.0%</td><td class="num good">1 мин</td><td class="num good">4 мин</td></tr>
+            <tr><td class="city-cell">Тягунов Д.А.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">31</td><td class="num">8</td><td class="num">3.9</td><td class="num bad">19.4%</td><td class="num mid">16.1%</td><td class="num good">1 мин</td><td class="num good">5 мин</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="skill-card" style="--city:var(--city-msk)">
+        <div class="city-name">Рязанцев А.А.</div>
+        <div class="skill-cols">
+          <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
+            <li>Реактивирует зависшие заявки сам, спустя дни — минимум 4-5 случаев (#935, #961, #1025, #1028)</li>
+            <li>Точный подбор под явную потребность клиента (#904)</li>
+            <li>Стабильный кросс-селл допзащиты почти в каждой брони (#894, #921, #1021, #1023)</li>
+            <li>Держит хладнокровие с конфликтным клиентом, доводит до брони (#923)</li>
+          </ul></div>
+          <div class="skill-axis"><div class="skill-axis-label">Слабые стороны</div><ul>
+            <li class="bad">Систематически долгие задержки ответа — свыше 2 суток в одном случае (#986, #997, #1024)</li>
+            <li class="bad">Уступает в цене без аргументации ценности (#917, #1001)</li>
+            <li class="bad">Фактическая нестыковка по топливу — риск для клиента (#1000)</li>
+            <li class="bad">Пропускает заявленный клиентом критерий (дизель) (#963)</li>
+          </ul></div>
+        </div>
+      </div>
+      <div class="skill-card" style="--city:var(--city-msk)">
+        <div class="city-name">Тягунов Д.А. <span class="mtag">худшая конверсия в июльской Москве</span></div>
+        <div class="skill-cols">
+          <div class="skill-axis"><div class="skill-axis-label">Сильные стороны</div><ul>
+            <li>Стабильно задаёт закрывающий вопрос — 6 из 31 (#942, #1008, #1010, #1011)</li>
+            <li>Доводит успешную бронь до полной детализации (#944)</li>
+            <li>Готов торговаться, чтобы спасти сделку (#942)</li>
+          </ul></div>
+          <div class="skill-axis"><div class="skill-axis-label">Слабые стороны</div><ul>
+            <li class="bad"><b>Главная причина низкой конверсии</b> — медленные ответы, часто 7-15+ часов, минимум 7-8 из 31 (#937, #940, #980); один клиент прямо ушёл к конкуренту из-за этого (#909)</li>
+            <li class="bad">Полностью проигнорированный лид (#1038)</li>
+            <li class="bad">Расчётная нестыковка, подрывающая доверие (#1007)</li>
+            <li class="bad">Скидки предлагаются сразу, без аргументации ценности (#1039)</li>
+          </ul></div>
+        </div>
+        <div class="reco"><span>Вывод</span>Слабые стороны концентрируются не в качестве консультации (она обычно полная и по делу), а в скорости реакции и доведении тёплых лидов до брони.</div>
+      </div>
+    </div>
+
   </section>
 
   <footer>
-    <p>Источники: <code>Чаты итог июль.xlsx</code> (лист «История чатов», 1280 диалогов, 1–31 июля 2026) и <code>выгрузка август.xlsx</code> (381 диалог, 1–9 августа 2026). Конверсия и доля загасших лидов посчитаны напрямую по колонке «Статус». «Отказ из-за нехватки» — доля диалогов со статусом «Отказ», где текст переписки содержит явные признаки занятости/отсутствия машины (регекс по ключевым словам). Модельная разбивка — по совпадению названия модели в тексте диалога с расширяемым словарём ключевых слов, используемым во всех отчётах этой серии. Фактические пробелы в парке и оценки менеджеров получены построчным прочтением переписок по каждому городу отдельно. ★ рейтинг — не самостоятельная оценка, а среднее двух ранжирований по реально посчитанным метрикам (формула — над таблицей рейтинга). Скорость реагирования (вкладка «Менеджеры: детально») посчитана программно по таймстемпам внутри строк переписки («ДД.ММ.ГГ ЧЧ:ММ роль:») — время от последнего непроверенного сообщения клиента до следующего сообщения менеджера; медиана и p90 показаны раздельно, поскольку среднее сильно искажается редкими ночными задержками. Упоминания продления (13 диалогов) разобраны вручную, построчно, без выборки — это полный список, не оценка по образцу. Пакеты снижения ответственности классифицированы вручную по каждому диалогу отдельно: «реальный выбор» засчитан только там, где менеджер явно спросил или предложил решение, а не просто продиктовал условия. Разбивка по менеджерам построена по <code>Журналу рабочих смен менеджеров.xlsx</code> (город+дата→ФИО, сокращено до фамилии и инициалов), с привязкой на уровне отдельных сообщений, а не диалога целиком — покрыто 344 из 381 диалогов (90%), это тестовый раздел, не финальный HR-вывод. Ни один процент в этом отчёте не выдуман — если оценка качественная (не посчитана), это указано текстом, а не числом.</p>
+    <p>Источники: <code>Чаты итог июль.xlsx</code> (лист «История чатов», 1280 диалогов, 1–31 июля 2026) и <code>выгрузка август.xlsx</code> (381 диалог, 1–9 августа 2026). Конверсия и доля загасших лидов посчитаны напрямую по колонке «Статус». «Отказ из-за нехватки» — доля диалогов со статусом «Отказ», где текст переписки содержит явные признаки занятости/отсутствия машины (регекс по ключевым словам). Модельная разбивка — по совпадению названия модели в тексте диалога с расширяемым словарём ключевых слов, используемым во всех отчётах этой серии. Фактические пробелы в парке и оценки менеджеров получены построчным прочтением переписок по каждому городу отдельно. ★ рейтинг — не самостоятельная оценка, а среднее двух ранжирований по реально посчитанным метрикам (формула — над таблицей рейтинга). Скорость реагирования (вкладка «Менеджеры: детально») посчитана программно по таймстемпам внутри строк переписки («ДД.ММ.ГГ ЧЧ:ММ роль:») — время от последнего непроверенного сообщения клиента до следующего сообщения менеджера; медиана и p90 показаны раздельно, поскольку среднее сильно искажается редкими ночными задержками. Упоминания продления (13 диалогов) разобраны вручную, построчно, без выборки — это полный список, не оценка по образцу. Пакеты снижения ответственности классифицированы вручную по каждому диалогу отдельно: «реальный выбор» засчитан только там, где менеджер явно спросил или предложил решение, а не просто продиктовал условия. Разбивка по менеджерам построена по <code>Журналу рабочих смен менеджеров.xlsx</code> (город+дата→ФИО, сокращено до фамилии и инициалов), с привязкой на уровне отдельных сообщений, а не диалога целиком — покрыто 344 из 381 августовских диалогов (90%) и 1141 из 1280 июльских (89%), это тестовый раздел, не финальный HR-вывод. Ни один процент в этом отчёте не выдуман — если оценка качественная (не посчитана), это указано текстом, а не числом.</p>
   </footer>
 </div>
 
