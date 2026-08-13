@@ -1066,6 +1066,31 @@
       </div>
     </div>
 
+    <h2 class="section-title"><svg class="icon"><use href="#i-user"/></svg>По менеджерам (тест-режим)</h2>
+    <div class="caveat-banner">
+      <svg class="icon"><use href="#i-warn"/></svg>
+      <div><b>Данные неполные и не проверены.</b> Привязка «город+дата → менеджер» сделана по журналу рабочих смен, распознанному со скриншотов, а не из выгруженного файла — риск ошибки в дате или фамилии реален; часть смен распознать не удалось, эти диалоги в разбивку не попали. ФИО намеренно сокращены до фамилии и инициалов. <b>52 из 381 диалогов растянуты на несколько календарных дней</b> — переписку продолжает уже другой менеджер, если сменился день. Поэтому здесь привязка не «весь диалог = один менеджер», а по каждому сообщению отдельно: скорость ответа — менеджеру, который в тот конкретный день был на смене в этом городе; исход диалога (бронь/отказ/загас) — менеджеру, который вёл его в день ПОСЛЕДНЕГО сообщения, то есть фактически довёл до финала. Считайте это направлением, а не готовым основанием для оргвыводов — особенно там, где отмечено «мало данных».</div>
+    </div>
+    <div class="profile-wrap">
+      <table class="profile">
+        <thead><tr><th>Менеджер</th><th>Диалогов (исход)</th><th>Смен</th><th>Диалогов/смену</th><th>Конверсия</th><th>Загасился</th><th>Первый ответ</th><th>Ответ на сообщение</th></tr></thead>
+        <tbody>
+          <tr><td class="city-cell">Сантросян А.К.</td><td class="num">26</td><td class="num">3</td><td class="num">8.7</td><td class="num good">65.4%</td><td class="num good">3.8%</td><td class="num good">1 мин</td><td class="num good">1 мин</td></tr>
+          <tr><td class="city-cell">Башлыков Г.Б.</td><td class="num">50</td><td class="num">5</td><td class="num">10.0</td><td class="num good">54.0%</td><td class="num good">2.0%</td><td class="num mid">6 мин</td><td class="num mid">3 мин</td></tr>
+          <tr><td class="city-cell">Буцырин С.Е.</td><td class="num">22</td><td class="num">3</td><td class="num">7.3</td><td class="num mid">40.9%</td><td class="num good">9.1%</td><td class="num mid">6 мин</td><td class="num good">1 мин</td></tr>
+          <tr><td class="city-cell">Макаров И.С.</td><td class="num">52</td><td class="num">4</td><td class="num">13.0</td><td class="num mid">40.4%</td><td class="num mid">23.1%</td><td class="num good">4 мин</td><td class="num good">1 мин</td></tr>
+          <tr><td class="city-cell">Тягунов Д.А. <span class="mtag">мало данных</span></td><td class="num">3</td><td class="num">1</td><td class="num">3.0</td><td class="num mid">33.3%</td><td class="num good">0.0%</td><td class="num bad">1.6 ч</td><td class="num bad">24 мин</td></tr>
+          <tr><td class="city-cell">Потапов К.О.</td><td class="num">25</td><td class="num">2</td><td class="num">12.5</td><td class="num mid">32.0%</td><td class="num bad">28.0%</td><td class="num mid">6 мин</td><td class="num good">2 мин</td></tr>
+          <tr><td class="city-cell">Суслов П.В.</td><td class="num">32</td><td class="num">2</td><td class="num">16.0</td><td class="num mid">31.2%</td><td class="num mid">15.6%</td><td class="num mid">17 мин</td><td class="num good">2 мин</td></tr>
+          <tr><td class="city-cell">Некрасов В.Ю.</td><td class="num">28</td><td class="num">3</td><td class="num">9.3</td><td class="num mid">28.6%</td><td class="num bad">28.6%</td><td class="num good">1 мин</td><td class="num good">1 мин</td></tr>
+          <tr><td class="city-cell">Невидомский В.И.</td><td class="num">28</td><td class="num">3</td><td class="num">9.3</td><td class="num bad">17.9%</td><td class="num mid">14.3%</td><td class="num good">4 мин</td><td class="num mid">4 мин</td></tr>
+          <tr><td class="city-cell">Рязанцев А.А. <span class="mtag">мало данных</span></td><td class="num">5</td><td class="num">2</td><td class="num">2.5</td><td class="num bad">20.0%</td><td class="num mid">20.0%</td><td class="num good">2 мин</td><td class="num good">2 мин</td></tr>
+          <tr><td class="city-cell">Черных Я.М. <span class="mtag">мало данных</span></td><td class="num">5</td><td class="num">2</td><td class="num">2.5</td><td class="num bad">20.0%</td><td class="num mid">20.0%</td><td class="num mid">20 мин</td><td class="num good">1 мин</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="conclusion"><svg class="icon"><use href="#i-flag"/></svg><div><b>Скорость ответа не объясняет разницу в конверсии.</b> У Некрасова В.Ю. — один из самых быстрых ответов в выборке (1 мин и на первое сообщение, и на последующие), но конверсия одна из низких (28.6%) и самый высокий загасился (28.6%). А городская статистика Красноярска («лучшая конверсия сети, но и худший загасился») оказалась смесью двух разных людей на одном городе: Сантросян А.К. держит 65.4%/3.8%, Некрасов В.Ю. на тех же условиях — 28.6%/28.6%. Нагрузка (диалогов/смену) тоже не даёт прямой связи с результатом: у Суслова П.В. и Макарова И.С. нагрузка выше всех (13-16/смену), но конверсия у обоих средняя.</div></div>
+
   </section>
 
   <footer>
