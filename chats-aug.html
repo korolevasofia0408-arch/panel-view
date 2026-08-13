@@ -271,6 +271,20 @@
   .finding-card.improve .finding-item .icon{ color:var(--good); }
   .finding-item p{ margin:0; font-size:13px; color:var(--ink-muted); }
   .finding-item p b{ color:var(--ink); font-weight:700; }
+
+  /* ---- deep-dive tab: split sales-vs-consultation skill cards, response-time note ---- */
+  .skill-card{ background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--city); border-radius:var(--radius); padding:18px 20px; box-shadow:var(--shadow); margin-bottom:16px; }
+  .skill-card .city-name{ font-size:15px; font-weight:800; margin-bottom:14px; display:flex; align-items:center; gap:9px; }
+  .skill-cols{ display:grid; grid-template-columns:1fr; gap:18px; }
+  @media (min-width:760px){ .skill-cols{ grid-template-columns:1fr 1fr; } }
+  .skill-axis-label{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--accent); font-weight:800; margin-bottom:9px; }
+  .skill-axis ul{ margin:0; padding-left:0; list-style:none; display:grid; gap:7px; }
+  .skill-axis li{ font-size:12.6px; color:var(--ink-muted); padding-left:15px; position:relative; }
+  .skill-axis li::before{ content:"+"; position:absolute; left:0; color:var(--good); font-weight:800; }
+  .skill-axis li.bad::before{ content:"–"; color:var(--critical); }
+  .skill-axis li b{ color:var(--ink); font-weight:600; }
+  .stat-note{ background:var(--surface); border:1px solid var(--line-strong); border-left:3px solid var(--accent); border-radius:var(--radius); padding:16px 20px; margin:16px 0; font-size:14px; color:var(--ink); }
+  .stat-note b{ color:var(--accent); }
 </style>
 </head>
 <body>
@@ -323,6 +337,7 @@
     <button class="tab" id="tab-fleet" role="tab" aria-selected="true" aria-controls="panel-fleet"><svg class="icon icon-sm"><use href="#i-car"/></svg>Автопарк</button>
     <button class="tab" id="tab-sales" role="tab" aria-selected="false" aria-controls="panel-sales"><svg class="icon icon-sm"><use href="#i-cart"/></svg>Продажи</button>
     <button class="tab" id="tab-trend" role="tab" aria-selected="false" aria-controls="panel-trend"><svg class="icon icon-sm"><use href="#i-scale"/></svg>Июль → Август</button>
+    <button class="tab" id="tab-deep" role="tab" aria-selected="false" aria-controls="panel-deep"><svg class="icon icon-sm"><use href="#i-clock"/></svg>Менеджеры: детально</button>
   </div>
 
   <!-- ============ TAB 1 — АВТОПАРК ============ -->
@@ -891,8 +906,170 @@
 
   </section>
 
+  <!-- ============ TAB 4 — МЕНЕДЖЕРЫ: ДЕТАЛЬНО ============ -->
+  <section id="panel-deep" class="panel" role="tabpanel" aria-labelledby="tab-deep">
+
+    <p class="section-note">Всё ниже — по августовской выборке (381 диалог, 1–9 августа), тем же 5 городам. Скорость ответа посчитана напрямую по таймстемпам внутри переписок (не оценка). Пакеты и продления — по фактическому подсчёту вручную/построчно, с явным указанием, что было реальным предложением выбора, а что — просто информационным текстом.</p>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-clock"/></svg>Скорость реагирования</h2>
+    <p class="section-note">Два показателя: «первый ответ» — сколько времени проходит от первого сообщения клиента до первого ответа менеджера; «ответ на сообщение» — то же самое, но по каждому последующему обмену репликами внутри диалога. Медиана — типичный случай; p90 — «9 из 10 ответов быстрее этого» (то есть показывает именно хвост из редких, но долгих задержек, который медиана прячет).</p>
+    <div class="profile-wrap">
+      <table class="profile">
+        <thead><tr><th>Город</th><th>Первый ответ, медиана</th><th>Первый ответ, p90</th><th>Ответ на сообщение, медиана</th><th>Доля ответов &gt;3ч</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-krsk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Красноярск</td>
+            <td class="num good">1 мин</td><td class="num good">23 мин</td><td class="num good">1 мин</td><td class="num good">1.0%</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-ekb); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Екатеринбург</td>
+            <td class="num good">3 мин</td><td class="num good">37 мин</td><td class="num good">1 мин</td><td class="num mid">4.6%</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-msk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Москва</td>
+            <td class="num good">4 мин</td><td class="num mid">2.6 ч</td><td class="num good">1 мин</td><td class="num mid">3.4%</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-nsk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Новосибирск</td>
+            <td class="num good">6 мин</td><td class="num mid">1.2 ч</td><td class="num good">3 мин</td><td class="num mid">3.6%</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-irk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Иркутск</td>
+            <td class="num mid">5 мин</td><td class="num bad">9.7 ч</td><td class="num mid">2 мин</td><td class="num bad">8.6%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="conclusion"><svg class="icon"><use href="#i-flag"/></svg><div><b>Медиана обманчиво хорошая почти везде</b> — большинство обменов репликами внутри уже идущего разговора происходит за 1-3 минуты, это реальная скорость, когда менеджер онлайн. Но именно медиана прячет то, что раньше находили качественно: «ответ на следующее утро». P90 это ловит — у Иркутска 9 из 10 первых ответов укладываются быстрее <b>9.7 часа</b>, это на порядок хуже остальной сети, и 8.6% всех ответов там занимают больше 3 часов. Красноярск — противоположный полюс: p90 всего 23 минуты, самый ровный город по скорости.</div></div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-refresh"/></svg>Продления в переписке</h2>
+    <p class="section-note">Каждое из 381 сообщений вручную проверено на упоминание слова «продление» — их оказалось мало (13 диалогов), поэтому это разобрано построчно, а не агентами: полная выборка, не оценка.</p>
+    <div class="stat-note">Слово «продление» звучит всего в <b>13 из 381</b> диалогов (3.4%). В <b>8</b> из них тему поднимает клиент. Из 5 диалогов, где первым говорит менеджер — в 3 это объяснение, почему машина занята («её уже 2 месяца продлевает другой клиент»), не предложение текущему клиенту; ещё в 1 менеджер просто уточняет уже подразумеваемое клиентом продление. Реальный проактивный случай — когда менеджер сам, без запроса, предлагает продление — нашёлся только <b>один на всю выборку</b>: Красноярск, «Продление возможно?» в диалоге о свежей брони Tank 300 (клиент ответил «Наврятле»).</div>
+    <div class="conclusion"><svg class="icon"><use href="#i-flag"/></svg><div>По количеству упоминаний: Иркутск — 5, Екатеринбург — 4, Красноярск — 3, Новосибирск — 1, Москва — 0. Уведомления о возможности продления как отдельная, системная практика — <b>отсутствуют</b>: ни в одном городе нет шаблонной фразы или скрипта, который бы поднимал тему продления сам. Это открытая точка роста, а не то, что где-то работает лучше/хуже — везде одинаково не делается.</div></div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-shield"/></svg>Пакеты страхования (снижение ответственности)</h2>
+    <p class="section-note">Менеджеры часто присылают шаблонную строку «Пакет снижения ответственности №1.» просто как информационную часть брони — это не то же самое, что реально спросить клиента и получить ответ. Ниже разделено: сколько диалогов вообще упоминают пакет, сколько из них — настоящий вопрос с выбором, и что клиент ответил.</p>
+    <div class="profile-wrap">
+      <table class="profile">
+        <thead><tr><th>Город</th><th>Упоминаний</th><th>Реальный выбор</th><th>Принято</th><th>Отказ</th><th>Не разрешено</th></tr></thead>
+        <tbody>
+          <tr><td class="city-cell"><span class="city-avatar" style="background:var(--city-ekb); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Екатеринбург</td>
+            <td class="num">18</td><td class="num">17</td><td class="num good">8</td><td class="num bad">4</td><td class="num mid">5</td></tr>
+          <tr><td class="city-cell"><span class="city-avatar" style="background:var(--city-irk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Иркутск</td>
+            <td class="num">24</td><td class="num">6</td><td class="num good">1</td><td class="num bad">3</td><td class="num mid">2</td></tr>
+          <tr><td class="city-cell"><span class="city-avatar" style="background:var(--city-krsk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Красноярск</td>
+            <td class="num">24</td><td class="num">19</td><td class="num good">9</td><td class="num bad">8</td><td class="num mid">2</td></tr>
+          <tr><td class="city-cell"><span class="city-avatar" style="background:var(--city-msk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Москва</td>
+            <td class="num">2</td><td class="num">2</td><td class="num good">0</td><td class="num bad">1</td><td class="num mid">1</td></tr>
+          <tr><td class="city-cell"><span class="city-avatar" style="background:var(--city-nsk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Новосибирск</td>
+            <td class="num">25</td><td class="num">8</td><td class="num good">4</td><td class="num bad">2</td><td class="num mid">2</td></tr>
+          <tr><td class="city-cell" style="font-weight:800;">Всего по сети</td>
+            <td class="num" style="font-weight:800;">93</td><td class="num" style="font-weight:800;">52</td><td class="num good" style="font-weight:800;">22</td><td class="num bad" style="font-weight:800;">18</td><td class="num mid" style="font-weight:800;">12</td></tr>
+        </tbody>
+      </table>
+      <div class="legend-row">
+        <span class="li">«Реальный выбор» — менеджер явно спросил/предложил, а не просто прислал текст условий</span>
+        <span class="li">«Не разрешено» — диалог оборвался/лид пропал до ответа клиента</span>
+      </div>
+    </div>
+    <div class="conclusion"><svg class="icon"><use href="#i-flag"/></svg><div><b>Отказ от пакета: 45%</b> среди диалогов с ясным итогом (18 отказов из 40 принято+отказ), или <b>35%</b> если считать знаменателем вообще все случаи, где пакет был реально предложен (18 из 52). Но главная находка не в проценте отказа, а в том, что происходит ДО этого выбора: из 93 диалогов, где пакет вообще упомянут, реальным вопросом с выбором это стало только в 52 (56%) — в остальных менеджер просто продиктовал условия и не спросил. Особенно заметно в Иркутске (24 упоминания → всего 6 настоящих предложений) и Новосибирске (25 → 8). Это значит компания недобирает допродажу не столько из-за отказов, сколько из-за того, что пакет часто вообще не предлагается как решение.</div></div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-user"/></svg>Продажи и консультация — раздельная оценка</h2>
+    <p class="section-note">Два разных навыка, специально не смешаны в одну оценку: «Продажи» — закрытие сделки, допродажа, работа с возражениями, дожим остывших лидов. «Консультация» — точность и последовательность информации, доведение вопроса клиента до ответа, корректность расчётов. Менеджер может быть слабым продавцом, но точным консультантом, и наоборот — эта разбивка как раз должна такое показывать.</p>
+
+    <div class="skill-card" style="--city:var(--city-krsk)">
+      <div class="city-name"><span class="city-avatar" style="background:var(--city-krsk); width:24px; height:24px; border-radius:6px;"><svg class="icon" style="width:13px;height:13px;stroke:#fff"><use href="#i-building"/></svg></span>Красноярск</div>
+      <div class="skill-cols">
+        <div class="skill-axis"><div class="skill-axis-label">Продажи</div><ul>
+          <li>Закрывающий вопрос звучит в ~10 из 69 диалогов («Оформляем бронь?»)</li>
+          <li>Реальный апсейл через соц. доказательство: «его всегда ваши коллеги берут максимальный пакет» — сработало</li>
+          <li class="bad">На «дорого» — просто повтор цены, без аргумента ценности; лид потерян</li>
+          <li class="bad">Скидка выдаётся заранее («максимальная скидка»), а не как результат торга</li>
+        </ul></div>
+        <div class="skill-axis"><div class="skill-axis-label">Консультация</div><ul>
+          <li>Пробег и депозит объясняются одинаково точно в разных, не связанных диалогах</li>
+          <li>Менеджер сам поймал несостыковку клиента в датах перед расчётом цены</li>
+          <li class="bad">Прямой вопрос про конкретную модель иногда остаётся без ответа по существу</li>
+          <li class="bad">Обрывки шаблонного текста («......») делают часть условий нечитаемой для клиента</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <div class="skill-card" style="--city:var(--city-nsk)">
+      <div class="city-name"><span class="city-avatar" style="background:var(--city-nsk); width:24px; height:24px; border-radius:6px;"><svg class="icon" style="width:13px;height:13px;stroke:#fff"><use href="#i-building"/></svg></span>Новосибирск</div>
+      <div class="skill-cols">
+        <div class="skill-axis"><div class="skill-axis-label">Продажи</div><ul>
+          <li>Не поддаётся на просьбу скидки без причины — объясняет условия лояльности</li>
+          <li>Ставит бронь на предварительное удержание, чтобы не потерять машину для клиента</li>
+          <li class="bad">Большинство ответов по цене/наличию заканчиваются без закрывающего вопроса</li>
+          <li class="bad">Холодные лиды получают один и тот же шаблон и без ответа считаются потерянными</li>
+        </ul></div>
+        <div class="skill-axis"><div class="skill-axis-label">Консультация</div><ul>
+          <li>Системное выяснение потребности почти в каждом диалоге</li>
+          <li>«Сверьте данные» — стандартная, реально используемая фраза-проверка перед бронью</li>
+          <li class="bad">Реальное расхождение цены Camry (8500₽+30000 vs 7000₽+10000) не объяснено клиенту</li>
+          <li class="bad">На «непонятно» от клиента менеджер отвечает просто «?»</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <div class="skill-card" style="--city:var(--city-ekb)">
+      <div class="city-name"><span class="city-avatar" style="background:var(--city-ekb); width:24px; height:24px; border-radius:6px;"><svg class="icon" style="width:13px;height:13px;stroke:#fff"><use href="#i-building"/></svg></span>Екатеринбург</div>
+      <div class="skill-cols">
+        <div class="skill-axis"><div class="skill-axis-label">Продажи</div><ul>
+          <li>Закрывающий вопрос в ~10 из 100 диалогов; допродажа пакета почти при каждой брони</li>
+          <li class="bad">Скидка «в виде исключения» (10 000₽) даётся без аргумента ценности</li>
+          <li class="bad">Урожай реального дефицита (кабриолет, бизнес-класс) не используется как аргумент срочности</li>
+          <li class="bad">Follow-up на холодные лиды есть, но общий шаблон без персонализации</li>
+        </ul></div>
+        <div class="skill-axis"><div class="skill-axis-label">Консультация</div><ul>
+          <li>Потребность выясняется до расчёта; проверенные суммы сходятся</li>
+          <li class="bad">Минимум 3 реальных противоречия в одном диалоге (машина то «занята», то «на диагностике»)</li>
+          <li class="bad">Цена на сайте разошлась с озвученной менеджером — клиент сам это поймал</li>
+          <li class="bad">Дублирующийся автоответ иногда мешает получить содержательный ответ</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <div class="skill-card" style="--city:var(--city-msk)">
+      <div class="city-name"><span class="city-avatar" style="background:var(--city-msk); width:24px; height:24px; border-radius:6px;"><svg class="icon" style="width:13px;height:13px;stroke:#fff"><use href="#i-building"/></svg></span>Москва</div>
+      <div class="skill-cols">
+        <div class="skill-axis"><div class="skill-axis-label">Продажи</div><ul>
+          <li>Закрывающий вопрос использован как минимум дважды, с быстрым результатом</li>
+          <li>Скидка на BMW 540i подана с ценностной рамкой («в максимальной комплектации»)</li>
+          <li class="bad">Ни один из 6 остывших лидов не получил повторного контакта</li>
+          <li class="bad">Предложение конкурента (Rentcars) встречено без контрпредложения — «Хорошего дня!»</li>
+        </ul></div>
+        <div class="skill-axis"><div class="skill-axis-label">Консультация</div><ul>
+          <li>Цель поездки выясняется почти в каждой брони; расчёт по Ростову сошёлся точно</li>
+          <li class="bad">100₽ расхождение в цене подменного авто, без объяснения</li>
+          <li class="bad">Депозит вырос 40 000→80 000→150 000₽ в одном диалоге без объяснения — клиент растерялся</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <div class="skill-card" style="--city:var(--city-irk)">
+      <div class="city-name"><span class="city-avatar" style="background:var(--city-irk); width:24px; height:24px; border-radius:6px;"><svg class="icon" style="width:13px;height:13px;stroke:#fff"><use href="#i-building"/></svg></span>Иркутск</div>
+      <div class="skill-cols">
+        <div class="skill-axis"><div class="skill-axis-label">Продажи</div><ul>
+          <li>Изредка реактивирует остывшие лиды («Подскажите, что решили?»)</li>
+          <li class="bad">Почти нет закрывающего вопроса; после «Понял вас» лид просто бросается</li>
+          <li class="bad">Скидка даётся по первому требованию клиента, без торга и аргументации</li>
+          <li class="bad">Реальный дефицит (машина «уже 2 месяца продлевается») не используется как аргумент</li>
+        </ul></div>
+        <div class="skill-axis"><div class="skill-axis-label">Консультация</div><ul>
+          <li>Чёткое выяснение класса/цели поездки; последовательная политика по маршруту на Ольхон</li>
+          <li>Детализация суммы аренды сходится, посчитано верно</li>
+          <li class="bad">Цена озвучена клиенту, который уже «пошёл согласовывать» — и лишь потом исправлена</li>
+          <li class="bad">Путаница с датой/машиной внутри одного диалога, менеджер повторяется</li>
+        </ul></div>
+      </div>
+    </div>
+
+  </section>
+
   <footer>
-    <p>Источники: <code>Чаты итог июль.xlsx</code> (лист «История чатов», 1280 диалогов, 1–31 июля 2026) и <code>выгрузка август.xlsx</code> (381 диалог, 1–9 августа 2026). Конверсия и доля загасших лидов посчитаны напрямую по колонке «Статус». «Отказ из-за нехватки» — доля диалогов со статусом «Отказ», где текст переписки содержит явные признаки занятости/отсутствия машины (регекс по ключевым словам). Модельная разбивка — по совпадению названия модели в тексте диалога с расширяемым словарём ключевых слов, используемым во всех отчётах этой серии. Фактические пробелы в парке и оценки менеджеров получены построчным прочтением переписок по каждому городу отдельно. ★ рейтинг — не самостоятельная оценка, а среднее двух ранжирований по реально посчитанным метрикам (формула — над таблицей рейтинга). Ни один процент в этом отчёте не выдуман — если оценка качественная (не посчитана), это указано текстом, а не числом.</p>
+    <p>Источники: <code>Чаты итог июль.xlsx</code> (лист «История чатов», 1280 диалогов, 1–31 июля 2026) и <code>выгрузка август.xlsx</code> (381 диалог, 1–9 августа 2026). Конверсия и доля загасших лидов посчитаны напрямую по колонке «Статус». «Отказ из-за нехватки» — доля диалогов со статусом «Отказ», где текст переписки содержит явные признаки занятости/отсутствия машины (регекс по ключевым словам). Модельная разбивка — по совпадению названия модели в тексте диалога с расширяемым словарём ключевых слов, используемым во всех отчётах этой серии. Фактические пробелы в парке и оценки менеджеров получены построчным прочтением переписок по каждому городу отдельно. ★ рейтинг — не самостоятельная оценка, а среднее двух ранжирований по реально посчитанным метрикам (формула — над таблицей рейтинга). Скорость реагирования (вкладка «Менеджеры: детально») посчитана программно по таймстемпам внутри строк переписки («ДД.ММ.ГГ ЧЧ:ММ роль:») — время от последнего непроверенного сообщения клиента до следующего сообщения менеджера; медиана и p90 показаны раздельно, поскольку среднее сильно искажается редкими ночными задержками. Упоминания продления (13 диалогов) разобраны вручную, построчно, без выборки — это полный список, не оценка по образцу. Пакеты снижения ответственности классифицированы вручную по каждому диалогу отдельно: «реальный выбор» засчитан только там, где менеджер явно спросил или предложил решение, а не просто продиктовал условия. Ни один процент в этом отчёте не выдуман — если оценка качественная (не посчитана), это указано текстом, а не числом.</p>
   </footer>
 </div>
 
@@ -901,6 +1078,7 @@
     ['tab-fleet','panel-fleet'],
     ['tab-sales','panel-sales'],
     ['tab-trend','panel-trend'],
+    ['tab-deep','panel-deep'],
   ];
   tabs.forEach(([tabId, panelId]) => {
     document.getElementById(tabId).addEventListener('click', () => {
