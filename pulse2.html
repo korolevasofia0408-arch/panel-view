@@ -157,6 +157,9 @@
   .stack-legend .sw{ display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px; vertical-align:middle; }
   .stack-legend b{ color:var(--text-primary); font-variant-numeric:tabular-nums; }
 
+  /* ---- revenue vs booking-count blocks, kept visually separate ---- */
+  .cp-block-divider{ margin-top:20px; padding-top:18px; border-top:1px solid var(--gridline); }
+
   /* ---- per-segment (new/repeat) pace vs plan ---- */
   .seg-pace-row{ display:grid; grid-template-columns:1fr; gap:14px; margin-top:8px; }
   @media (min-width:520px){ .seg-pace-row{ grid-template-columns:1fr 1fr; } }
@@ -735,37 +738,45 @@ function renderCurrentPeriod(suffix){
     return {ratio, status: statusFor(ratio)};
   };
 
-  const countP = paceOf(t.count.fact, t.count.plan);
-  const rubP = paceOf(t.rub.fact, t.rub.plan);
-  const newP = paceOf(segs.new.rub.fact, segs.new.rub.plan);
-  const repeatP = paceOf(segs.repeat.rub.fact, segs.repeat.rub.plan);
+  const segBlockHtml = (label, color, fact, plan, p, fmt) => `
+    <div class="seg-pace">
+      <div class="seg-pace-top"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${color};"></span><span class="seg-pace-label">${label}</span><span class="status-pill sm ${p.status}">темп ${fmtPct(p.ratio*100,0)}</span></div>
+      <div class="seg-pace-nums"><b>${fmt(fact)}</b> <span class="mini-label">из ${fmt(plan)}</span></div>
+      ${meterBarHtml(fact, plan, frac, p.status, true)}
+    </div>`;
+
+  const rubTotal = paceOf(t.rub.fact, t.rub.plan);
+  const rubNew = paceOf(segs.new.rub.fact, segs.new.rub.plan);
+  const rubRepeat = paceOf(segs.repeat.rub.fact, segs.repeat.rub.plan);
+
+  const cntTotal = paceOf(t.count.fact, t.count.plan);
+  const cntNew = paceOf(segs.new.count.fact, segs.new.count.plan);
+  const cntRepeat = paceOf(segs.repeat.count.fact, segs.repeat.count.plan);
 
   el.innerHTML = `
-    <div class="stat-row">
+    <div class="cp-block">
+      <div class="stat-tile">
+        <div class="stat-label">Выручка (факт/план)</div>
+        <div class="stat-value">${fmtRubShort(t.rub.fact)}<span style="font-size:13px;color:var(--text-muted);"> / ${fmtRubShort(t.rub.plan)}</span></div>
+        <div class="stat-sub">темп <span class="status-pill sm ${rubTotal.status}">${fmtPct(rubTotal.ratio*100,0)}</span></div>
+      </div>
+      ${meterBarHtml(t.rub.fact, t.rub.plan, frac, rubTotal.status, true)}
+      <div class="seg-pace-row" style="margin-top:10px;">
+        ${segBlockHtml('Новые', 'var(--series-1)', segs.new.rub.fact, segs.new.rub.plan, rubNew, fmtRubShort)}
+        ${segBlockHtml('Постоянные', 'var(--series-2)', segs.repeat.rub.fact, segs.repeat.rub.plan, rubRepeat, fmtRubShort)}
+      </div>
+    </div>
+
+    <div class="cp-block cp-block-divider">
       <div class="stat-tile">
         <div class="stat-label">Броней (факт/план)</div>
         <div class="stat-value">${fmtNum(t.count.fact)}<span style="font-size:13px;color:var(--text-muted);"> / ${fmtNum(t.count.plan)}</span></div>
-        <div class="stat-sub">темп <span class="status-pill sm ${countP.status}">${fmtPct(countP.ratio*100,0)}</span></div>
+        <div class="stat-sub">темп <span class="status-pill sm ${cntTotal.status}">${fmtPct(cntTotal.ratio*100,0)}</span></div>
       </div>
-      <div class="stat-tile">
-        <div class="stat-label">Выручка (факт/план)</div>
-        <div class="stat-value">${fmtRubShort(t.rub.fact)}</div>
-        <div class="stat-sub">план ${fmtRubShort(t.rub.plan)} · темп <span class="status-pill sm ${rubP.status}">${fmtPct(rubP.ratio*100,0)}</span></div>
-      </div>
-    </div>
-    ${meterBarHtml(t.rub.fact, t.rub.plan, frac, rubP.status, true)}
-
-    <div class="hint" style="margin:14px 0 0;">Кого недобираем — план по выручке отдельно для новых и постоянных клиентов</div>
-    <div class="seg-pace-row">
-      <div class="seg-pace">
-        <div class="seg-pace-top"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--series-1);"></span><span class="seg-pace-label">Новые</span><span class="status-pill sm ${newP.status}">темп ${fmtPct(newP.ratio*100,0)}</span></div>
-        <div class="seg-pace-nums"><b>${fmtNum(segs.new.count.fact)}</b> · ${fmtRubShort(segs.new.rub.fact)} <span class="mini-label">из ${fmtRubShort(segs.new.rub.plan)}</span></div>
-        ${meterBarHtml(segs.new.rub.fact, segs.new.rub.plan, frac, newP.status, true)}
-      </div>
-      <div class="seg-pace">
-        <div class="seg-pace-top"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--series-2);"></span><span class="seg-pace-label">Постоянные</span><span class="status-pill sm ${repeatP.status}">темп ${fmtPct(repeatP.ratio*100,0)}</span></div>
-        <div class="seg-pace-nums"><b>${fmtNum(segs.repeat.count.fact)}</b> · ${fmtRubShort(segs.repeat.rub.fact)} <span class="mini-label">из ${fmtRubShort(segs.repeat.rub.plan)}</span></div>
-        ${meterBarHtml(segs.repeat.rub.fact, segs.repeat.rub.plan, frac, repeatP.status, true)}
+      ${meterBarHtml(t.count.fact, t.count.plan, frac, cntTotal.status, true)}
+      <div class="seg-pace-row" style="margin-top:10px;">
+        ${segBlockHtml('Новые', 'var(--series-1)', segs.new.count.fact, segs.new.count.plan, cntNew, fmtNum)}
+        ${segBlockHtml('Постоянные', 'var(--series-2)', segs.repeat.count.fact, segs.repeat.count.plan, cntRepeat, fmtNum)}
       </div>
     </div>
   `;
