@@ -103,13 +103,15 @@
   .seg-block .seg-line{ display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:3px; }
   .seg-block .seg-line b{ font-variant-numeric:tabular-nums; }
 
-  .chan-list{ display:flex; flex-direction:column; gap:8px; }
-  .chan-row{ display:flex; align-items:center; gap:10px; }
-  .chan-row .chan-name{ width:170px; flex:none; font-size:12.5px; color:var(--text-secondary); }
-  .chan-row .chan-bar-track{ flex:1; height:8px; border-radius:4px; background:var(--gridline); overflow:hidden; }
+  .chan-list{ display:flex; flex-direction:column; }
+  .chan-row{ padding:8px 0; border-bottom:1px solid var(--gridline); }
+  .chan-row:last-child{ border-bottom:none; }
+  .chan-top{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+  .chan-top .chan-name{ font-size:12.5px; color:var(--text-secondary); font-weight:600; }
+  .chan-top .chan-nums{ flex:none; text-align:right; font-size:12px; font-variant-numeric:tabular-nums; color:var(--text-secondary); white-space:nowrap; }
+  .chan-top .chan-nums b{ color:var(--text-primary); }
+  .chan-row .chan-bar-track{ height:8px; border-radius:4px; background:var(--gridline); overflow:hidden; margin-top:6px; }
   .chan-row .chan-bar-fill{ height:100%; background:var(--accent); border-radius:4px; }
-  .chan-row .chan-val{ width:110px; flex:none; text-align:right; font-size:12px; font-variant-numeric:tabular-nums; color:var(--text-secondary); }
-  .chan-row .chan-val b{ color:var(--text-primary); }
 
   .empty-note{ font-size:12.5px; color:var(--text-muted); padding:12px 0; text-align:center; }
   footer.caveats{ font-size:12px; color:var(--text-muted); border-top:1px solid var(--gridline); padding-top:14px; line-height:1.65; margin-top:8px; }
@@ -154,6 +156,14 @@
   .stack-legend{ display:flex; gap:16px; flex-wrap:wrap; font-size:11.5px; color:var(--text-secondary); margin-bottom:2px; }
   .stack-legend .sw{ display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:5px; vertical-align:middle; }
   .stack-legend b{ color:var(--text-primary); font-variant-numeric:tabular-nums; }
+
+  /* ---- per-segment (new/repeat) pace vs plan ---- */
+  .seg-pace-row{ display:grid; grid-template-columns:1fr; gap:14px; margin-top:8px; }
+  @media (min-width:520px){ .seg-pace-row{ grid-template-columns:1fr 1fr; } }
+  .seg-pace-top{ display:flex; align-items:center; gap:7px; font-size:12px; }
+  .seg-pace-label{ font-weight:700; color:var(--text-primary); flex:1; }
+  .seg-pace-nums{ font-size:12px; color:var(--text-secondary); font-variant-numeric:tabular-nums; margin-top:4px; }
+  .seg-pace-nums b{ color:var(--text-primary); }
 
   /* ---- small twin bars (plan vs fact) ---- */
 
@@ -719,31 +729,45 @@ function renderCurrentPeriod(suffix){
   const t = segs.total;
   const frac = elapsedFraction(state.month);
 
-  const countTarget = t.count.plan*frac;
-  const countRatio = countTarget>0 ? t.count.fact/countTarget : (t.count.fact>0?1:0);
-  const countStatus = statusFor(countRatio);
+  const paceOf = (fact, plan) => {
+    const target = plan*frac;
+    const ratio = target>0 ? fact/target : (fact>0?1:0);
+    return {ratio, status: statusFor(ratio)};
+  };
 
-  const rubTarget = t.rub.plan*frac;
-  const rubRatio = rubTarget>0 ? t.rub.fact/rubTarget : (t.rub.fact>0?1:0);
-  const rubStatus = statusFor(rubRatio);
+  const countP = paceOf(t.count.fact, t.count.plan);
+  const rubP = paceOf(t.rub.fact, t.rub.plan);
+  const newP = paceOf(segs.new.rub.fact, segs.new.rub.plan);
+  const repeatP = paceOf(segs.repeat.rub.fact, segs.repeat.rub.plan);
 
   el.innerHTML = `
     <div class="stat-row">
       <div class="stat-tile">
         <div class="stat-label">Броней (факт/план)</div>
         <div class="stat-value">${fmtNum(t.count.fact)}<span style="font-size:13px;color:var(--text-muted);"> / ${fmtNum(t.count.plan)}</span></div>
-        <div class="stat-sub">темп <span class="status-pill sm ${countStatus}">${fmtPct(countRatio*100,0)}</span></div>
+        <div class="stat-sub">темп <span class="status-pill sm ${countP.status}">${fmtPct(countP.ratio*100,0)}</span></div>
       </div>
       <div class="stat-tile">
         <div class="stat-label">Выручка (факт/план)</div>
         <div class="stat-value">${fmtRubShort(t.rub.fact)}</div>
-        <div class="stat-sub">план ${fmtRubShort(t.rub.plan)} · темп <span class="status-pill sm ${rubStatus}">${fmtPct(rubRatio*100,0)}</span></div>
+        <div class="stat-sub">план ${fmtRubShort(t.rub.plan)} · темп <span class="status-pill sm ${rubP.status}">${fmtPct(rubP.ratio*100,0)}</span></div>
       </div>
     </div>
-    ${meterBarHtml(t.rub.fact, t.rub.plan, frac, rubStatus, true)}
-    <div class="hint" style="margin:12px 0 0;">Состав выручки периода</div>
-    ${newRepeatStackHtml(segs.new.rub.fact, segs.repeat.rub.fact,
-      `Новые: ${fmtNum(segs.new.count.fact)} · ${fmtRubShort(segs.new.rub.fact)}`, `Постоянные: ${fmtNum(segs.repeat.count.fact)} · ${fmtRubShort(segs.repeat.rub.fact)}`)}
+    ${meterBarHtml(t.rub.fact, t.rub.plan, frac, rubP.status, true)}
+
+    <div class="hint" style="margin:14px 0 0;">Кого недобираем — план по выручке отдельно для новых и постоянных клиентов</div>
+    <div class="seg-pace-row">
+      <div class="seg-pace">
+        <div class="seg-pace-top"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--series-1);"></span><span class="seg-pace-label">Новые</span><span class="status-pill sm ${newP.status}">темп ${fmtPct(newP.ratio*100,0)}</span></div>
+        <div class="seg-pace-nums"><b>${fmtNum(segs.new.count.fact)}</b> · ${fmtRubShort(segs.new.rub.fact)} <span class="mini-label">из ${fmtRubShort(segs.new.rub.plan)}</span></div>
+        ${meterBarHtml(segs.new.rub.fact, segs.new.rub.plan, frac, newP.status, true)}
+      </div>
+      <div class="seg-pace">
+        <div class="seg-pace-top"><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:var(--series-2);"></span><span class="seg-pace-label">Постоянные</span><span class="status-pill sm ${repeatP.status}">темп ${fmtPct(repeatP.ratio*100,0)}</span></div>
+        <div class="seg-pace-nums"><b>${fmtNum(segs.repeat.count.fact)}</b> · ${fmtRubShort(segs.repeat.rub.fact)} <span class="mini-label">из ${fmtRubShort(segs.repeat.rub.plan)}</span></div>
+        ${meterBarHtml(segs.repeat.rub.fact, segs.repeat.rub.plan, frac, repeatP.status, true)}
+      </div>
+    </div>
   `;
 }
 
@@ -797,11 +821,13 @@ function renderChannels(suffix){
   cities.forEach(c => {
     const chans = DATA[state.month][c].channels;
     Object.entries(chans).forEach(([name, v]) => {
-      if(!totals[name]) totals[name] = 0;
-      totals[name] += v.fact || 0;
+      if(!totals[name]) totals[name] = {fact:0, plan:0, hasPlan:false};
+      totals[name].fact += v.fact || 0;
+      if(typeof v.plan === 'number'){ totals[name].plan += v.plan; totals[name].hasPlan = true; }
     });
   });
-  const allRows = Object.entries(totals).map(([name,fact]) => ({name, fact})).filter(r=>r.fact>0).sort((a,b)=>b.fact-a.fact);
+  const frac = elapsedFraction(state.month);
+  const allRows = Object.entries(totals).map(([name,t]) => ({name, ...t})).filter(r=>r.fact>0).sort((a,b)=>b.fact-a.fact);
   const sumAll = allRows.reduce((a,r)=>a+r.fact,0);
   const CAP = 10;
   const rows = allRows.slice(0, CAP);
@@ -810,13 +836,23 @@ function renderChannels(suffix){
   const maxV = Math.max(...rows.map(r=>r.fact), 1);
   el.innerHTML = rows.length ? `
     <div class="chan-list">
-      ${rows.map(r => `
-        <div class="chan-row">
-          <span class="chan-name">${r.name}</span>
-          <div class="chan-bar-track"><div class="chan-bar-fill" style="width:${r.fact/maxV*100}%;"></div></div>
-          <span class="chan-val"><b>${fmtNum(r.fact)}</b> · ${fmtPct(r.fact/sumAll*100,0)}</span>
-        </div>
-      `).join('')}
+      ${rows.map(r => {
+        if(r.hasPlan && r.plan>0){
+          const target = r.plan*frac;
+          const ratio = target>0 ? r.fact/target : (r.fact>0?1:0);
+          const status = statusFor(ratio);
+          return `
+            <div class="chan-row">
+              <div class="chan-top"><span class="chan-name">${r.name}</span><span class="chan-nums"><b>${fmtNum(r.fact)}</b> / ${fmtNum(r.plan)} · <span class="status-pill sm ${status}">темп ${fmtPct(ratio*100,0)}</span></span></div>
+              ${meterBarHtml(r.fact, r.plan, frac, status, true)}
+            </div>`;
+        }
+        return `
+          <div class="chan-row">
+            <div class="chan-top"><span class="chan-name">${r.name}</span><span class="chan-nums"><b>${fmtNum(r.fact)}</b> · ${fmtPct(r.fact/sumAll*100,0)} <span class="mini-label">план не указан</span></span></div>
+            <div class="chan-bar-track"><div class="chan-bar-fill" style="width:${r.fact/maxV*100}%;"></div></div>
+          </div>`;
+      }).join('')}
     </div>
     ${tailCount>0 ? `<div class="mom-note">и ещё ${tailCount} каналов поменьше — суммарно ${fmtNum(tailSum)} лидов</div>` : ''}
     <div class="mom-note">Всего по показанным каналам: <b>${fmtNum(sumAll)}</b> лидов</div>
