@@ -396,15 +396,17 @@ function deviationCard(el, monthMetric, fmt){
 // was, but still didn't show the actual point-deviation as a number. Deviation is in percentage
 // points (факт% - план%), not a relative %, since these are already percentages themselves --
 // "+5 п.п." reads directly, "+25%" of a percentage would just confuse plan and fact's own scale.
-// opts.invert: true when higher-than-plan is the BAD direction (cancellations, future-bookings
-// leakage) rather than the default GOOD direction (conversion).
-function deviationRateCard(plan, fact, opts){
-  opts = opts || {};
+// Color/direction is a fixed sign convention across every deviation display on this dashboard:
+// minus = left + red, plus = right + green, always -- deliberately NOT flipped for metrics where
+// "up" is business-bad (% отмен, % будущих броней). Whether a plus is actually good or bad for
+// that particular metric is for the reader to judge from the label, not something the bar decides
+// for them by silently inverting its own color -- a red-but-really-improving bar read backwards
+// once too often.
+function deviationRateCard(plan, fact){
   const planPct = plan*100, factPct = fact*100;
   const deltaPP = factPct - planPct;
   const isFiniteDelta = isFinite(deltaPP);
-  const good = isFiniteDelta ? (opts.invert ? deltaPP<=0 : deltaPP>=0) : true;
-  const status = good ? 'good' : 'critical';
+  const status = isFiniteDelta ? (deltaPP>=0 ? 'good' : 'critical') : 'good';
   const ppText = isFiniteDelta ? (deltaPP>=0?'+':'')+deltaPP.toFixed(1)+' п.п.' : '—';
 
   const capPP = Math.max(-15, Math.min(15, isFiniteDelta ? deltaPP : 0));
@@ -707,18 +709,38 @@ function newRepeatStackHtml(newVal, repeatVal, newLabel, repeatLabel){
   `;
 }
 
+// Темп = pace against the elapsed-time-prorated target (same elapsedFraction() used by the
+// headline revenue card and paceCard), shown per metric -- count and revenue can pace very
+// differently (e.g. lots of small bookings vs a few big ones), so one blended "Выполнение" %
+// hid that. Replaced the old plain fact/plan % with a темп pill on each of the two tiles instead.
 function renderCurrentPeriod(suffix){
   const el = document.getElementById('m-current'+suffix);
   const segs = segTotals(state.month, ['segments','SEG','currentPeriodCount'], ['segments','SEG','currentPeriodRub']);
   const t = segs.total;
-  const ratio = (t.rub.plan>0) ? t.rub.fact/t.rub.plan : (t.rub.fact>0?1:0);
-  const status = statusFor(ratio);
+  const frac = elapsedFraction(state.month);
+
+  const countTarget = t.count.plan*frac;
+  const countRatio = countTarget>0 ? t.count.fact/countTarget : (t.count.fact>0?1:0);
+  const countStatus = statusFor(countRatio);
+
+  const rubTarget = t.rub.plan*frac;
+  const rubRatio = rubTarget>0 ? t.rub.fact/rubTarget : (t.rub.fact>0?1:0);
+  const rubStatus = statusFor(rubRatio);
+
   el.innerHTML = `
     <div class="stat-row">
-      <div class="stat-tile"><div class="stat-label">Броней (факт/план)</div><div class="stat-value">${fmtNum(t.count.fact)}<span style="font-size:13px;color:var(--text-muted);"> / ${fmtNum(t.count.plan)}</span></div></div>
-      <div class="stat-tile"><div class="stat-label">Выручка (факт/план)</div><div class="stat-value">${fmtRubShort(t.rub.fact)}</div><div class="stat-sub">план ${fmtRubShort(t.rub.plan)}</div></div>
-      <div class="stat-tile"><div class="stat-label">Выполнение</div><div class="stat-value"><span class="status-pill ${status}">${fmtPct(ratio*100,0)}</span></div></div>
+      <div class="stat-tile">
+        <div class="stat-label">Броней (факт/план)</div>
+        <div class="stat-value">${fmtNum(t.count.fact)}<span style="font-size:13px;color:var(--text-muted);"> / ${fmtNum(t.count.plan)}</span></div>
+        <div class="stat-sub">темп <span class="status-pill sm ${countStatus}">${fmtPct(countRatio*100,0)}</span></div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">Выручка (факт/план)</div>
+        <div class="stat-value">${fmtRubShort(t.rub.fact)}</div>
+        <div class="stat-sub">план ${fmtRubShort(t.rub.plan)} · темп <span class="status-pill sm ${rubStatus}">${fmtPct(rubRatio*100,0)}</span></div>
+      </div>
     </div>
+    ${meterBarHtml(t.rub.fact, t.rub.plan, frac, rubStatus, true)}
     <div class="hint" style="margin:12px 0 0;">Состав выручки периода</div>
     ${newRepeatStackHtml(segs.new.rub.fact, segs.repeat.rub.fact,
       `Новые: ${fmtNum(segs.new.count.fact)} · ${fmtRubShort(segs.new.rub.fact)}`, `Постоянные: ${fmtNum(segs.repeat.count.fact)} · ${fmtRubShort(segs.repeat.rub.fact)}`)}
@@ -756,13 +778,14 @@ function renderPctPair(suffix){
     <div class="stat-row">
       <div class="stat-tile" style="flex:1; min-width:220px;">
         <div class="stat-label">% отмен</div>
-        ${deviationRateCard(cancel.plan, cancel.fact, {invert:true})}
+        ${deviationRateCard(cancel.plan, cancel.fact)}
       </div>
       <div class="stat-tile" style="flex:1; min-width:220px;">
         <div class="stat-label">% будущих броней</div>
-        ${deviationRateCard(future.plan, future.fact, {invert:true})}
+        ${deviationRateCard(future.plan, future.fact)}
       </div>
     </div>
+    <div class="hint" style="margin:10px 0 0;">Зелёный/вправо = факт выше плана, красный/влево = факт ниже плана — здесь это про направление, не про оценку: для этих двух метрик факт НИЖЕ плана (красный, влево) — это хороший исход.</div>
   `;
 }
 
