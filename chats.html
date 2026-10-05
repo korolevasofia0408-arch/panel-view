@@ -13,7 +13,7 @@
     --good:#3E6B42; --warn:#96690F; --critical:#A03B2E;
     --good-bg: rgba(62,107,66,.10); --warn-bg: rgba(150,105,15,.10);
     --critical-bg: rgba(160,59,46,.09); --neutral-bg: rgba(91,95,90,.10);
-    --city-ekb:#3F5F94; --city-irk:#6E4E96; --city-krsk:#A24A5E; --city-msk:#5F6B2E; --city-nsk:#237A7E;
+    --city-ekb:#3F5F94; --city-irk:#6E4E96; --city-krsk:#A24A5E; --city-msk:#5F6B2E; --city-nsk:#237A7E; --city-tyu:#8C6239;
     --rank1:#A03B2E; --rank2:#B5701A; --rank3:#96690F; --rank4:#3F5F94; --rank5:#6E4E96; --rank6:#5B5F5A;
     --shadow: 0 1px 2px rgba(20,22,20,.04), 0 8px 24px -12px rgba(20,22,20,.18);
     --radius: 10px;
@@ -29,7 +29,7 @@
       --good:#7CB584; --warn:#D9B054; --critical:#E38879;
       --good-bg: rgba(124,181,132,.13); --warn-bg: rgba(217,176,84,.13);
       --critical-bg: rgba(227,136,121,.13); --neutral-bg: rgba(164,169,162,.12);
-      --city-ekb:#7C9BD6; --city-irk:#B79BE0; --city-krsk:#E098AC; --city-msk:#AEC073; --city-nsk:#57C4C9;
+      --city-ekb:#7C9BD6; --city-irk:#B79BE0; --city-krsk:#E098AC; --city-msk:#AEC073; --city-nsk:#57C4C9; --city-tyu:#D9A876;
       --rank1:#E38879; --rank2:#E3A34C; --rank3:#D9B054; --rank4:#7C9BD6; --rank5:#B79BE0; --rank6:#A4A9A2;
       --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.55);
     }
@@ -40,7 +40,7 @@
     --accent:#E3A34C; --accent-ink:#1A1508;
     --good:#7CB584; --warn:#D9B054; --critical:#E38879;
     --good-bg: rgba(124,181,132,.13); --warn-bg: rgba(217,176,84,.13); --critical-bg: rgba(227,136,121,.13); --neutral-bg: rgba(164,169,162,.12);
-    --city-ekb:#7C9BD6; --city-irk:#B79BE0; --city-krsk:#E098AC; --city-msk:#AEC073; --city-nsk:#57C4C9;
+    --city-ekb:#7C9BD6; --city-irk:#B79BE0; --city-krsk:#E098AC; --city-msk:#AEC073; --city-nsk:#57C4C9; --city-tyu:#D9A876;
     --rank1:#E38879; --rank2:#E3A34C; --rank3:#D9B054; --rank4:#7C9BD6; --rank5:#B79BE0; --rank6:#A4A9A2;
     --shadow: 0 1px 2px rgba(0,0,0,.3), 0 10px 30px -14px rgba(0,0,0,.55);
   }
@@ -50,7 +50,7 @@
     --accent:#B5701A; --accent-ink:#FFFFFF;
     --good:#3E6B42; --warn:#96690F; --critical:#A03B2E;
     --good-bg: rgba(62,107,66,.10); --warn-bg: rgba(150,105,15,.10); --critical-bg: rgba(160,59,46,.09); --neutral-bg: rgba(91,95,90,.10);
-    --city-ekb:#3F5F94; --city-irk:#6E4E96; --city-krsk:#A24A5E; --city-msk:#5F6B2E; --city-nsk:#237A7E;
+    --city-ekb:#3F5F94; --city-irk:#6E4E96; --city-krsk:#A24A5E; --city-msk:#5F6B2E; --city-nsk:#237A7E; --city-tyu:#8C6239;
     --rank1:#A03B2E; --rank2:#B5701A; --rank3:#96690F; --rank4:#3F5F94; --rank5:#6E4E96; --rank6:#5B5F5A;
     --shadow: 0 1px 2px rgba(20,22,20,.04), 0 8px 24px -12px rgba(20,22,20,.18);
   }
@@ -216,6 +216,14 @@
   footer{ margin-top:44px; padding-top:18px; border-top:1px solid var(--line); font-size:12px; color:var(--ink-faint); }
   footer p{ max-width:92ch; }
 
+  /* ---- month-over-month / week-over-week mini bar chart ---- */
+  .mcompare{ display:flex; gap:16px; align-items:flex-end; height:90px; margin:6px 0 8px; padding-top:18px; }
+  .mcompare .mc-col{ flex:1; max-width:90px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; }
+  .mcompare .mc-val{ font-size:12px; font-weight:700; margin-bottom:4px; color:var(--ink); white-space:nowrap; font-family:var(--font-mono); font-variant-numeric:tabular-nums; }
+  .mcompare .mc-bar{ width:60%; border-radius:4px 4px 0 0; background:var(--accent-light, var(--line-strong)); }
+  .mcompare .mc-bar.current{ background:var(--accent); }
+  .mcompare .mc-lbl{ font-size:11px; color:var(--ink-faint); margin-top:6px; }
+
   /* ---------- ★ rating (new, prominent) ---------- */
   .rating-row{ display:grid; grid-template-columns:repeat(auto-fit, minmax(190px,1fr)); gap:14px; }
   .rating-card{ background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--city); border-radius:var(--radius); padding:16px 18px; box-shadow:var(--shadow); text-align:center; }
@@ -349,7 +357,7 @@
 </svg>
 
 
-<nav class="pn" aria-label="Период отчёта"><div class="pn-inner"><div class="pn-row"><span class="pn-label">Месяц</span><button type="button" class="pn-chip pn-month" data-month="aug" data-last="aug-month" aria-selected="false">Август 2026</button><button type="button" class="pn-chip pn-month" data-month="sep" data-last="sep-2127" aria-selected="false">Сентябрь 2026</button></div><div class="pn-row pn-weeks" data-month="aug"><span class="pn-label">Период</span><button type="button" class="pn-chip" data-period="aug-1016" aria-selected="false">10–16 авг</button><button type="button" class="pn-chip" data-period="aug-1723" aria-selected="false">17–23 авг</button><button type="button" class="pn-chip kind-month" data-period="aug-month" aria-selected="false">Месяц · детально</button></div><div class="pn-row pn-weeks" data-month="sep"><span class="pn-label">Период</span><button type="button" class="pn-chip" data-period="sep-0106" aria-selected="false">1–6 сен</button><button type="button" class="pn-chip" data-period="sep-0713" aria-selected="false">7–13 сен</button><button type="button" class="pn-chip" data-period="sep-1420" aria-selected="false">14–20 сен</button><button type="button" class="pn-chip" data-period="sep-2127" aria-selected="false">21–27 сен</button></div></div></nav>
+<nav class="pn" aria-label="Период отчёта"><div class="pn-inner"><div class="pn-row"><span class="pn-label">Месяц</span><button type="button" class="pn-chip pn-month" data-month="aug" data-last="aug-month" aria-selected="false">Август 2026</button><button type="button" class="pn-chip pn-month" data-month="sep" data-last="sep-month" aria-selected="false">Сентябрь 2026</button><button type="button" class="pn-chip pn-month" data-month="oct" data-last="oct-2804" aria-selected="false">Октябрь 2026</button></div><div class="pn-row pn-weeks" data-month="aug"><span class="pn-label">Период</span><button type="button" class="pn-chip" data-period="aug-1016" aria-selected="false">10–16 авг</button><button type="button" class="pn-chip" data-period="aug-1723" aria-selected="false">17–23 авг</button><button type="button" class="pn-chip kind-month" data-period="aug-month" aria-selected="false">Месяц · детально</button></div><div class="pn-row pn-weeks" data-month="sep"><span class="pn-label">Период</span><button type="button" class="pn-chip" data-period="sep-0106" aria-selected="false">1–6 сен</button><button type="button" class="pn-chip" data-period="sep-0713" aria-selected="false">7–13 сен</button><button type="button" class="pn-chip" data-period="sep-1420" aria-selected="false">14–20 сен</button><button type="button" class="pn-chip" data-period="sep-2127" aria-selected="false">21–27 сен</button><button type="button" class="pn-chip kind-month" data-period="sep-month" aria-selected="false">Месяц · детально</button></div><div class="pn-row pn-weeks" data-month="oct"><span class="pn-label">Период</span><button type="button" class="pn-chip" data-period="oct-2804" aria-selected="false">28 сен – 4 окт</button></div></div></nav>
 
 <section class="period" id="p-aug-1016" data-month="aug">
 <header class="masthead">
@@ -3343,10 +3351,1006 @@
 </div>
 
 </section>
+<section class="period" id="p-sep-month" data-month="sep">
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand-row">
+      <div class="brand-mark"><span class="dot"></span>CARS&amp;GO · Клуб проката автомобилей</div>
+      <div class="mast-stats">
+        <div class="mast-stat"><svg class="icon"><use href="#i-chat"/></svg><div><b>863</b><span>диалога</span></div></div>
+        <div class="mast-stat"><svg class="icon"><use href="#i-building"/></svg><div><b>6</b><span>городов</span></div></div>
+        <div class="mast-stat"><svg class="icon"><use href="#i-calendar"/></svg><div><b>30 дней</b><span>1–30 сентября</span></div></div>
+        <div class="mast-stat"><svg class="icon"><use href="#i-check"/></svg><div><b>51.4%</b><span>в бронь</span></div></div>
+      </div>
+    </div>
+    <h1 class="mast-title">Сентябрь: автопарк, продажи и менеджеры по всей сети</h1>
+    <p class="mast-sub">Полный месяц, собранный из четырёх недельных выгрузок подряд (1–6, 7–13, 14–20, 21–27 сентября, без пропусков и наложений) — автопарк, реальные продажные цифры по городам и разбивка по каждому менеджеру с рейтингом ★, привязанным к реальному графику смен.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="tabs" role="tablist" aria-label="Разделы отчёта">
+    <button class="tab" id="tab-fleet-sep-month" role="tab" aria-selected="true" aria-controls="panel-fleet-sep-month"><svg class="icon icon-sm"><use href="#i-car"/></svg>Автопарк</button>
+    <button class="tab" id="tab-sales-sep-month" role="tab" aria-selected="false" aria-controls="panel-sales-sep-month"><svg class="icon icon-sm"><use href="#i-cart"/></svg>Продажи</button>
+    <button class="tab" id="tab-deep-sep-month" role="tab" aria-selected="false" aria-controls="panel-deep-sep-month"><svg class="icon icon-sm"><use href="#i-clock"/></svg>Менеджеры: детально</button>
+  </div>
+
+  <!-- ============ TAB 1 — АВТОПАРК ============ -->
+  <section id="panel-fleet-sep-month" class="panel active" role="tabpanel" aria-labelledby="tab-fleet-sep-month">
+
+    <p class="section-note"><b>Про период:</b> полный месяц, собран из четырёх недельных экспортов подряд (1–6, 7–13, 14–20, 21–27 сентября — проверено, что диапазоны дат не пересекаются и не оставляют пропусков). 863 диалога, 6 городов — Тюмень пока даёт только 11 диалогов за месяц, читать её часть как предварительный сигнал. Разбивка по менеджерам на вкладке «Менеджеры: детально» привязана к реальному графику смен (96.5% диалогов покрыто).</p>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-building"/></svg>Пробелы по городам</h2>
+    <div class="grid">
+
+      <article class="card" style="--city:var(--city-ekb)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Екатеринбург</span></div>
+          <span class="dlg-count">285 диалогов</span>
+        </div>
+        <div class="chips">
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>Электро, Dodge Challenger, Mercedes S-класс — нет совсем</span>
+          <span class="chip warn"><svg class="icon"><use href="#i-warn"/></svg>Дизель «на вес золота» — 10+ упоминаний</span>
+        </div>
+        <ul class="details">
+          <li>Электромобилей нет вообще («только дизель либо бензин»); Dodge Challenger продан, больше не будет; <b>Mercedes S-класс</b> (S63, S350D, W222) — «все S классы выбыли из парка»; 7-местных/трёхрядных нет; Kia K5, Hyundai Elantra, G55, авто с фаркопом — тоже подтверждённо отсутствуют</li>
+          <li><b>Дизельный сегмент</b> — самый частый дефицит месяца, 10+ упоминаний: «сейчас дизельные авто на вес золота»; премиальные седаны Mercedes C/E/S заняты в ~8 диалогах; эконом вымывается по выходным</li>
+          <li>Lixiang L7 — в парке в единственном экземпляре, хронически занят («он у нас один»)</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Дизельный дефицит держится весь месяц без изменений; Mercedes S-класс и несколько других моделей выбыли из парка не разово, а по несколько раз.</div>
+      </article>
+
+      <article class="card" style="--city:var(--city-irk)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Иркутск</span></div>
+          <span class="dlg-count">161 диалог</span>
+        </div>
+        <div class="chips">
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>«Загасился» весь месяц — 25.5%</span>
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>Премиум BMW в аренде с 31 мая — весь месяц</span>
+        </div>
+        <ul class="details">
+          <li>Газель/Соболь (минивэн) — класса нет вообще; BMW X5 — «больше в парке нет»</li>
+          <li><b>Премиум BMW</b> — в аренде с 31 мая, весь сентябрь так и не освободился: «До конца сентября точно будет ездить... клиенту очень понравился»; Land Cruiser 200 — высокий спрос, почти всегда занят; Toyota Camry — все 3 машины разобраны (одна на ремонте)</li>
+          <li>Любопытная деталь: Hyundai/Haval Tucson «стоят без броней, но на стопе для аренды» — управленческое решение не использовать актив, а не реальная нехватка</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Один премиум-автомобиль фактически выключен из посуточной выдачи на весь месяц — решить, возвращать в прокат или официально снять с витрины.</div>
+      </article>
+
+      <article class="card" style="--city:var(--city-krsk)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Красноярск</span></div>
+          <span class="dlg-count">128 диалогов</span>
+        </div>
+        <div class="chips">
+          <span class="chip good"><svg class="icon"><use href="#i-check"/></svg>Лучшая конверсия месяца — 68.8%</span>
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>45.7% отказов — необъяснённый отказ СБ</span>
+        </div>
+        <ul class="details">
+          <li>Mercedes S-класса нет; бренд Lixiang («ли9/ли7») отсутствует целиком — «лисянов нету»; 4WD-кроссоверы по факту представлены одной моделью (Exeed TXL)</li>
+          <li><b>Кроссоверы/внедорожники</b> (Jetour T2, Tank 300, Changan Uni-K, Land Cruiser 200, Haval H5) — заняты или в долгосрочной аренде систематически, 8–10 упоминаний за месяц: «Кроссоверы все, разобрали в долгосрочную аренду»</li>
+          <li>Эконом регулярно занят, замещается комфортом по цене эконома; комфорт-седаны массово разбирают в начале месяца</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Лучший город месяца по продажам, но почти половина его отказов — необъяснённые решения СБ, которые напрямую злят клиентов.</div>
+      </article>
+
+      <article class="card" style="--city:var(--city-msk)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Москва</span></div>
+          <span class="dlg-count">97 диалогов</span>
+        </div>
+        <div class="chips">
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>8 моделей подтверждённо выбыли из парка</span>
+          <span class="chip warn"><svg class="icon"><use href="#i-warn"/></svg>Geely Monjaro — недоступен 3 раза за месяц</span>
+        </div>
+        <ul class="details">
+          <li>Rolls-Royce Ghost/Phantom, Genesis GV80, BMW X6 (сайт всё ещё его показывает), Dodge Charger, Mercedes G63 матовый, BMW M8, Voyah Dream — подтверждённо «нет в парке» или «выбыл»</li>
+          <li><b>Geely Monjaro</b> — недоступен независимо 3 раза за месяц (#132, #143, #837) — явный, стабильный паттерн, не совпадение; BMW M-серия фактически доступна только «через партнёров»; Lixiang L9/L7 хронически в долгосроке</li>
+          <li>Клиенты сами замечают нестыковку сайта и реального парка — «а на сайте он у вас висит» (BMW X6)</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Geely Monjaro — самый повторяющийся дефицит месяца именно здесь; отдельно стоит почистить витрину сайта от выбывших моделей.</div>
+      </article>
+
+      <article class="card" style="--city:var(--city-nsk)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Новосибирск</span></div>
+          <span class="dlg-count">181 диалог</span>
+        </div>
+        <div class="chips">
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>Самая высокая доля явного «Отказ» — 48.1%</span>
+          <span class="chip warn"><svg class="icon"><use href="#i-warn"/></svg>Премиум-сегмент «почти разбронирован» — 4–5 раз за месяц</span>
+        </div>
+        <ul class="details">
+          <li>Voyah Free выведен из парка, Voyah Dream временно отсутствует; Mercedes E200 — «больше недоступен к аренде»; Lexus LC200/LX570/ES/RS — выведены по году выпуска; Toyota Camry (70-й кузов) выведен</li>
+          <li><b>Премиум-сегмент целиком</b> — «почти разбронирован» повторяется 4–5 раз за месяц, не разовая формулировка; дизельные кроссоверы/минивэны (Santa Fe, Carnival) — «только бензиновые варианты» минимум 6 раз</li>
+          <li>Клиент прямо говорит: «уже полгода пытаюсь взять машину в разных городах, постоянно отказ» — репутационный риск, не единичная жалоба</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Почти половина диалогов заканчивается отказом — больше, чем в любом другом городе; премиум-сегмент выведен из строя почти целиком, это не точечная проблема.</div>
+      </article>
+
+      <article class="card" style="--city:var(--city-tyu)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Тюмень</span></div>
+          <span class="dlg-count">11 диалогов</span>
+        </div>
+        <div class="chips">
+          <span class="chip warn"><svg class="icon"><use href="#i-warn"/></svg>Первый полный месяц в отчёте — выборка крошечная</span>
+          <span class="chip good"><svg class="icon"><use href="#i-check"/></svg>Хорошая конверсия на малой базе — 63.6%</span>
+        </div>
+        <ul class="details">
+          <li>Nissan Qashqai — «нет, к сожалению», единственный явный пробел парка за месяц</li>
+          <li>Отказы по доступности в основном привязаны к датам (K5/Elantra на конкретные даты, «только три паркетника»), не к структурному отсутствию класса</li>
+          <li>Проверка СБ прошла быстро и прозрачно в одном из диалогов (~20 минут) — хороший единичный пример</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Город слишком мал для выводов по парку — следить дальше по мере роста числа диалогов.</div>
+      </article>
+
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-flag"/></svg>Что докупить — приоритеты и картина по классам</h2>
+    <div class="two-col">
+
+      <div class="priority-list">
+        <div class="priority-item" style="--rank-bg:var(--rank1)">
+          <span class="priority-icon"><svg class="icon"><use href="#i-car"/></svg></span>
+          <div><p class="priority-title">Премиум-кроссоверы и внедорожники</p><p class="priority-desc">Audi Q7, Geely Monjaro, Porsche Cayenne, Kia Sportage, Tank 300/500 — структурный дефицит в Екатеринбурге, Красноярске, Москве, Новосибирске. Подтверждено и модельной разбивкой ниже: у Audi Q7 половина запросов заканчивается отказом.</p><p class="priority-city">4 из 6 городов</p></div>
+          <span class="priority-badge">№1</span>
+        </div>
+        <div class="priority-item" style="--rank-bg:var(--rank2)">
+          <span class="priority-icon"><svg class="icon"><use href="#i-diamond"/></svg></span>
+          <div><p class="priority-title">Mercedes S-класс</p><p class="priority-desc">Подтверждённо отсутствует в Екатеринбурге и Красноярске; та же проблема бренда и в Новосибирске (E200 выведен).</p><p class="priority-city">Екатеринбург, Красноярск, Новосибирск</p></div>
+          <span class="priority-badge">№2</span>
+        </div>
+        <div class="priority-item" style="--rank-bg:var(--rank3)">
+          <span class="priority-icon"><svg class="icon"><use href="#i-diamond"/></svg></span>
+          <div><p class="priority-title">Lixiang (Li Auto) L7/L9</p><p class="priority-desc">Хронически в долгосроке или занят в Иркутске, Москве; бренда целиком нет в Красноярске. Третий месяц подряд всплывает в отчётах серии.</p><p class="priority-city">Иркутск, Москва, Красноярск</p></div>
+          <span class="priority-badge">№3</span>
+        </div>
+        <div class="priority-item" style="--rank-bg:var(--rank4)">
+          <span class="priority-icon"><svg class="icon"><use href="#i-search"/></svg></span>
+          <div><p class="priority-title">Дизельный сегмент</p><p class="priority-desc">«На вес золота» в Екатеринбурге, «только бензиновые варианты» в Новосибирске — тянется с прошлых месяцев без изменений.</p><p class="priority-city">Екатеринбург, Новосибирск</p></div>
+          <span class="priority-badge">№4</span>
+        </div>
+        <div class="priority-item" style="--rank-bg:var(--rank5)">
+          <span class="priority-icon"><svg class="icon"><use href="#i-bolt"/></svg></span>
+          <div><p class="priority-title">BMW M-серия и премиум-купе</p><p class="priority-desc">Фактически доступны только «через партнёров» — собственного парка почти нет.</p><p class="priority-city">Москва</p></div>
+          <span class="priority-badge">№5</span>
+        </div>
+        <div class="priority-item" style="--rank-bg:var(--rank6)">
+          <span class="priority-icon"><svg class="icon"><use href="#i-van"/></svg></span>
+          <div><p class="priority-title">Минивэны и 7-местные</p><p class="priority-desc">Класса нет вообще сразу в двух городах — не единичная модель, а пустой сегмент.</p><p class="priority-city">Екатеринбург, Иркутск</p></div>
+          <span class="priority-badge">№6</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="matrix-wrap">
+          <table class="matrix">
+            <thead><tr><th>Город</th><th>Эконом</th><th>Комфорт</th><th>Бизнес</th><th>Премиум</th><th>Внедорожник/кросс.</th><th>Минивэн</th></tr></thead>
+            <tbody>
+              <tr><td>Екатеринбург</td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+              </tr>
+              <tr><td>Иркутск</td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+              </tr>
+              <tr><td>Красноярск</td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+              </tr>
+              <tr><td>Москва</td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+              </tr>
+              <tr><td>Новосибирск</td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+              </tr>
+              <tr><td>Тюмень</td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="legend-row">
+            <span class="li"><span class="status-ico good"><svg class="icon icon-sm"><use href="#i-check"/></svg></span>достаточно</span>
+            <span class="li"><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span>дефицит юнитов</span>
+            <span class="li"><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span>отсутствует в парке</span>
+            <span class="li"><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span>мало запросов / нет данных</span>
+          </div>
+        </div>
+        <p class="section-note" style="margin-top:12px;">Тюмень — слишком мало диалогов за месяц, чтобы заполнить таблицу осмысленно. Нишевые находки (сайт показывает выбывшие модели, управленческая заморозка части парка в Иркутске) — см. карточки городов выше.</p>
+      </div>
+
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-car"/></svg>Разбивка по конкретным моделям — где теряем чаще всего</h2>
+    <p class="section-note">Топ-12 моделей по числу отказов «занято» за 1–30 сентября, по всей сети. Считалось по упоминанию модели в тексте диалога — модель может фигурировать и как исходный запрос, и как предложенная альтернатива.</p>
+    <div class="matrix-wrap">
+      <table class="models">
+        <thead><tr><th>#</th><th>Модель</th><th>Класс</th><th style="text-align:right">Упоминаний</th><th style="text-align:right">Бронь</th><th style="text-align:right">Отказ «занято»</th><th>Доля отказов</th></tr></thead>
+        <tbody>
+          <tr><td class="rank">1</td><td class="model">Audi Q7</td><td><span class="mtag">Премиум</span></td><td class="num">16</td><td class="num">5</td><td class="num bad">8</td><td class="mbar-cell"><div class="mbar-track"><div class="mbar-fill" style="width:50%"></div></div></td></tr>
+          <tr><td class="rank">2</td><td class="model">Geely Monjaro</td><td><span class="mtag">Кроссовер</span></td><td class="num">23</td><td class="num">11</td><td class="num bad">7</td><td class="mbar-cell"><div class="mbar-track"><div class="mbar-fill" style="width:30%"></div></div></td></tr>
+          <tr><td class="rank">3</td><td class="model">VW Polo</td><td><span class="mtag">Эконом</span></td><td class="num">58</td><td class="num">35</td><td class="num bad">7</td><td class="mbar-cell"><div class="mbar-track"><div class="mbar-fill" style="width:12%"></div></div></td></tr>
+          <tr><td class="rank">4</td><td class="model">Hyundai Tucson</td><td><span class="mtag">Кроссовер</span></td><td class="num">25</td><td class="num">10</td><td class="num bad">6</td><td class="mbar-cell"><div class="mbar-track"><div class="mbar-fill" style="width:24%"></div></div></td></tr>
+          <tr><td class="rank">5</td><td class="model">Kia Sportage</td><td><span class="mtag">Кроссовер</span></td><td class="num">20</td><td class="num">9</td><td class="num bad">6</td><td class="mbar-cell"><div class="mbar-track"><div class="mbar-fill" style="width:30%"></div></div></td></tr>
+          <tr><td class="rank">6</td><td class="model">Porsche Cayenne</td><td><span class="mtag">Премиум</span></td><td class="num">26</td><td class="num">11</td><td class="num bad">5</td><td class="mbar-cell"><div class="mbar-track"><div class="mbar-fill" style="width:19%"></div></div></td></tr>
+          <tr><td class="rank">7</td><td class="model">Toyota Camry</td><td><span class="mtag">Бизнес</span></td><td class="num">47</td><td class="num">22</td><td class="num bad">5</td><td class="mbar-cell"><div class="mbar-track"><div class="mbar-fill" style="width:11%"></div></div></td></tr>
+          <tr><td class="rank">8</td><td class="model">Li Auto / Lixiang</td><td><span class="mtag">Премиум EV</span></td><td class="num">50</td><td class="num">22</td><td class="num bad">5</td><td class="mbar-cell"><div class="mbar-track"><div class="mbar-fill" style="width:10%"></div></div></td></tr>
+          <tr><td class="rank">9</td><td class="model">Tank 300</td><td><span class="mtag">Кроссовер</span></td><td class="num">21</td><td class="num">11</td><td class="num bad">3</td><td class="mbar-cell"><div class="mbar-track"><div class="mbar-fill" style="width:14%"></div></div></td></tr>
+          <tr><td class="rank">10</td><td class="model">Tank 500</td><td><span class="mtag">Кроссовер</span></td><td class="num">10</td><td class="num">6</td><td class="num bad">3</td><td class="mbar-cell"><div class="mbar-track"><div class="mbar-fill" style="width:30%"></div></div></td></tr>
+          <tr><td class="rank">11</td><td class="model">Audi A5</td><td><span class="mtag">Бизнес</span></td><td class="num">21</td><td class="num">15</td><td class="num bad">3</td><td class="mbar-cell"><div class="mbar-track"><div class="mbar-fill" style="width:14%"></div></div></td></tr>
+          <tr><td class="rank">12</td><td class="model">Geely Atlas</td><td><span class="mtag">Кроссовер</span></td><td class="num">12</td><td class="num">6</td><td class="num bad">3</td><td class="mbar-cell"><div class="mbar-track"><div class="mbar-fill" style="width:25%"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="conclusion"><svg class="icon"><use href="#i-flag"/></svg><div><b>Audi Q7 — худший показатель месяца.</b> Половина всех запросов на эту модель заканчивается отказом «занято» — даже у Geely Monjaro и Kia Sportage/Tank 500 (30%) разрыв меньше. При этом VW Polo и Toyota Camry — самые частые по упоминаниям модели в принципе (58 и 47), но доля отказов у них в 4–5 раз ниже: это разные истории — Polo/Camry нужно больше единиц просто из-за объёма спроса, а Audi Q7/Monjaro физически не хватает на уже существующий спрос даже при меньшем числе запросов.</div></div>
+
+  </section>
+
+  <!-- ============ TAB 2 — ПРОДАЖИ ============ -->
+  <section id="panel-sales-sep-month" class="panel" role="tabpanel" aria-labelledby="tab-sales-sep-month">
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-trend"/></svg>Реальные цифры по городам</h2>
+    <p class="section-note">Точный подсчёт статусов «Бронь / Загасился / Отказ» по каждому городу за весь сентябрь.</p>
+    <div class="overview-row">
+      <div class="databox">
+        <h3><svg class="icon"><use href="#i-check"/></svg>Конверсия в бронь</h3>
+        <p class="sub">Доля диалогов, закрытых бронированием</p>
+        <div class="barlist">
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-krsk)"></span>Красноярск</span><div class="bartrack"><div class="barfill" style="width:68.8%; background:var(--good)"></div></div><span class="barval">68.8%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-tyu)"></span>Тюмень</span><div class="bartrack"><div class="barfill" style="width:63.6%; background:var(--good)"></div></div><span class="barval">63.6%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-ekb)"></span>Екатеринбург</span><div class="bartrack"><div class="barfill" style="width:53.3%; background:var(--good)"></div></div><span class="barval">53.3%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-irk)"></span>Иркутск</span><div class="bartrack"><div class="barfill" style="width:47.2%; background:var(--warn)"></div></div><span class="barval">47.2%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-nsk)"></span>Новосибирск</span><div class="bartrack"><div class="barfill" style="width:44.8%; background:var(--warn)"></div></div><span class="barval">44.8%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-msk)"></span>Москва</span><div class="bartrack"><div class="barfill" style="width:41.2%; background:var(--warn)"></div></div><span class="barval">41.2%</span></div>
+        </div>
+      </div>
+      <div class="databox">
+        <h3><svg class="icon"><use href="#i-cross"/></svg>Загасился — потерян без ответа</h3>
+        <p class="sub">Ни брони, ни явного отказа — диалог просто затих</p>
+        <div class="barlist">
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-irk)"></span>Иркутск</span><div class="bartrack"><div class="barfill" style="width:25.5%; background:var(--critical)"></div></div><span class="barval">25.5%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-tyu)"></span>Тюмень</span><div class="bartrack"><div class="barfill" style="width:18.2%; background:var(--warn)"></div></div><span class="barval">18.2%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-msk)"></span>Москва</span><div class="bartrack"><div class="barfill" style="width:15.5%; background:var(--warn)"></div></div><span class="barval">15.5%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-nsk)"></span>Новосибирск</span><div class="bartrack"><div class="barfill" style="width:7.2%; background:var(--good)"></div></div><span class="barval">7.2%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-ekb)"></span>Екатеринбург</span><div class="bartrack"><div class="barfill" style="width:7.0%; background:var(--good)"></div></div><span class="barval">7.0%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-krsk)"></span>Красноярск</span><div class="bartrack"><div class="barfill" style="width:3.9%; background:var(--good)"></div></div><span class="barval">3.9%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-trend"/></svg>Динамика конверсии по неделям</h2>
+    <p class="section-note">Те же 4 недели, что уже публиковались отдельными недельными отчётами (вкладки вверху страницы) — здесь просто сведены рядом, без пересчёта.</p>
+    <div class="mcompare">
+      <div class="mc-col"><div class="mc-val">52.6%</div><div class="mc-bar" style="height:85%"></div><div class="mc-lbl">1–6 сен</div></div>
+      <div class="mc-col"><div class="mc-val">52.7%</div><div class="mc-bar" style="height:85%"></div><div class="mc-lbl">7–13 сен</div></div>
+      <div class="mc-col"><div class="mc-val">48.3%</div><div class="mc-bar" style="height:78%"></div><div class="mc-lbl">14–20 сен</div></div>
+      <div class="mc-col"><div class="mc-val">52.2%</div><div class="mc-bar current" style="height:85%"></div><div class="mc-lbl">21–27 сен</div></div>
+    </div>
+    <p class="section-note" style="margin-top:4px;">Конверсия держится в узком коридоре 48–53% все четыре недели — единственная заметная просадка (14–20 сентября) на 4 п.п. ниже соседних недель, не драматична и не продолжилась дальше.</p>
+
+    <div class="conclusion"><svg class="icon"><use href="#i-flag"/></svg><div><b>Главное наблюдение месяца.</b> Красноярск — лучшая конверсия (68.8%) и минимальные потери («Загасился» 3.9%), но почти половина его отказов (45.7%) — необъяснённые решения службы безопасности, худший показатель в сети и разрыв с остальными городами в 2–3 раза. Иркутск — противоположная история: конверсия средняя, но «Загасился» держится на уровне 25.5% весь месяц, и это совпадает с премиум-автомобилем, застрявшим в аренде с 31 мая, и худшей в сети скоростью ответа — похоже на одну структурную проблему, а не на разные случайные сбои.</div></div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-warn"/></svg>Топ-6 сквозных проблем продаж</h2>
+    <div class="problem-grid">
+      <div class="problem-card"><p class="problem-num">01</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-shield"/></svg></span><p class="problem-title">Отказы СБ без объяснения</p></div><p class="problem-desc">Красноярск — 45.7% своих отказов; Новосибирск — client открыто говорит про полгода отказов подряд. По сети 45 из 323 отказов (13.9%).</p></div>
+      <div class="problem-card"><p class="problem-num">02</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-car"/></svg></span><p class="problem-title">Премиум-кроссоверы — дефицит почти везде</p></div><p class="problem-desc">Audi Q7, Geely Monjaro, Porsche Cayenne — структурный дефицит в 4 из 6 городов, подтверждён и модельной разбивкой.</p></div>
+      <div class="problem-card"><p class="problem-num">03</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-clock"/></svg></span><p class="problem-title">Иркутск: парк и скорость ответа разом</p></div><p class="problem-desc">Премиум-автомобиль заморожен с 31 мая весь месяц, p90 первого ответа — 9.4 часа, худший в сети.</p></div>
+      <div class="problem-card"><p class="problem-num">04</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-search"/></svg></span><p class="problem-title">Нет листа ожидания</p></div><p class="problem-desc">Системно отсутствует почти везде; редкое исключение (Красноярск, «придержим авто») не стало практикой.</p></div>
+      <div class="problem-card"><p class="problem-num">05</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-clock"/></svg></span><p class="problem-title">Медленный вечерний/ночной ответ</p></div><p class="problem-desc">Почти универсально по сети; Москва — отдельные случаи по 5–14 часов несмотря на мгновенный автоответ.</p></div>
+      <div class="problem-card"><p class="problem-num">06</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-percent"/></svg></span><p class="problem-title">Скидка вместо ценности</p></div><p class="problem-desc">Скидка как первый ответ на возражение по цене встречается во всех городах, без попытки аргументации.</p></div>
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-building"/></svg>Продажный профиль по городам</h2>
+    <div class="profile-wrap">
+      <table class="profile">
+        <thead><tr><th>Город</th><th>Бронь</th><th>Загасился</th><th>Отказ</th><th>Сильная сторона</th><th>Главная проблема</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-krsk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Красноярск</td>
+            <td class="num good">68.8%</td><td class="num good">3.9%</td><td class="num">27.3%</td>
+            <td>Апсейл с объяснением ценности, редкий, но реальный приём «придержим авто за вами».</td>
+            <td>45.7% отказов — СБ без объяснения причины, худший показатель в сети с большим отрывом.</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-tyu); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Тюмень</td>
+            <td class="num good">63.6%</td><td class="num mid">18.2%</td><td class="num">18.2%</td>
+            <td>Быстрая и прозрачная проверка СБ в наблюдавшемся случае (~20 минут).</td>
+            <td>Выборка слишком мала для выводов — 11 диалогов за месяц.</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-ekb); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Екатеринбург</td>
+            <td class="num good">53.3%</td><td class="num good">7.0%</td><td class="num">39.6%</td>
+            <td>Закрытие «Бронируем?» почти в каждой брони; узнают повторных клиентов по истории (в т.ч. по супругу).</td>
+            <td>Дизельный дефицит держится весь месяц без изменений.</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-irk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Иркутск</td>
+            <td class="num mid">47.2%</td><td class="num bad">25.5%</td><td class="num">27.3%</td>
+            <td>Ценностная работа с выбором модели вместо голой скидки.</td>
+            <td>«Загасился» на уровне 25.5% весь месяц — совпадает с застрявшим в аренде премиум-авто и худшей скоростью ответа.</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-nsk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Новосибирск</td>
+            <td class="num mid">44.8%</td><td class="num good">7.2%</td><td class="num bad">48.1%</td>
+            <td>Системная реактивация холодных лидов — почти универсальная привычка, самая сильная в сети.</td>
+            <td>Почти половина всех диалогов заканчивается отказом — больше, чем в любом другом городе.</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-msk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Москва</td>
+            <td class="num mid">41.2%</td><td class="num mid">15.5%</td><td class="num">43.3%</td>
+            <td>Образцовый сервис-recovery при поломке авто: честно объяснили причину, дали альтернативу и скидку.</td>
+            <td>Противоречие между сайтом (от 18 лет) и реальным требованием менеджеров (от 23) — клиенты сами это замечают.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-cross"/></svg>Где мы теряем деньги</h2>
+    <div class="funnel-row">
+      <div class="funnel-col bad">
+        <h4><svg class="icon icon-sm"><use href="#i-cross"/></svg>Как происходит сейчас</h4>
+        <div class="funnel-steps">
+          <div class="fstep"><svg class="icon"><use href="#i-chat"/></svg><span>Клиент написал</span></div>
+          <div class="farrow"><svg class="icon"><use href="#i-arrow"/></svg></div>
+          <div class="fstep"><svg class="icon"><use href="#i-clock"/></svg><span>Ответ с задержкой (в Иркутске — иногда часами)</span></div>
+          <div class="farrow"><svg class="icon"><use href="#i-arrow"/></svg></div>
+          <div class="fstep"><svg class="icon"><use href="#i-percent"/></svg><span>Премиум-кроссовера нет, или СБ отказала без причины</span></div>
+          <div class="farrow"><svg class="icon"><use href="#i-arrow"/></svg></div>
+          <div class="fstep end bad-end"><svg class="icon"><use href="#i-cross"/></svg>Лид потерян — 24.1% всех отказов по сети объясняются нехваткой авто (до 33% в Новосибирске); ещё 13.9% — необъяснённый отказ СБ (до 45.7% в Красноярске)</div>
+        </div>
+      </div>
+      <div class="funnel-col good">
+        <h4><svg class="icon icon-sm"><use href="#i-check"/></svg>Как должно быть</h4>
+        <div class="funnel-steps">
+          <div class="fstep"><svg class="icon"><use href="#i-search"/></svg><span>Выяснить задачу клиента</span></div>
+          <div class="farrow"><svg class="icon"><use href="#i-arrow"/></svg></div>
+          <div class="fstep"><svg class="icon"><use href="#i-shield"/></svg><span>Объяснить причину отказа (в т.ч. СБ) и предложить альтернативу по классу</span></div>
+          <div class="farrow"><svg class="icon"><use href="#i-arrow"/></svg></div>
+          <div class="fstep"><svg class="icon"><use href="#i-cart"/></svg><span>Зафиксировать интерес в очередь, если подходящего авто нет</span></div>
+          <div class="farrow"><svg class="icon"><use href="#i-arrow"/></svg></div>
+          <div class="fstep end good-end"><svg class="icon"><use href="#i-check"/></svg>Закрыли сейчас — или в лист ожидания</div>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-flag"/></svg>Что делать дальше</h2>
+    <div class="priority-list">
+      <div class="priority-item" style="--rank-bg:var(--rank1)">
+        <span class="priority-icon"><svg class="icon"><use href="#i-shield"/></svg></span>
+        <div><p class="priority-title">Красноярск: прояснить отказы СБ клиентам</p><p class="priority-desc">45.7% отказов без причины — нужен хотя бы шаблонный ответ «что делать дальше», раз полный молчок повторяется весь месяц.</p></div>
+        <span class="priority-badge">№1</span>
+      </div>
+      <div class="priority-item" style="--rank-bg:var(--rank2)">
+        <span class="priority-icon"><svg class="icon"><use href="#i-clock"/></svg></span>
+        <div><p class="priority-title">Иркутск: решить судьбу замороженного премиум-авто</p><p class="priority-desc">Один автомобиль фактически выключен из посуточной выдачи с 31 мая — вернуть в прокат или снять с витрины, разобраться со скоростью ответа отдельно.</p></div>
+        <span class="priority-badge">№2</span>
+      </div>
+      <div class="priority-item" style="--rank-bg:var(--rank3)">
+        <span class="priority-icon"><svg class="icon"><use href="#i-car"/></svg></span>
+        <div><p class="priority-title">Заявка на парк: Audi Q7, Geely Monjaro, Mercedes S-класс</p><p class="priority-desc">Самые частые по доле отказов позиции месяца, подтверждены и качественным разбором, и модельной статистикой.</p></div>
+        <span class="priority-badge">№3</span>
+      </div>
+      <div class="priority-item" style="--rank-bg:var(--rank4)">
+        <span class="priority-icon"><svg class="icon"><use href="#i-search"/></svg></span>
+        <div><p class="priority-title">Новосибирск: разобрать 48.1% явных отказов предметно</p><p class="priority-desc">Самая высокая доля отказов в сети, плюс открытая жалоба клиента на повторяющиеся отказы в разных городах — требует разбора конкретных причин.</p></div>
+        <span class="priority-badge">№4</span>
+      </div>
+      <div class="priority-item" style="--rank-bg:var(--rank5)">
+        <span class="priority-icon"><svg class="icon"><use href="#i-warn"/></svg></span>
+        <div><p class="priority-title">Ввести лист ожидания на дефицитные позиции</p><p class="priority-desc">По-прежнему системно отсутствует, несмотря на явный спрос почти в каждом городе.</p></div>
+        <span class="priority-badge">№5</span>
+      </div>
+    </div>
+
+    <div class="result-strip">
+      <span class="ri"><svg class="icon"><use href="#i-check"/></svg>Конверсия по сети за месяц — 51.4%, держится в узком коридоре 48–53% все четыре недели</span>
+      <span class="ri"><svg class="icon"><use href="#i-shield"/></svg>Красноярск — лучшая конверсия, но 45.7% отказов — необъяснённые решения СБ</span>
+      <span class="ri"><svg class="icon"><use href="#i-search"/></svg>Audi Q7 — худший показатель месяца по модельной разбивке: половина запросов заканчивается отказом</span>
+    </div>
+
+  </section>
+
+  <!-- ============ TAB 3 — МЕНЕДЖЕРЫ: ДЕТАЛЬНО ============ -->
+  <section id="panel-deep-sep-month" class="panel" role="tabpanel" aria-labelledby="tab-deep-sep-month">
+
+    <p class="section-note">Полный месяц, 863 диалога. Привязка «диалог → менеджер» — из реального файла <code>Журнал рабочих смен менеджеров.xlsx</code> (свежая версия, покрывает все 30 дней сентября по всем 6 городам), сопоставлена по городу и дню последнего сообщения в диалоге. Покрыто <b>833 из 863</b> диалогов (96.5%) — оставшиеся не попадают в дни, зафиксированные в графике смен, и не учтены ни в одном менеджере, а не разбросаны наугад.</p>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-clock"/></svg>Скорость реагирования по городам</h2>
+    <p class="section-note">Посчитано напрямую по таймстемпам внутри переписок («ДД.ММ.ГГ ЧЧ:ММ роль:»), не оценка. «Первый ответ» — от первого сообщения клиента до первого ответа менеджера. «Ответ на сообщение» — то же самое для каждого следующего обмена репликами внутри уже идущего диалога. Медиана — типичный случай; p90 показывает хвост из редких, но долгих задержек, который медиана прячет.</p>
+    <div class="profile-wrap">
+      <table class="profile">
+        <thead><tr><th>Город</th><th>Первый ответ, медиана</th><th>Первый ответ, p90</th><th>Ответ на сообщение, медиана</th><th>Доля ответов &gt;3ч</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-tyu); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Тюмень</td>
+            <td class="num good">1.5 мин</td><td class="num good">15 мин</td><td class="num good">1 мин</td><td class="num good">0.0%</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-krsk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Красноярск</td>
+            <td class="num good">2 мин</td><td class="num good">24 мин</td><td class="num good">1 мин</td><td class="num good">1.7%</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-ekb); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Екатеринбург</td>
+            <td class="num good">2 мин</td><td class="num good">45 мин</td><td class="num good">1 мин</td><td class="num good">3.5%</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-msk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Москва</td>
+            <td class="num good">2.5 мин</td><td class="num mid">1.0 ч</td><td class="num good">1 мин</td><td class="num good">2.8%</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-nsk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Новосибирск</td>
+            <td class="num good">4 мин</td><td class="num mid">1.2 ч</td><td class="num mid">3 мин</td><td class="num mid">5.0%</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-irk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Иркутск</td>
+            <td class="num good">9 мин</td><td class="num bad">9.4 ч</td><td class="num mid">2 мин</td><td class="num mid">8.0%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="conclusion"><svg class="icon"><use href="#i-flag"/></svg><div><b>Медиана хорошая почти везде</b> — типичный первый ответ укладывается в несколько минут во всех городах. Но p90 показывает другую картину: у Иркутска 9 из 10 первых ответов укладываются быстрее <b>9.4 часа</b> — на порядок хуже остальной сети, и это совпадает с его же худшим «Загасился» за месяц. Красноярск и Тюмень держат лучший результат по хвосту (24 и 15 минут).</div></div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-user"/></svg>По менеджерам, по городам</h2>
+    <div class="caveat-banner">
+      <svg class="icon"><use href="#i-warn"/></svg>
+      <div><b>★ считается от сетевого эталона, не от ранга внутри города.</b> 5★ по каждой оси — это лучший результат, реально достигнутый в сети среди всех 12 менеджеров с ≥10 диалогами за сентябрь (конверсия — Сантросян А.К., 71.4%; доля загасших — Некрасов В.Ю., 0.0%), а 1★ — худший реально достигнутый результат среди тех же менеджеров (конверсия — Рязанцев А.А., 39.2%; загасшие — Невидомский В.И., 26.8%). Внутри этого диапазона шкала линейная; итоговая звезда — среднее двух осей, округлено до 0.5. Ни один эталон не выдуман — оба конца шкалы это реальные цифры реальных людей на этой же выборке. «Диал./смену» — нагрузка, посчитанная по факту отработанных смен из графика, не оценка. Тюмень даёт только одного менеджера с 11 диалогами за весь месяц — за пределами обычного объёма остальных городов, цифра есть, но опирается на маленькую выборку.</div>
+    </div>
+
+    <div class="mgr-city-block">
+      <div class="mgr-city-heading"><span class="city-avatar" style="background:var(--city-krsk)"></span>Красноярск</div>
+      <div class="profile-wrap">
+        <table class="profile">
+          <thead><tr><th>Менеджер</th><th>★</th><th>Диалогов</th><th>Смен</th><th>Диал./смену</th><th>Конверсия</th><th>Загасился</th><th>1й ответ</th><th>Ответ далее</th></tr></thead>
+          <tbody>
+            <tr><td class="city-cell">Сантросян А.К.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon half"><use href="#i-star"/></svg></span></td><td class="num">84</td><td class="num">19</td><td class="num">4.4</td><td class="num good">71.4%</td><td class="num good">6.0%</td><td class="num good">2 мин</td><td class="num good">1 мин</td></tr>
+            <tr><td class="city-cell">Некрасов В.Ю.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon half"><use href="#i-star"/></svg></span></td><td class="num">44</td><td class="num">10</td><td class="num">4.4</td><td class="num good">63.6%</td><td class="num good">0.0%</td><td class="num good">1 мин</td><td class="num good">1 мин</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mgr-city-block">
+      <div class="mgr-city-heading"><span class="city-avatar" style="background:var(--city-tyu)"></span>Тюмень</div>
+      <div class="profile-wrap">
+        <table class="profile">
+          <thead><tr><th>Менеджер</th><th>★</th><th>Диалогов</th><th>Смен</th><th>Диал./смену</th><th>Конверсия</th><th>Загасился</th><th>1й ответ</th><th>Ответ далее</th></tr></thead>
+          <tbody>
+            <tr><td class="city-cell">Калиниченко Д.В.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">11</td><td class="num">12</td><td class="num">0.9</td><td class="num good">63.6%</td><td class="num mid">18.2%</td><td class="num good">1.5 мин</td><td class="num good">1 мин</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mgr-city-block">
+      <div class="mgr-city-heading"><span class="city-avatar" style="background:var(--city-ekb)"></span>Екатеринбург</div>
+      <div class="profile-wrap">
+        <table class="profile">
+          <thead><tr><th>Менеджер</th><th>★</th><th>Диалогов</th><th>Смен</th><th>Диал./смену</th><th>Конверсия</th><th>Загасился</th><th>1й ответ</th><th>Ответ далее</th></tr></thead>
+          <tbody>
+            <tr><td class="city-cell">Макаров И.С.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon half"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">129</td><td class="num">13</td><td class="num">9.9</td><td class="num mid">54.3%</td><td class="num good">6.2%</td><td class="num good">2 мин</td><td class="num good">1 мин</td></tr>
+            <tr><td class="city-cell">Буцырин С.Е.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">130</td><td class="num">15</td><td class="num">8.7</td><td class="num mid">51.5%</td><td class="num good">8.5%</td><td class="num good">3 мин</td><td class="num good">1 мин</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mgr-city-block">
+      <div class="mgr-city-heading"><span class="city-avatar" style="background:var(--city-nsk)"></span>Новосибирск</div>
+      <div class="profile-wrap">
+        <table class="profile">
+          <thead><tr><th>Менеджер</th><th>★</th><th>Диалогов</th><th>Смен</th><th>Диал./смену</th><th>Конверсия</th><th>Загасился</th><th>1й ответ</th><th>Ответ далее</th></tr></thead>
+          <tbody>
+            <tr><td class="city-cell">Суслов П.В.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">114</td><td class="num">18</td><td class="num">6.3</td><td class="num mid">45.6%</td><td class="num good">7.0%</td><td class="num mid">5 мин</td><td class="num mid">3 мин</td></tr>
+            <tr><td class="city-cell">Башлыков Г.Б.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon half"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">67</td><td class="num">12</td><td class="num">5.6</td><td class="num mid">43.3%</td><td class="num good">7.5%</td><td class="num good">2 мин</td><td class="num mid">3 мин</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mgr-city-block">
+      <div class="mgr-city-heading"><span class="city-avatar" style="background:var(--city-msk)"></span>Москва</div>
+      <div class="profile-wrap">
+        <table class="profile">
+          <thead><tr><th>Менеджер</th><th>★</th><th>Диалогов</th><th>Смен</th><th>Диал./смену</th><th>Конверсия</th><th>Загасился</th><th>1й ответ</th><th>Ответ далее</th></tr></thead>
+          <tbody>
+            <tr><td class="city-cell">Рязанцев А.А.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">51</td><td class="num">14</td><td class="num">3.6</td><td class="num bad">39.2%</td><td class="num mid">15.7%</td><td class="num good">2 мин</td><td class="num good">1 мин</td></tr>
+            <tr><td class="city-cell">Тягунов Д.А.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon half"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">40</td><td class="num">12</td><td class="num">3.3</td><td class="num bad">40.0%</td><td class="num mid">17.5%</td><td class="num mid">8.5 мин</td><td class="num good">1 мин</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mgr-city-block">
+      <div class="mgr-city-heading"><span class="city-avatar" style="background:var(--city-irk)"></span>Иркутск</div>
+      <div class="profile-wrap">
+        <table class="profile">
+          <thead><tr><th>Менеджер</th><th>★</th><th>Диалогов</th><th>Смен</th><th>Диал./смену</th><th>Конверсия</th><th>Загасился</th><th>1й ответ</th><th>Ответ далее</th></tr></thead>
+          <tbody>
+            <tr><td class="city-cell">Черных Я.М.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">52</td><td class="num">12</td><td class="num">4.3</td><td class="num mid">50.0%</td><td class="num bad">23.1%</td><td class="num mid">7 мин</td><td class="num mid">2 мин</td></tr>
+            <tr><td class="city-cell">Потапов К.О.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">27</td><td class="num">3</td><td class="num">9.0</td><td class="num mid">51.9%</td><td class="num bad">25.9%</td><td class="num mid">12 мин</td><td class="num mid">3 мин</td></tr>
+            <tr><td class="city-cell">Невидомский В.И.</td><td><span class="rating-stars sm"><svg class="icon"><use href="#i-star"/></svg><svg class="icon half"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg><svg class="icon off"><use href="#i-star"/></svg></span></td><td class="num">82</td><td class="num">15</td><td class="num">5.5</td><td class="num mid">43.9%</td><td class="num bad">26.8%</td><td class="num mid">10 мин</td><td class="num mid">2 мин</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="conclusion"><svg class="icon"><use href="#i-flag"/></svg><div><b>Красноярск занимает весь пьедестал месяца:</b> и Сантросян, и Некрасов получили 4.5★ — лучшая конверсия и близкий к нулю «Загасился» у обоих, не у одного случайно сильного человека. Все три менеджера Иркутска, наоборот, оказались в нижней половине рейтинга сети (1.5–2.0★) одновременно — city-wide проблема, а не слабое звено одного человека, что совпадает с городским выводом о застрявшем в аренде премиум-авто и худшей скорости ответа.</div></div>
+
+  </section>
+
+  <footer>
+    <p>Источник: четыре недельных экспорта подряд — <code>chat_history (7).xlsx</code> (1–6 сен, 175), <code>chat_history (8).xlsx</code> (7–13 сен, 201), <code>chat_history (9).xlsx</code> (14–20 сен, 209), <code>chat_history (10).xlsx</code> (21–27 сен, 184) и сентябрьская часть <code>chat_history (11).xlsx</code> (28 сен – 4 окт, из которого взяты только строки с датой в сентябре) — итого 863 диалога без пропусков и наложений дат, 1–30 сентября 2026, 6 городов. Конверсия и доля загасших лидов посчитаны напрямую по колонке «Статус». «Отказ из-за нехватки» — доля диалогов со статусом «Отказ», где текст переписки содержит явные признаки занятости/отсутствия машины (регекс по ключевым словам) — 24.1% от всех отказов по сети, до 33% в Новосибирске. Отказы СБ без объяснения причин посчитаны отдельным регексом по формулировкам («причины не раскрываются», «не одобрили» и т.п.) — 45 из 323 отказов (13.9%), до 45.7% в Красноярске; регекс не идеален, часть формулировок мог пропустить. Модельная разбивка — по совпадению названия модели в тексте диалога с расширяемым словарём ключевых слов, используемым во всех отчётах этой серии (в этот раз дополнен моделями Kia K5, Carnival, BMW X5/X4/Z4, Genesis GV80 и другими, встретившимися в сентябрьских диалогах). Фактические пробелы в парке и оценка менеджеров как продажников получены построчным прочтением переписок по каждому городу отдельно (13 параллельных разборов — Екатеринбург разбит на две части из-за объёма, отдельно разобрана и неделя 28 сен – 4 окт). ★ по отдельным менеджерам — шкала от сетевого эталона (лучший/худший реально достигнутый результат месяца), формула описана прямо над таблицами. Скорость реагирования посчитана программно по таймстемпам внутри строк переписки («ДД.ММ.ГГ ЧЧ:ММ роль:»), отдельно по городам и по каждому менеджеру; медиана и p90 показаны раздельно, поскольку среднее сильно искажается редкими ночными задержками. Разбивка по менеджерам построена по свежему <code>Журналу рабочих смен менеджеров.xlsx</code> (город+дата→ФИО, сокращено до фамилии и инициалов), диалог привязан к менеджеру по дню ПОСЛЕДНЕГО сообщения — покрыто 833 из 863 диалогов (96.5%). В этот раз, в отличие от августовского отчёта, городской рейтинг ★ на вкладке «Продажи» не считался отдельно — рейтинг по менеджерам на вкладке «Менеджеры: детально» уже даёт более точную картину по тем же городам; можно вернуть city-level рейтинг в следующий проход, если понадобится. Ни один процент в этом отчёте не выдуман — если оценка качественная (не посчитана), это указано текстом, а не числом.</p>
+  </footer>
+</div>
+
+</section>
+<section class="period" id="p-oct-2804" data-month="oct">
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand-row">
+      <div class="brand-mark"><span class="dot"></span>CARS&amp;GO · Клуб проката автомобилей</div>
+      <div class="mast-stats">
+        <div class="mast-stat"><svg class="icon"><use href="#i-chat"/></svg><div><b>207</b><span>диалогов</span></div></div>
+        <div class="mast-stat"><svg class="icon"><use href="#i-building"/></svg><div><b>6</b><span>городов</span></div></div>
+        <div class="mast-stat"><svg class="icon"><use href="#i-calendar"/></svg><div><b>7 дней</b><span>28 сен – 4 окт</span></div></div>
+        <div class="mast-stat"><svg class="icon"><use href="#i-check"/></svg><div><b>48.8%</b><span>в бронь</span></div></div>
+      </div>
+    </div>
+    <h1 class="mast-title">Неделя 28 сентября – 4 октября: автопарк и продажи по всей сети</h1>
+    <p class="mast-sub">Недельный формат отчёта — компактнее, без разбивки по моделям и без сравнения с прошлым периодом (это делает отдельный ежемесячный отчёт). 207 диалогов, 6 городов — впервые в отчёте появляется Тюмень.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="tabs" role="tablist" aria-label="Разделы отчёта">
+    <button class="tab" id="tab-fleet-oct-2804" role="tab" aria-selected="true" aria-controls="panel-fleet-oct-2804"><svg class="icon icon-sm"><use href="#i-car"/></svg>Автопарк</button>
+    <button class="tab" id="tab-sales-oct-2804" role="tab" aria-selected="false" aria-controls="panel-sales-oct-2804"><svg class="icon icon-sm"><use href="#i-cart"/></svg>Продажи</button>
+  </div>
+
+  <!-- ============ TAB 1 — АВТОПАРК ============ -->
+  <section id="panel-fleet-oct-2804" class="panel active" role="tabpanel" aria-labelledby="tab-fleet-oct-2804">
+
+    <p class="section-note"><b>Про период:</b> полная неделя, 28 сентября – 4 октября (207 диалогов, 7 дней). Тюмень включена в отчёт впервые — 24 диалога, читать как первый срез, не как тренд. Москва (20) и Красноярск (24) — тоже небольшие выборки.</p>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-building"/></svg>Пробелы по городам</h2>
+    <div class="grid">
+
+      <article class="card" style="--city:var(--city-ekb)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Екатеринбург</span></div>
+          <span class="dlg-count">53 диалога</span>
+        </div>
+        <div class="chips">
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>Mercedes S-класс и Kia K5 — нет в парке</span>
+          <span class="chip warn"><svg class="icon"><use href="#i-warn"/></svg>Mercedes G63 — дефицит в 3 диалогах</span>
+        </div>
+        <ul class="details">
+          <li><b>Dodge Challenger</b> — «данного авто не в автопарке» (#58); <b>Kia K5</b> — выбыл дважды за неделю (#59, #93); <b>Mercedes S350D и S63</b> — «выбыл из парка» (#68, #74)</li>
+          <li><b>Mercedes G63</b> — проблемный класс сразу в 3 диалогах: занят, дорог (35к/сутки), технически вышел из строя — дым из-под капота (#98)</li>
+          <li><b>Changan Uni-K</b> занят разово (#90); ночные обращения получают реальный ответ только утром — задержка 8–12 часов примерно в 10 из 53 диалогов</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Mercedes S-класс и Kia K5 выбыли из парка сразу по несколько раз за неделю — стоит проверить, временно это или окончательно.</div>
+      </article>
+
+      <article class="card" style="--city:var(--city-irk)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Иркутск</span></div>
+          <span class="dlg-count">36 диалогов</span>
+        </div>
+        <div class="chips">
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>Худший «Загасился» недели — 38.9%</span>
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>p90 первого ответа — 7.5 часа</span>
+        </div>
+        <ul class="details">
+          <li><b>Эконом-класс</b> — «ничего нет» целиком (#107); неназванный автомобиль выбыл из парка (#108)</li>
+          <li><b>Премиум/бизнес</b> (Camry, Tank 300, Land Cruiser 200, Lexus GX460, Tucson) — дефицит примерно в 17% диалогов; подмена класса без объяснения — Camry заменили на Chery Arrizo 8 (#138)</li>
+          <li>Противоречие в одном диалоге: Tucson сначала «занят», затем «на ремонте» (#133)</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Конверсия, «Загасился» и скорость ответа — всё хуже сети одновременно; нужен отдельный разбор смен, а не точечная правка.</div>
+      </article>
+
+      <article class="card" style="--city:var(--city-krsk)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Красноярск</span></div>
+          <span class="dlg-count">24 диалога</span>
+        </div>
+        <div class="chips">
+          <span class="chip good"><svg class="icon"><use href="#i-check"/></svg>Лучшая конверсия недели — 70.8%</span>
+          <span class="chip warn"><svg class="icon"><use href="#i-warn"/></svg>Кроссоверы разобраны в долгосрок до середины октября</span>
+        </div>
+        <ul class="details">
+          <li>Явных «нет в парке» не найдено — все отказы по доступности сформулированы как занятость</li>
+          <li><b>Кроссоверы/внедорожники</b> — весь класс в дефиците до середины октября: «с 12 числа кроссоверов много освободится» (#198); выбор сужен до 3 моделей (#193)</li>
+          <li><b>Бизнес-седаны</b> (K5, Camry) — заняты разово на прямой запрос (#193)</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Лучший результат недели по продажам, но почти весь класс кроссоверов недоступен клиентам ближайшие полторы недели.</div>
+      </article>
+
+      <article class="card" style="--city:var(--city-msk)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Москва</span></div>
+          <span class="dlg-count">20 диалогов</span>
+        </div>
+        <div class="chips">
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>Худшая конверсия недели — 35.0%</span>
+          <span class="chip warn"><svg class="icon"><use href="#i-warn"/></svg>Купе-класс — всего 1 машина на даты</span>
+        </div>
+        <ul class="details">
+          <li><b>Mercedes S-купе</b> — «такой нет» (#154); <b>Geely Monjaro</b> — «отсутствует на данный момент в прокате» (#145)</li>
+          <li><b>Купе-класс</b> в целом — на нужные даты свободна только 1 машина (#143); <b>Zeekr 001</b> — в долгосрочной аренде, возят от партнёров (#147); <b>Audi TT</b> — недоступен до конца октября (#156)</li>
+          <li>Системная задержка первого ответа — около 4 часов почти в каждом диалоге, независимо от времени заявки</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Купе и премиум-электро (Zeekr) — точечный, но стабильный дефицит; задержка первого ответа ~4 часа выглядит системной нормой, а не вечерним хвостом.</div>
+      </article>
+
+      <article class="card" style="--city:var(--city-nsk)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Новосибирск</span></div>
+          <span class="dlg-count">50 диалогов</span>
+        </div>
+        <div class="chips">
+          <span class="chip warn"><svg class="icon"><use href="#i-warn"/></svg>Camry 70 и дизель — по-прежнему вне парка</span>
+          <span class="chip warn"><svg class="icon"><use href="#i-warn"/></svg>Премиум-внедорожники — самый частый дефицит (6 из 50)</span>
+        </div>
+        <ul class="details">
+          <li><b>Toyota Camry 70</b> (кузов) выведен из парка; <b>дизельный сегмент</b> почти пуст — «только бензиновый» (#50); <b>Land Cruiser 200</b> (2016) выводится из парка</li>
+          <li><b>Toyota Camry 80</b> — занят минимум 3 раза; <b>премиум-внедорожники</b> (Tank 300/500, TLC300, Highlander) — дефицит в 6 из 50 диалогов</li>
+          <li><b>Lixiang L7</b> — занят дважды (#25, #48)</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Дизель и Camry 70 — та же проблема, что и в предыдущих отчётах, не разовая; премиум-кроссоверы — самый частый повод отказа на этой неделе.</div>
+      </article>
+
+      <article class="card" style="--city:var(--city-tyu)">
+        <div class="card-head">
+          <div class="city-id"><span class="city-avatar"><svg class="icon"><use href="#i-building"/></svg></span><span class="city-name">Тюмень</span></div>
+          <span class="dlg-count">24 диалога</span>
+        </div>
+        <div class="chips">
+          <span class="chip warn"><svg class="icon"><use href="#i-warn"/></svg>Впервые в отчёте — читать как первый срез</span>
+          <span class="chip crit"><svg class="icon"><use href="#i-cross"/></svg>Премиум-класс — дефицит в ~20% диалогов</span>
+        </div>
+        <ul class="details">
+          <li><b>Nissan Qashqai</b> — «нет, к сожалению» (#165), единственный чистый пробел парка за неделю</li>
+          <li><b>Премиум</b> (Mercedes E/S, BMW 5-й серии, Cayenne, X5M) — самый явный паттерн недели, ~5 из 24 диалогов: «все автомобили... заняты» (#179, #180, #181)</li>
+          <li><b>Haval Jolion</b> — систематический запасной вариант почти во всех диалогах</li>
+        </ul>
+        <div class="reco"><span>Рекомендация</span>Конверсия неплохая для старта (54.2%), но «Загасился» 20.8% и дефицит премиум-класса стоит отслеживать дальше, по мере накопления данных.</div>
+      </article>
+
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-flag"/></svg>Что докупить — приоритеты и картина по классам</h2>
+    <div class="two-col">
+
+      <div class="priority-list">
+        <div class="priority-item" style="--rank-bg:var(--rank1)">
+          <span class="priority-icon"><svg class="icon"><use href="#i-car"/></svg></span>
+          <div><p class="priority-title">Премиум-внедорожники и кроссоверы</p><p class="priority-desc">G63, Cayenne, X5, Audi Q7, Tank 300/500, TLC300/Highlander — дефицит отмечен во всех 6 городах разом на этой неделе. Самый широкий сигнал серии на сегодня.</p><p class="priority-city">Все города</p></div>
+          <span class="priority-badge">№1</span>
+        </div>
+        <div class="priority-item" style="--rank-bg:var(--rank2)">
+          <span class="priority-icon"><svg class="icon"><use href="#i-diamond"/></svg></span>
+          <div><p class="priority-title">Купе и нишевый премиум без замены</p><p class="priority-desc">Mercedes S-купе, Zeekr 001, Audi TT, Nissan Qashqai — маленькая частота, но клиент уходит без брони.</p><p class="priority-city">Москва, Тюмень</p></div>
+          <span class="priority-badge">№2</span>
+        </div>
+        <div class="priority-item" style="--rank-bg:var(--rank3)">
+          <span class="priority-icon"><svg class="icon"><use href="#i-search"/></svg></span>
+          <div><p class="priority-title">Mercedes S-класс и Kia K5</p><p class="priority-desc">Повторно выбыли из парка несколько раз за одну неделю.</p><p class="priority-city">Екатеринбург</p></div>
+          <span class="priority-badge">№3</span>
+        </div>
+        <div class="priority-item" style="--rank-bg:var(--rank4)">
+          <span class="priority-icon"><svg class="icon"><use href="#i-warn"/></svg></span>
+          <div><p class="priority-title">Camry 70 и дизельный сегмент</p><p class="priority-desc">Выведены из парка ещё раньше и до сих пор не восстановлены.</p><p class="priority-city">Новосибирск</p></div>
+          <span class="priority-badge">№4</span>
+        </div>
+        <div class="priority-item" style="--rank-bg:var(--rank5)">
+          <span class="priority-icon"><svg class="icon"><use href="#i-van"/></svg></span>
+          <div><p class="priority-title">Эконом-класс</p><p class="priority-desc">«Ничего нет» целиком в моменте обращения.</p><p class="priority-city">Иркутск</p></div>
+          <span class="priority-badge">№5</span>
+        </div>
+        <div class="priority-item" style="--rank-bg:var(--rank6)">
+          <span class="priority-icon"><svg class="icon"><use href="#i-refresh"/></svg></span>
+          <div><p class="priority-title">Кроссоверы в долгосроке</p><p class="priority-desc">Весь класс распродан в долгосрочную аренду до середины октября.</p><p class="priority-city">Красноярск</p></div>
+          <span class="priority-badge">№6</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="matrix-wrap">
+          <table class="matrix">
+            <thead><tr><th>Город</th><th>Эконом</th><th>Комфорт</th><th>Бизнес</th><th>Премиум</th><th>Внедорожник/кросс.</th><th>Минивэн</th></tr></thead>
+            <tbody>
+              <tr><td>Екатеринбург</td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+              </tr>
+              <tr><td>Иркутск</td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+              </tr>
+              <tr><td>Красноярск</td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+              </tr>
+              <tr><td>Москва</td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+              </tr>
+              <tr><td>Новосибирск</td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+              </tr>
+              <tr><td>Тюмень</td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+                <td><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span></td>
+                <td><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span></td>
+                <td><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="legend-row">
+            <span class="li"><span class="status-ico good"><svg class="icon icon-sm"><use href="#i-check"/></svg></span>достаточно</span>
+            <span class="li"><span class="status-ico warn"><svg class="icon icon-sm"><use href="#i-warn"/></svg></span>дефицит юнитов</span>
+            <span class="li"><span class="status-ico crit"><svg class="icon icon-sm"><use href="#i-cross"/></svg></span>отсутствует в парке</span>
+            <span class="li"><span class="status-ico none"><svg class="icon icon-sm"><use href="#i-search"/></svg></span>мало запросов / нет данных</span>
+          </div>
+        </div>
+        <p class="section-note" style="margin-top:12px;">Нишевые находки, которые не укладываются в таблицу по классам (противоречивые причины недоступности одной машины, подмена класса без объяснения) — см. карточки городов выше и приоритетный список слева.</p>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ============ TAB 2 — ПРОДАЖИ ============ -->
+  <section id="panel-sales-oct-2804" class="panel" role="tabpanel" aria-labelledby="tab-sales-oct-2804">
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-trend"/></svg>Реальные цифры по городам</h2>
+    <p class="section-note">Точный подсчёт статусов «Бронь / Загасился / Отказ» по каждому городу за 28 сентября – 4 октября.</p>
+    <div class="overview-row">
+      <div class="databox">
+        <h3><svg class="icon"><use href="#i-check"/></svg>Конверсия в бронь</h3>
+        <p class="sub">Доля диалогов, закрытых бронированием</p>
+        <div class="barlist">
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-krsk)"></span>Красноярск</span><div class="bartrack"><div class="barfill" style="width:70.8%; background:var(--good)"></div></div><span class="barval">70.8%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-tyu)"></span>Тюмень</span><div class="bartrack"><div class="barfill" style="width:54.2%; background:var(--good)"></div></div><span class="barval">54.2%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-ekb)"></span>Екатеринбург</span><div class="bartrack"><div class="barfill" style="width:52.8%; background:var(--good)"></div></div><span class="barval">52.8%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-nsk)"></span>Новосибирск</span><div class="bartrack"><div class="barfill" style="width:44.0%; background:var(--warn)"></div></div><span class="barval">44.0%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-irk)"></span>Иркутск</span><div class="bartrack"><div class="barfill" style="width:38.9%; background:var(--warn)"></div></div><span class="barval">38.9%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-msk)"></span>Москва</span><div class="bartrack"><div class="barfill" style="width:35.0%; background:var(--warn)"></div></div><span class="barval">35.0%</span></div>
+        </div>
+      </div>
+      <div class="databox">
+        <h3><svg class="icon"><use href="#i-cross"/></svg>Загасился — потерян без ответа</h3>
+        <p class="sub">Ни брони, ни явного отказа — диалог просто затих</p>
+        <div class="barlist">
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-irk)"></span>Иркутск</span><div class="bartrack"><div class="barfill" style="width:38.9%; background:var(--critical)"></div></div><span class="barval">38.9%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-tyu)"></span>Тюмень</span><div class="bartrack"><div class="barfill" style="width:20.8%; background:var(--critical)"></div></div><span class="barval">20.8%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-msk)"></span>Москва</span><div class="bartrack"><div class="barfill" style="width:10.0%; background:var(--warn)"></div></div><span class="barval">10.0%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-krsk)"></span>Красноярск</span><div class="bartrack"><div class="barfill" style="width:8.3%; background:var(--good)"></div></div><span class="barval">8.3%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-ekb)"></span>Екатеринбург</span><div class="bartrack"><div class="barfill" style="width:7.5%; background:var(--good)"></div></div><span class="barval">7.5%</span></div>
+          <div class="barrow"><span class="city-lbl"><span class="city-dot" style="--city:var(--city-nsk)"></span>Новосибирск</span><div class="bartrack"><div class="barfill" style="width:4.0%; background:var(--good)"></div></div><span class="barval">4.0%</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="conclusion"><svg class="icon"><use href="#i-flag"/></svg><div><b>Главное наблюдение недели.</b> Иркутск — редкое сочетание худших показателей сразу по трём метрикам: конверсия (38.9%, на уровне Москвы), «Загасился» (38.9%, худший в сети) и скорость ответа (p90 первого ответа — 7.5 часа, в разы хуже остальных). Это не разные проблемы, а похоже на одну: лиды копятся и остывают, пока до них доходит очередь. Красноярск снова лидер по конверсии (70.8%), но по доле необъяснённых отказов СБ (40% своих отказов) — худший в сети третью неделю подряд.</div></div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-warn"/></svg>Топ-6 сквозных проблем продаж</h2>
+    <div class="problem-grid">
+      <div class="problem-card"><p class="problem-num">01</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-shield"/></svg></span><p class="problem-title">Отказы СБ без объяснения</p></div><p class="problem-desc">Красноярск — 40% своих отказов без причины третью неделю подряд; по сети 13 из 77 отказов (16.9%).</p></div>
+      <div class="problem-card"><p class="problem-num">02</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-car"/></svg></span><p class="problem-title">Премиум-внедорожники — дефицит везде</p></div><p class="problem-desc">Во всех 6 городах разом на этой неделе — самый широкий сигнал по парку.</p></div>
+      <div class="problem-card"><p class="problem-num">03</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-clock"/></svg></span><p class="problem-title">Иркутск: три проблемы разом</p></div><p class="problem-desc">Конверсия, «Загасился» и скорость ответа — всё хуже сети одновременно, похоже на одну причину.</p></div>
+      <div class="problem-card"><p class="problem-num">04</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-search"/></svg></span><p class="problem-title">Нет листа ожидания</p></div><p class="problem-desc">По-прежнему нигде не предлагается, несмотря на явный дефицит премиум-класса в каждом городе.</p></div>
+      <div class="problem-card"><p class="problem-num">05</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-clock"/></svg></span><p class="problem-title">Медленный вечерний/ночной ответ</p></div><p class="problem-desc">Москва — системная задержка ~4 часа независимо от времени заявки; Тюмень — отдельные случаи по 12–13 часов.</p></div>
+      <div class="problem-card"><p class="problem-num">06</p><div class="problem-head"><span class="problem-icon"><svg class="icon"><use href="#i-refresh"/></svg></span><p class="problem-title">Подмена класса без объяснения</p></div><p class="problem-desc">Иркутск — Camry заменили на Chery Arrizo 8 без комментария; Москва — купе на кабрио.</p></div>
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-building"/></svg>Продажный профиль по городам</h2>
+    <div class="profile-wrap">
+      <table class="profile">
+        <thead><tr><th>Город</th><th>Бронь</th><th>Загасился</th><th>Отказ</th><th>Сильная сторона</th><th>Главная проблема</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-krsk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Красноярск</td>
+            <td class="num good">70.8%</td><td class="num good">8.3%</td><td class="num">20.8%</td>
+            <td>Апсейл с конкретной цифрой («+600₽/сутки, итого 2750») и подтверждение перед отменой вместо тихого забрасывания лида.</td>
+            <td>40% отказов — СБ без объяснения причины, третью неделю подряд худший показатель в сети.</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-tyu); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Тюмень</td>
+            <td class="num good">54.2%</td><td class="num bad">20.8%</td><td class="num">25.0%</td>
+            <td>Системный допродажный скрипт (мойка/страховка/маршрут) почти в каждой брони; честная детализация по классам.</td>
+            <td>Премиум-класс в дефиците ~20% диалогов; «Загасился» неожиданно высок для дебютной недели в отчёте.</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-ekb); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Екатеринбург</td>
+            <td class="num good">52.8%</td><td class="num good">7.5%</td><td class="num">39.6%</td>
+            <td>Закрытие «Бронируем?» почти в каждой брони; ценностное объяснение залога вместо голой цифры.</td>
+            <td>Сразу несколько моделей выбыли из парка за одну неделю (S-класс, K5), помимо хронического G63.</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-nsk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Новосибирск</td>
+            <td class="num mid">44.0%</td><td class="num good">4.0%</td><td class="num">52.0%</td>
+            <td>Консультативные альтернативы при отказе почти всегда даются списком со ссылками; waitlist изредка предлагается (#18).</td>
+            <td>Самая высокая доля явного «Отказ» в сети (52.0%) — половина диалогов заканчивается отказом.</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-irk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Иркутск</td>
+            <td class="num mid">38.9%</td><td class="num bad">38.9%</td><td class="num">22.2%</td>
+            <td>Ценностная работа с выбором модели вместо голой скидки; реактивация части угасших лидов.</td>
+            <td>Худшая неделя сети сразу по трём метрикам — конверсия, «Загасился» и скорость ответа.</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-msk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Москва</td>
+            <td class="num bad">35.0%</td><td class="num mid">10.0%</td><td class="num">55.0%</td>
+            <td>Быстрое закрытие при готовности клиента («Давайте забронируем Х1» → «Сейчас сделаем»).</td>
+            <td>Самая высокая доля «Отказ» в сети (55.0%) и системная ~4-часовая задержка первого ответа.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-clock"/></svg>Скорость реагирования</h2>
+    <p class="section-note">Посчитано напрямую по таймстемпам внутри переписок («ДД.ММ.ГГ ЧЧ:ММ роль:»), не оценка. «Первый ответ» — от первого сообщения клиента до первого ответа менеджера. «Ответ на сообщение» — то же самое для каждого следующего обмена репликами внутри уже идущего диалога. Медиана — типичный случай; p90 показывает хвост из редких, но долгих задержек, который медиана прячет.</p>
+    <div class="profile-wrap">
+      <table class="profile">
+        <thead><tr><th>Город</th><th>Первый ответ, медиана</th><th>Первый ответ, p90</th><th>Ответ на сообщение, медиана</th><th>Доля ответов &gt;3ч</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-krsk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Красноярск</td>
+            <td class="num good">1 мин</td><td class="num good">9 мин</td><td class="num good">1 мин</td><td class="num good">1.2%</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-msk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Москва</td>
+            <td class="num good">3 мин</td><td class="num good">27 мин</td><td class="num good">1 мин</td><td class="num good">1.3%</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-ekb); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Екатеринбург</td>
+            <td class="num good">3.5 мин</td><td class="num good">27 мин</td><td class="num mid">2 мин</td><td class="num good">3.6%</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-nsk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Новосибирск</td>
+            <td class="num good">3.5 мин</td><td class="num good">44 мин</td><td class="num mid">3 мин</td><td class="num good">3.8%</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-tyu); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Тюмень</td>
+            <td class="num good">3.5 мин</td><td class="num mid">2.7 ч</td><td class="num good">1 мин</td><td class="num good">3.2%</td>
+          </tr>
+          <tr>
+            <td class="city-cell"><span class="city-avatar" style="background:var(--city-irk); width:26px; height:26px; border-radius:7px;"><svg class="icon" style="width:14px;height:14px;stroke:#fff"><use href="#i-building"/></svg></span>Иркутск</td>
+            <td class="num mid">11 мин</td><td class="num bad">7.5 ч</td><td class="num mid">2 мин</td><td class="num mid">9.0%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="conclusion"><svg class="icon"><use href="#i-flag"/></svg><div><b>Иркутск — p90 первого ответа 7.5 часа, худший результат серии.</b> Следующий худший — Тюмень (2.7 часа), то есть разрыв почти трёхкратный. У Иркутска это совпадает с худшим «Загасился» — похоже на структурную проблему с вечерними/ночными сменами, не на случайные единичные задержки. Красноярск держит лучший результат сразу по всем четырём показателям скорости.</div></div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-cross"/></svg>Где мы теряем деньги</h2>
+    <div class="funnel-row">
+      <div class="funnel-col bad">
+        <h4><svg class="icon icon-sm"><use href="#i-cross"/></svg>Как происходит сейчас</h4>
+        <div class="funnel-steps">
+          <div class="fstep"><svg class="icon"><use href="#i-chat"/></svg><span>Клиент написал</span></div>
+          <div class="farrow"><svg class="icon"><use href="#i-arrow"/></svg></div>
+          <div class="fstep"><svg class="icon"><use href="#i-clock"/></svg><span>Ответ с задержкой (в Иркутске — часами)</span></div>
+          <div class="farrow"><svg class="icon"><use href="#i-arrow"/></svg></div>
+          <div class="fstep"><svg class="icon"><use href="#i-percent"/></svg><span>Нужного авто нет (премиум-кроссовер почти везде) — альтернатива без объяснения или отказ СБ без причины</span></div>
+          <div class="farrow"><svg class="icon"><use href="#i-arrow"/></svg></div>
+          <div class="fstep end bad-end"><svg class="icon"><use href="#i-cross"/></svg>Лид потерян — 24.7% всех отказов по сети объясняются нехваткой авто (до 37.5% в Иркутске); ещё 16.9% — необъяснённый отказ СБ (до 40% в Красноярске)</div>
+        </div>
+      </div>
+      <div class="funnel-col good">
+        <h4><svg class="icon icon-sm"><use href="#i-check"/></svg>Как должно быть</h4>
+        <div class="funnel-steps">
+          <div class="fstep"><svg class="icon"><use href="#i-search"/></svg><span>Выяснить задачу клиента</span></div>
+          <div class="farrow"><svg class="icon"><use href="#i-arrow"/></svg></div>
+          <div class="fstep"><svg class="icon"><use href="#i-shield"/></svg><span>Объяснить причину отказа (в т.ч. СБ) и предложить альтернативу по классу</span></div>
+          <div class="farrow"><svg class="icon"><use href="#i-arrow"/></svg></div>
+          <div class="fstep"><svg class="icon"><use href="#i-cart"/></svg><span>Зафиксировать интерес в очередь, если подходящего авто нет</span></div>
+          <div class="farrow"><svg class="icon"><use href="#i-arrow"/></svg></div>
+          <div class="fstep end good-end"><svg class="icon"><use href="#i-check"/></svg>Закрыли сейчас — или в лист ожидания</div>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title"><svg class="icon"><use href="#i-flag"/></svg>Что делать дальше</h2>
+    <div class="priority-list">
+      <div class="priority-item" style="--rank-bg:var(--rank1)">
+        <span class="priority-icon"><svg class="icon"><use href="#i-clock"/></svg></span>
+        <div><p class="priority-title">Иркутск: разобрать конверсию, «Загасился» и скорость ответа разом</p><p class="priority-desc">p90 в 7.5 часа и «Загасился» 38.9% — не совпадение, а одна и та же причина: лиды не доходят до менеджера вовремя.</p></div>
+        <span class="priority-badge">№1</span>
+      </div>
+      <div class="priority-item" style="--rank-bg:var(--rank2)">
+        <span class="priority-icon"><svg class="icon"><use href="#i-shield"/></svg></span>
+        <div><p class="priority-title">Красноярск: прояснить отказы СБ клиентам</p><p class="priority-desc">40% отказов без причины — третью неделю подряд худший результат в сети, при этом лучшая конверсия.</p></div>
+        <span class="priority-badge">№2</span>
+      </div>
+      <div class="priority-item" style="--rank-bg:var(--rank3)">
+        <span class="priority-icon"><svg class="icon"><use href="#i-car"/></svg></span>
+        <div><p class="priority-title">Заявка на парк: премиум-внедорожники</p><p class="priority-desc">Дефицит разом во всех 6 городах — самый широкий сигнал недели.</p></div>
+        <span class="priority-badge">№3</span>
+      </div>
+      <div class="priority-item" style="--rank-bg:var(--rank4)">
+        <span class="priority-icon"><svg class="icon"><use href="#i-search"/></svg></span>
+        <div><p class="priority-title">Москва: сократить системную ~4-часовую задержку</p><p class="priority-desc">Это не вечерний хвост, а типичное время ответа в течение дня — требует разбора нагрузки на смену.</p></div>
+        <span class="priority-badge">№4</span>
+      </div>
+      <div class="priority-item" style="--rank-bg:var(--rank5)">
+        <span class="priority-icon"><svg class="icon"><use href="#i-warn"/></svg></span>
+        <div><p class="priority-title">Ввести лист ожидания на дефицитные позиции</p><p class="priority-desc">По-прежнему нигде не предлагается, несмотря на дефицит премиум-класса в каждом городе.</p></div>
+        <span class="priority-badge">№5</span>
+      </div>
+    </div>
+
+    <div class="result-strip">
+      <span class="ri"><svg class="icon"><use href="#i-check"/></svg>Конверсия по сети за неделю — 48.8%, разброс от 70.8% (Красноярск) до 35.0% (Москва)</span>
+      <span class="ri"><svg class="icon"><use href="#i-warn"/></svg>Иркутск — редкое сочетание худшей конверсии, «Загасился» и скорости ответа одновременно</span>
+      <span class="ri"><svg class="icon"><use href="#i-search"/></svg>Премиум-внедорожники — дефицит разом во всех 6 городах, самый широкий сигнал серии</span>
+    </div>
+
+  </section>
+
+  <footer>
+    <p>Источник: <code>chat_history (11).xlsx</code> (лист «История чатов», 207 диалогов, 28 сентября – 4 октября 2026, 6 городов, полная неделя — впервые включена Тюмень). Конверсия и доля «Загасился» посчитаны напрямую по колонке «Статус». «Нехватка авто» — доля диалогов со статусом «Отказ», где текст переписки содержит явные признаки занятости/отсутствия машины (регекс по ключевым словам: «занят», «нет в наличии», «недоступен», «на ремонте» и т.п.) — 24.7% от всех отказов по сети, до 37.5% в Иркутске. Отказы СБ без объяснения причин посчитаны регексом по формулировкам («причины не раскрываются», «информацию не предоставляют», «не одобрили» и т.п.) — 13 из 77 отказов (16.9%), до 40% в Красноярске; регекс не идеален, часть формулировок мог пропустить. Автопарк и оценка менеджеров получены построчным прочтением переписок по каждому городу отдельно (6 параллельных разборов, по одному на город). Скорость реагирования посчитана программно по таймстемпам внутри строк переписки, отдельно от качественного разбора. Недельный формат — компактнее ежемесячного: без разбивки по моделям, без звёздного рейтинга менеджеров и без сравнения с прошлым периодом. Остальные недели и ежемесячные отчёты — во вкладках вверху страницы. Ни один процент в этом отчёте не выдуман — если оценка качественная (не посчитана), это указано текстом («минимум», «около»), а не точным числом.</p>
+  </footer>
+</div>
+
+</section>
 
 <script>
 
-  const DEFAULT_KEY = 'sep-2127';
+  const DEFAULT_KEY = 'oct-2804';
   const lastByMonth = {};
   function show(key){
     const p = document.getElementById('p-' + key);
